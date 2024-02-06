@@ -18,12 +18,18 @@ version = properties("pluginVersion").get()
 
 // Configure project's dependencies
 repositories {
+    mavenLocal()
     mavenCentral()
+    maven(url = "https://maven.aliyun.com/nexus/content/groups/public/")
+    maven(url = "https://www.jetbrains.com/intellij-repository/releases")
+    maven(url = "https://www.jetbrains.com/intellij-repository/snapshots")
+    maven(url = "https://maven-central.storage-download.googleapis.com/repos/central/data/")
 }
 
 // Dependencies are managed with Gradle version catalog - read more: https://docs.gradle.org/current/userguide/platforms.html#sub:version-catalog
 dependencies {
-//    implementation(libs.annotations)
+    implementation("com.google.code.gson:gson:2.9.0")
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.2")
 }
 
 // Set the JVM language level used to build the project. Use Java 11 for 2020.3+, and Java 17 for 2022.2+.

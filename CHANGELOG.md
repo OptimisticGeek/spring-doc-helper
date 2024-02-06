@@ -1,7 +1,23 @@
 <!-- Keep a Changelog guide -> https://keepachangelog.com -->
 
-# test Changelog
+# springDocHelper Changelog
 
 ## [Unreleased]
-### Added
-- Initial scaffold created from [IntelliJ Platform Plugin Template](https://github.com/JetBrains/intellij-platform-plugin-template)
+- [ ] 基于接口的搜索
+- [ ] 生成接口请求用例
+- [ ] 针对指定类的自定义fields
+- [ ] controller缓存逻辑
+- [ ] 导入到Yapi
+- [ ] 导入到Postman
+- [ ] 复制接口Curl请求
+- [ ] swagger文档分析
+
+## [0.0.1]
+- 接口文档分析
+- 鼠标悬浮文档提示（class、field、response、params、method）
+- Object与泛型返回值真实类型推断
+- 快速文档提示复制model的html、json
+
+[Unreleased]: https://github.com/OptimisticGeek/spring-doc-helper/compare/v0.0.1...HEAD
+[0.0.1]: https://github.com/OptimisticGeek/spring-doc-helper/commits/v0.0.1
+[0.0.2]: https://github.com/OptimisticGeek/spring-doc-helper/commits/v0.0.1

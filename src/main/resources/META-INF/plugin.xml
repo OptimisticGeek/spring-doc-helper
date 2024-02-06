@@ -1,18 +1,28 @@
 <!-- Plugin Configuration File. Read more: https://plugins.jetbrains.com/docs/intellij/plugin-configuration-file.html -->
 <idea-plugin>
-    <id>com.github.optimisticgeek.test</id>
-    <name>test Template</name>
-    <vendor>optimisticgeek</vendor>
+  <version>0.0.1</version>
+  <idea-version since-build="223" until-build="233.*" />
+  <id>com.github.optimisticGeek.spring-doc-helper</id>
+  <name>SpringDocHelper</name>
+  <vendor email="optimisticgeekone@gmail.com">optimisticGeek</vendor>
+  <depends>com.intellij.modules.platform</depends>
+  <depends>com.intellij.java</depends>
+  <depends>com.intellij.spring.mvc</depends>
+  <description>&lt;p&gt;这是一款针对spring的接口文档插件，通过本插件获取接口文档，快速查看接口文档，快速复制接口文档的html、json、markdown、cURL等，生成接口用例，导入到yapi、postman等。&lt;/p&gt;
 
-    <depends>com.intellij.modules.platform</depends>
-
-    <resource-bundle>messages.MyBundle</resource-bundle>
-
-    <extensions defaultExtensionNs="com.intellij">
-        <toolWindow factoryClass="com.github.optimisticgeek.test.toolWindow.MyToolWindowFactory" id="MyToolWindow"/>
-    </extensions>
-
-    <applicationListeners>
-        <listener class="com.github.optimisticgeek.test.listeners.MyApplicationActivationListener" topic="com.intellij.openapi.application.ApplicationActivationListener"/>
-    </applicationListeners>
+&lt;h2&gt;ToDo list&lt;/h2&gt;
+&lt;ul&gt;&lt;li class="task-list-item"&gt;&lt;input type="checkbox" class="task-list-item-checkbox" checked disabled /&gt;接口文档分析&lt;/li&gt;&lt;li class="task-list-item"&gt;&lt;input type="checkbox" class="task-list-item-checkbox" checked disabled /&gt;快速文档提示（class、field、response、params、method）&lt;/li&gt;&lt;li class="task-list-item"&gt;&lt;input type="checkbox" class="task-list-item-checkbox" checked disabled /&gt;Object与泛型返回值真实类型推断&lt;/li&gt;&lt;li class="task-list-item"&gt;&lt;input type="checkbox" class="task-list-item-checkbox" checked disabled /&gt;快速文档提示复制model的html、json&lt;/li&gt;&lt;li class="task-list-item"&gt;&lt;input type="checkbox" class="task-list-item-checkbox" disabled /&gt;基于接口的搜索&lt;/li&gt;&lt;li class="task-list-item"&gt;&lt;input type="checkbox" class="task-list-item-checkbox" disabled /&gt;生成接口请求用例&lt;/li&gt;&lt;li class="task-list-item"&gt;&lt;input type="checkbox" class="task-list-item-checkbox" disabled /&gt;针对指定类的自定义fields&lt;/li&gt;&lt;li class="task-list-item"&gt;&lt;input type="checkbox" class="task-list-item-checkbox" disabled /&gt;controller缓存逻辑&lt;/li&gt;&lt;li class="task-list-item"&gt;&lt;input type="checkbox" class="task-list-item-checkbox" disabled /&gt;导入到Yapi&lt;/li&gt;&lt;li class="task-list-item"&gt;&lt;input type="checkbox" class="task-list-item-checkbox" disabled /&gt;导入到Postman&lt;/li&gt;&lt;li class="task-list-item"&gt;&lt;input type="checkbox" class="task-list-item-checkbox" disabled /&gt;复制接口Curl请求&lt;/li&gt;&lt;li class="task-list-item"&gt;&lt;input type="checkbox" class="task-list-item-checkbox" disabled /&gt;swagger文档分析&lt;/li&gt;&lt;/ul&gt;</description>
+  <change-notes>&lt;ul&gt;&lt;li&gt;接口文档分析&lt;/li&gt;&lt;li&gt;鼠标悬浮文档提示（class、field、response、params、method）&lt;/li&gt;&lt;li&gt;Object与泛型返回值真实类型推断&lt;/li&gt;&lt;li&gt;快速文档提示复制model的html、json&lt;/li&gt;&lt;/ul&gt;</change-notes>
+  <resource-bundle>messages.Scanner</resource-bundle>
+  <extensions defaultExtensionNs="com.intellij">
+    <codeInsight.lineMarkerProvider implementationClass="com.github.optimisticgeek.editor.listener.ControllerLineMarkerProvider" language="JAVA" />
+    <!--文档提示-->
+    <lang.documentationProvider language="JAVA" implementationClass="com.github.optimisticgeek.editor.listener.SpringApiDocumentProvider" order="first" />
+    <!--suppress PluginXmlValidity -->
+    <lang.documentationLinkHandler implementation="com.github.optimisticgeek.editor.listener.SpringDocDocumentationLinkHandler" order="first" />
+  </extensions>
+  <projectListeners>
+    <listener class="com.github.optimisticgeek.spring.listener.PluginListener" topic="com.intellij.ide.plugins.DynamicPluginListener" />
+    <listener class="com.github.optimisticgeek.editor.listener.BulkFileListenerImpl" topic="com.intellij.openapi.vfs.newvfs.BulkFileListener" />
+  </projectListeners>
 </idea-plugin>
