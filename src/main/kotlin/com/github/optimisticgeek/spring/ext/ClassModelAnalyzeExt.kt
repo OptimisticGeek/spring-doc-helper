@@ -1,0 +1,58 @@
+package com.github.optimisticgeek.spring.ext
+
+import com.github.optimisticgeek.analyze.model.AnalyzeMethod
+import com.github.optimisticgeek.analyze.model.AnalyzeModel
+import com.github.optimisticgeek.analyze.model.isLoopCall
+import com.github.optimisticgeek.spring.constant.FieldType
+import com.github.optimisticgeek.spring.model.*
+
+/**
+ * ClassModelAnalyzeExt
+
+ * @author OptimisticGeek
+ * @date 2024/1/16
+ */
+
+fun ControllerModel.analyze(): List<AnalyzeMethod>? {
+    return this.methodMap?.values?.map(MethodModel::analyze)?.toList()
+}
+
+fun MethodModel.analyze(): AnalyzeMethod {
+    return AnalyzeMethod(this)
+}
+
+fun FieldModel.analyze(): AnalyzeModel {
+    return this.classType.analyze().also {
+        it.name = this.realName
+        it.remark = this.realRemark
+    }
+}
+
+fun RefClassModel.analyze(ref: RefClassModel? = null, parent: AnalyzeModel? = null, isRefField: Boolean = false):
+        AnalyzeModel {
+
+    val model = AnalyzeModel(this, parent)
+
+    if (this.isBase()) return model
+
+    val realRefModel = if (ref.isNull()) this.ref else ref
+
+    if (sourceType == FieldType.LIST) {
+        return model.also { realRefModel?.analyze(null, model)?.let { model.children = listOf(it) } }
+    }
+
+    if (source.isRef() || isRefField) {
+        return realRefModel?.analyze(null, model) ?: model
+    }
+
+    // 通过parent避免循环调用，result -> result || result -> List<Result>
+    if (model.isLoopCall()) return model
+
+    model.children = this.source.fields?.map { field: FieldModel ->
+        field.classType.analyze(realRefModel, model, this.refField == field).apply {
+            this.name = field.realName
+            this.remark = field.realRemark
+        }
+    }?.toList()
+    return model
+}
