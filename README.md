@@ -5,6 +5,8 @@
 [![Downloads](https://img.shields.io/jetbrains/plugin/d/spring-doc-helper.svg)](https://plugins.jetbrains.com/plugin/spring-doc-helper)
 
 <!-- Plugin description -->
+This is a plugin for spring interface documentation. With this plugin, you can quickly view and copy interface documentation in HTML, JSON, Markdown, cURL, etc., and generate interface test cases for import into Yapi, Postman, etc.
+
 这是一款针对spring的接口文档插件，通过本插件获取接口文档，快速查看接口文档，快速复制接口文档的html、json、markdown、cURL等，生成接口用例，导入到yapi、postman等。
 
 ## ToDo list

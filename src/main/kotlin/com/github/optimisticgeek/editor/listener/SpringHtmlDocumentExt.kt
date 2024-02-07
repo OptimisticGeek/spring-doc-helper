@@ -1,4 +1,4 @@
-// Copyright 2023-2024 79127. Use of this source code is governed by the Apache 2.0 license that can be found in the LICENSE file.
+// Copyright 2023-2024 OptimisticGeek. Use of this source code is governed by the Apache 2.0 license that can be found in the LICENSE file.
 package com.github.optimisticgeek.editor.listener
 
 import com.github.optimisticgeek.analyze.model.AnalyzeMethod
@@ -97,10 +97,13 @@ fun RefClassModel?.isShowHtmlDocument(): Boolean {
 
 private fun AnalyzeModel.toHtml(title: String): String {
     return createHTML(false).div("model") {
+        span { +message(title) }
+        /*
         span { +"${message(title)}  - " }
         a("$position###$title###$commandCopyHtml", classes = "button") { +"Copy" }
         span { +" - " }
         a("$position###$title###$commandCopyJson", classes = "button") { +"Copy JSON" }
+        */
         unsafe {
             +toHtml(0, true)
         }
