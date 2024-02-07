@@ -17,6 +17,7 @@
 - 鼠标悬浮文档提示（class、field、response、params、method）
 - Object与泛型返回值真实类型推断
 - 快速文档提示复制model的html、json
+- GET|POST|PUT|DELETE左侧小图标，支持复制操作
 
 [Unreleased]: https://github.com/OptimisticGeek/spring-doc-helper/compare/v0.0.1...HEAD
 [0.0.1]: https://github.com/OptimisticGeek/spring-doc-helper/commits/v0.0.1
