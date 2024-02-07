@@ -1,6 +1,6 @@
 # springDocHelper
 
-![Build](https://github.com/OptimisticGeek/spring-doc-helper/workflows/Build/badge.svg)
+[![Release](https://badgen.net/github/release/OptimisticGeek/spring-doc-helper)](https://github.com/OptimisticGeek/spring-doc-helper/releases)
 [![Version](https://img.shields.io/jetbrains/plugin/v/:23730-springdochelper)](https://plugins.jetbrains.com/plugin/23730-springdochelper)
 [![Downloads](https://img.shields.io/jetbrains/plugin/d/:23730-springdochelper)](https://plugins.jetbrains.com/plugin/23730-springdochelper)
   
