@@ -1,9 +1,9 @@
 # springDocHelper
 
 ![Build](https://github.com/OptimisticGeek/spring-doc-helper/workflows/Build/badge.svg)
-[![Version](https://img.shields.io/jetbrains/plugin/v/spring-doc-helper.svg)](https://plugins.jetbrains.com/plugin/spring-doc-helper)
-[![Downloads](https://img.shields.io/jetbrains/plugin/d/spring-doc-helper.svg)](https://plugins.jetbrains.com/plugin/spring-doc-helper)
-
+[![Version](https://img.shields.io/jetbrains/plugin/v/:23730-springdochelper)](https://plugins.jetbrains.com/plugin/23730-springdochelper)
+[![Downloads](https://img.shields.io/jetbrains/plugin/d/:23730-springdochelper)](https://plugins.jetbrains.com/plugin/23730-springdochelper)
+  
 <!-- Plugin description -->
 This is a plugin for spring interface documentation. With this plugin, you can quickly view and copy interface documentation in HTML, JSON, Markdown, cURL, etc., and generate interface test cases for import into Yapi, Postman, etc.
 
