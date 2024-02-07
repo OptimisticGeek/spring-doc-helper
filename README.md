@@ -14,6 +14,7 @@ This is a plugin for spring interface documentation. With this plugin, you can q
 - [X] 快速文档提示（class、field、response、params、method）
 - [X] Object与泛型返回值真实类型推断
 - [X] 快速文档提示复制model的html、json
+- [X] GET|POST|PUT|DELETE左侧小图标，支持复制操作
 - [ ] 基于接口的搜索
 - [ ] 生成接口请求用例
 - [ ] 针对指定类的自定义fields
