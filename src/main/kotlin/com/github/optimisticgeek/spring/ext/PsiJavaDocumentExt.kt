@@ -32,5 +32,5 @@ fun PsiJavaDocumentedElement.getRemark(): String {
 }
 
 private fun String?.trim(): String {
-    return this?.replace("\\s*<\\s*\\w+\\s*[^>]*>\\s*", "")?.trim() ?: ""
+    return this?.replace("\\s*<\\s*\\w+\\s*[^>]*>\\s*", "") ?: ""
 }
