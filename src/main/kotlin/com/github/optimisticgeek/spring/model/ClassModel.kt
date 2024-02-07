@@ -1,4 +1,4 @@
-// Copyright 2023-2024 79127. Use of this source code is governed by the Apache 2.0 license that can be found in the LICENSE file.
+// Copyright 2023-2024 OptimisticGeek. Use of this source code is governed by the Apache 2.0 license that can be found in the LICENSE file.
 package com.github.optimisticgeek.spring.model
 
 import com.github.optimisticgeek.spring.constant.FieldType
@@ -66,7 +66,7 @@ fun ClassModel?.isNull(): Boolean {
     return this == null || type == FieldType.OTHER
 }
 
-fun String.// Copyright 2023-2024 79127. Use of this source code is governed by the Apache 2.0 license that can be found in the LICENSE file.
+fun String.// Copyright 2023-2024 OptimisticGeek. Use of this source code is governed by the Apache 2.0 license that can be found in the LICENSE file.
 packageName(): String {
     if (!this.contains(".")) return this
     return this.substring(0, this.lastIndexOf("."))

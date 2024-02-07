@@ -1,15 +1,15 @@
-// Copyright 2023-2024 79127. Use of this source code is governed by the Apache 2.0 license that can be found in the LICENSE file.
+// Copyright 2023-2024 OptimisticGeek. Use of this source code is governed by the Apache 2.0 license that can be found in the LICENSE file.
 package com.github.optimisticgeek.analyze.model
 
 import com.github.optimisticgeek.spring.constant.FieldType
 import com.github.optimisticgeek.spring.ext.analyze
 import com.github.optimisticgeek.spring.model.FieldModel
 import com.github.optimisticgeek.spring.model.MethodModel
-import com.intellij.spring.mvc.jam.RequestMethod
+import com.intellij.util.net.HTTPMethod
 import java.util.*
 
 data class AnalyzeMethod(val methodModel: MethodModel) : BaseAnalyzeModel(methodModel) {
-    val httpMethod: RequestMethod = methodModel.requestMethod
+    val httpMethod: HTTPMethod = methodModel.requestMethod
 
     val urls: List<String> = methodModel.urls!!
 
