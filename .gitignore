@@ -2,3 +2,5 @@
 .idea
 .qodana
 build
+/.run/发布插件.run.xml
+/.run/验证插件.run.xml

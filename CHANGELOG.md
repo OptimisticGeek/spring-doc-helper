@@ -19,5 +19,5 @@
 - GET|POST|PUT|DELETE左侧小图标，支持复制操作
 - controller缓存逻辑
 
-[Unreleased]: https://github.com/OptimisticGeek/spring-doc-helper/compare/v0.0.1...HEAD
-[0.1.0]: https://github.com/OptimisticGeek/spring-doc-helper/commits/v0.1.0
+[Unreleased]: https://github.com/OptimisticGeek/spring-doc-helper/compare/v0.1.0...HEAD
+[0.1.0]: https://github.com/OptimisticGeek/spring-doc-helper/releases/tag/v0.1.0
