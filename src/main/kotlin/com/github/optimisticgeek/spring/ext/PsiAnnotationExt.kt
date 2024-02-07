@@ -12,6 +12,7 @@ import com.intellij.util.net.HTTPMethod
 import org.apache.commons.lang3.BooleanUtils
 import org.apache.commons.lang3.StringUtils
 import java.util.*
+import java.util.stream.Collectors
 
 fun PsiModifierListOwner.getAnnotationValue(qName: String, valueName: String): String {
     return this.getAnnotationValues(qName, valueName).firstOrNull() ?: StringUtils.EMPTY
@@ -31,7 +32,7 @@ fun PsiAnnotation.getAnnotationValues(valueName: String): List<String> {
     if (values.isEmpty()) {
         return listOf(attributeValue.text.replace("\"", "").replace("{}", ""))
     }
-    return values.stream().map { it.text.replace("\"", "").replace("{}", "") }.toList()
+    return values.stream().map { it.text.replace("\"", "").replace("{}", "") }.collect(Collectors.toList())
 }
 
 fun PsiAnnotation.getHttpMethod(): HTTPMethod? {

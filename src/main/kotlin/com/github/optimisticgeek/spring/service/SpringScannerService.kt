@@ -2,10 +2,7 @@
 package com.github.optimisticgeek.spring.service
 
 import com.github.optimisticgeek.spring.constant.FieldType
-import com.github.optimisticgeek.spring.ext.analyze
-import com.github.optimisticgeek.spring.ext.createControllerModel
-import com.github.optimisticgeek.spring.ext.isControllerClass
-import com.github.optimisticgeek.spring.ext.toClassModel
+import com.github.optimisticgeek.spring.ext.*
 import com.github.optimisticgeek.spring.model.ClassModel
 import com.intellij.openapi.components.Service
 import com.intellij.openapi.components.service
@@ -17,7 +14,6 @@ import com.intellij.psi.PsiDocumentManager
 import com.intellij.psi.PsiElement
 import com.intellij.psi.search.ProjectScope
 import com.intellij.psi.search.searches.AllClassesSearch
-import com.intellij.util.alsoIfNull
 
 /**
  * SpringScannerService
@@ -46,15 +42,15 @@ class SpringScannerService(private val myProject: Project) {
         if (qName == "null" || qName == "void") return null
 
         FieldType.getType(null, qName).takeIf { it != FieldType.OBJECT }
-            ?.let { fieldType -> return buildSourceModel(qName, fieldType)  }
+            ?.let { fieldType -> return buildSourceModel(qName, fieldType) }
 
         ProjectScope.getProjectScope(myProject).let {
-            return cacheMap[qName].alsoIfNull { javaPsiFacade.findClass(qName, it)?.toClassModel() }
+            return cacheMap[qName] ?: javaPsiFacade.findClass(qName, it)?.toClassModel()
         }
     }
 
     fun buildSourceModel(qName: String?, type: FieldType, useCache: Boolean = true): ClassModel {
-        val key = if(type.isBase) type.qName else qName ?: type.qName
+        val key = if (type.isBase) type.qName else qName ?: type.qName
         // 不能使用缓存：基于原有classModel，重写属性与字段
         return cacheMap.getOrPut(key) { ClassModel(qName = key, type = type) }
             .also { if (!useCache && type == FieldType.OBJECT) it.setDefaultStatus() }
@@ -64,6 +60,10 @@ class SpringScannerService(private val myProject: Project) {
         return it.toClassModel()
     }
 
+}
+
+fun PsiClass?.clearModelCache(){
+    this?.let { if(it.isControllerClass()) it.clearControllerCache() else it.clearClassModelCache() }
 }
 
 fun PsiClass.clearClassModelCache() {

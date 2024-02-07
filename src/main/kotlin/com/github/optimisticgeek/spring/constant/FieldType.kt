@@ -32,14 +32,13 @@ enum class FieldType(
     CHAR(JAVA_LANG_CHARACTER, "'a'", qNames = setOf("char", JAVA_LANG_CHAR_SEQUENCE, JAVA_LANG_CHARACTER)),
 
     DATE(
-        JAVA_UTIL_DATE, "\"2022-02-22 22:22:22\"", qNames = setOf(
-            JAVA_TIME_LOCAL_DATE,
-            JAVA_TIME_ZONED_DATE_TIME,
-            JAVA_TIME_LOCAL_DATE_TIME,
-            JAVA_TIME_LOCAL_TIME,
-            JAVA_UTIL_DATE
-        )
-    ),
+        JAVA_UTIL_DATE, "\"2022-02-22 22:22:22\"", qNames = setOf(JAVA_UTIL_DATE)
+
+    ) {
+        override fun isFieldType(qName: String): Boolean {
+            return super.isFieldType(qName) || qName.startsWith("java.time.")
+        }
+    },
 
     ENUM("Enum", "\"\""),
 
@@ -109,6 +108,7 @@ enum class FieldType(
     }
 
     companion object {
+        @JvmStatic
         fun getType(psiClass: PsiClass?, qualifiedName: String?): FieldType {
             if (psiClass == null && qualifiedName.isNullOrBlank()) return OTHER
             val qName = qualifiedName ?: psiClass?.qualifiedName ?: return OTHER
@@ -120,12 +120,7 @@ enum class FieldType(
                     .joinToString(",") + "," + psiClass.supers.mapNotNull { it.qualifiedName }
                     .filter { it != JAVA_LANG_OBJECT }.joinToString(",")
             }
-
-            return qName.findFieldType(supers) ?: OBJECT
-        }
-
-        private fun String.findFieldType(supers: String?): FieldType? {
-            return values().firstOrNull { it.isFieldType(this) || it.isThisOrSupers(supers) }
+            return values().firstOrNull { it.isFieldType(qName) || it.isThisOrSupers(supers) } ?: OBJECT
         }
     }
 }

@@ -3,6 +3,7 @@ package com.github.optimisticgeek.spring.ext
 
 import com.github.optimisticgeek.spring.constant.*
 import com.github.optimisticgeek.spring.model.*
+import com.intellij.openapi.util.Key
 import com.intellij.psi.*
 import com.intellij.psi.impl.source.PsiMethodImpl
 import com.intellij.psi.impl.source.tree.java.PsiAssignmentExpressionImpl
@@ -167,15 +168,22 @@ private fun PsiCallExpression.analyzeResponseBody(fieldName: String?): RefClassM
     return params[fieldIndex]?.type.analyzeRefClassModel(project)
 }
 
+private val CACHE_KEY_CONTROLLER: Key<ControllerModel> = Key.create("springDocHelper.controller.cache")
+fun PsiClass.clearControllerCache() {
+    this.putUserData(CACHE_KEY_CONTROLLER, null)
+}
+
 fun PsiClass.createControllerModel(): ControllerModel? {
     if (!this.isControllerClass()) return null
-    val controller = ControllerModel(this).also { if (CollectionUtils.isEmpty(it.urls)) return null }
+
+    val controller = this.getUserData(CACHE_KEY_CONTROLLER)
+        ?: ControllerModel(this).also { if (CollectionUtils.isEmpty(it.urls)) return null }
 
     this.methods.filter { it.hasModifierProperty(PsiModifier.PUBLIC) && it.getHttpRequestAnnotation() != null }
         .mapNotNull { it.buildMethodModel(controller) }.associateBy { it.psiMethod }.let { controller.methodMap = it }
 
     if (controller.methodMap.isNullOrEmpty()) return null
-    return controller
+    return controller.also { this.putUserData(CACHE_KEY_CONTROLLER, controller) }
 }
 
 fun PsiMethod.buildMethodModel(controller: ControllerModel): MethodModel {

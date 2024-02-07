@@ -1,7 +1,7 @@
 // Copyright 2023-2024 OptimisticGeek. Use of this source code is governed by the Apache 2.0 license that can be found in the LICENSE file.
 package com.github.optimisticgeek.editor.listener
 
-import com.github.optimisticgeek.spring.service.clearClassModelCache
+import com.github.optimisticgeek.spring.service.clearModelCache
 import com.intellij.ide.highlighter.JavaClassFileType
 import com.intellij.ide.highlighter.JavaFileType
 import com.intellij.openapi.diagnostic.thisLogger
@@ -29,7 +29,7 @@ class BulkFileListenerImpl(private val project: Project) : BulkFileListener {
         }
         events.mapNotNull { it.file }
             .filter { it.fileType is JavaClassFileType || it.fileType is JavaFileType }
-            .forEach { it.toPsiClass(project)?.clearClassModelCache() }
+            .forEach { it.toPsiClass(project).clearModelCache() }
     }
 }
 
