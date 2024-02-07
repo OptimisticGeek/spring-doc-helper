@@ -1,6 +1,10 @@
+<!--
+  ~ // Copyright 2023-2024 OptimisticGeek. Use of this source code is governed by the Apache 2.0 license that can be found in the LICENSE file.
+  -->
+
 <!-- Plugin Configuration File. Read more: https://plugins.jetbrains.com/docs/intellij/plugin-configuration-file.html -->
 <idea-plugin>
-  <version>0.0.1</version>
+  <version>0.0.2</version>
   <idea-version since-build="223" until-build="233.*" />
   <id>com.github.optimisticGeek.spring-doc-helper</id>
   <name>SpringDocHelper</name>
@@ -23,6 +27,5 @@
   <projectListeners>
     <listener class="com.github.optimisticgeek.spring.listener.PluginListener" topic="com.intellij.ide.plugins.DynamicPluginListener" />
     <listener class="com.github.optimisticgeek.editor.listener.BulkFileListenerImpl" topic="com.intellij.openapi.vfs.newvfs.BulkFileListener" />
-    <listener class="com.github.optimisticgeek.editor.listener.SpringDocDocumentationLinkHandler" topic="com.intellij.openapi.editor.event.EditorMouseListener" />
   </projectListeners>
 </idea-plugin>
