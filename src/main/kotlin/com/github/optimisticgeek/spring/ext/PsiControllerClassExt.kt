@@ -1,7 +1,19 @@
 // Copyright 2023-2024 OptimisticGeek. Use of this source code is governed by the Apache 2.0 license that can be found in the LICENSE file.
 package com.github.optimisticgeek.spring.ext
 
-import com.github.optimisticgeek.spring.constant.*
+import com.github.optimisticgeek.spring.constant.FieldType
+import com.github.optimisticgeek.spring.constant.QNameConstants.DELETE_MAPPING
+import com.github.optimisticgeek.spring.constant.QNameConstants.GET_MAPPING
+import com.github.optimisticgeek.spring.constant.QNameConstants.PATH_VARIABLE
+import com.github.optimisticgeek.spring.constant.QNameConstants.POST_MAPPING
+import com.github.optimisticgeek.spring.constant.QNameConstants.PUT_MAPPING
+import com.github.optimisticgeek.spring.constant.QNameConstants.REQUEST_BODY
+import com.github.optimisticgeek.spring.constant.QNameConstants.REQUEST_MAPPING
+import com.github.optimisticgeek.spring.constant.QNameConstants.REQUEST_PARAM
+import com.github.optimisticgeek.spring.constant.QNameConstants.RESPONSE_BODY
+import com.github.optimisticgeek.spring.constant.StringConstants.DEFAULT
+import com.github.optimisticgeek.spring.constant.StringConstants.REQUIRED
+import com.github.optimisticgeek.spring.constant.StringConstants.RETURN
 import com.github.optimisticgeek.spring.model.*
 import com.intellij.openapi.util.Key
 import com.intellij.psi.*
@@ -137,8 +149,10 @@ private fun PsiReferenceExpressionImpl.analyzeResponseBody(root: RefClassModel, 
 
 @JvmName("analyzeResponseBody")
 fun PsiMethodCallExpression.analyzeResponseBody(): RefClassModel? {
-    return this.resolveMethod()?.returnTypeElement?.toRefClassModel()?.also { root ->
-        this.analyzeResponseBody(root, root.refField?.name).let { root.updateRef(it) }
+    return this.resolveMethod()?.let { method ->
+        method.returnTypeElement?.toRefClassModel()
+            ?.also { it.remark = method.getDocumentTag(RETURN) }
+            ?.also { root -> this.analyzeResponseBody(root, root.refField?.name)?.let { root.updateRef(it) } }
     }
 }
 
@@ -178,6 +192,7 @@ private fun PsiCallExpression.analyzeResponseBody(fieldName: String?): RefClassM
 }
 
 private val CACHE_KEY_CONTROLLER: Key<ControllerModel> = Key.create("springDocHelper.controller.cache")
+
 @JvmName("clearControllerCache")
 fun PsiClass.clearControllerCache() {
     this.putUserData(CACHE_KEY_CONTROLLER, null)

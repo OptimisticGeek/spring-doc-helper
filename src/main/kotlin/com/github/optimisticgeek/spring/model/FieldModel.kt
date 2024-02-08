@@ -19,7 +19,7 @@ class FieldModel(
     val realName: String
         get() = aliasName ?: fieldName
     val realRemark: String
-        get() = classType.remark ?: remark ?: ""
+        get() = remark ?: classType.remark ?: ""
 
     override fun toString(): String {
         return "FieldModel(classType=$classType, realName='$realName', realRemark='$realRemark')"

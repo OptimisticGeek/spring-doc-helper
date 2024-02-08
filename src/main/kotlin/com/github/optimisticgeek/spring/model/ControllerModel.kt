@@ -1,9 +1,9 @@
 // Copyright 2023-2024 OptimisticGeek. Use of this source code is governed by the Apache 2.0 license that can be found in the LICENSE file.
 package com.github.optimisticgeek.spring.model
 
-import com.github.optimisticgeek.spring.constant.DEFAULT
-import com.github.optimisticgeek.spring.constant.REQUEST_MAPPING
-import com.github.optimisticgeek.spring.constant.REST_CONTROLLER
+import com.github.optimisticgeek.spring.constant.QNameConstants.REQUEST_MAPPING
+import com.github.optimisticgeek.spring.constant.QNameConstants.REST_CONTROLLER
+import com.github.optimisticgeek.spring.constant.StringConstants.DEFAULT
 import com.github.optimisticgeek.spring.ext.getAnnotationValues
 import com.github.optimisticgeek.spring.ext.getAuthor
 import com.github.optimisticgeek.spring.ext.getRemark

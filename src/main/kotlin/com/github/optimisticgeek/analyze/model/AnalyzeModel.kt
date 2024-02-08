@@ -12,7 +12,7 @@ class AnalyzeModel(
     val parent: AnalyzeModel? = null
 ) : BaseAnalyzeModel(model) {
     constructor(ref: RefClassModel, parent: AnalyzeModel?) : this(ref.sourceType, null, ref.source, parent) {
-        this.remark = ref.realRemark
+        this.remark = ref.remark ?: ref.realRemark
     }
 
     init {

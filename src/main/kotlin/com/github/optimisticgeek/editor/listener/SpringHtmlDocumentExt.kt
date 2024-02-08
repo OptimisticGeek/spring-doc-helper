@@ -3,10 +3,10 @@ package com.github.optimisticgeek.editor.listener
 
 import com.github.optimisticgeek.analyze.model.AnalyzeMethod
 import com.github.optimisticgeek.analyze.model.AnalyzeModel
-import com.github.optimisticgeek.spring.constant.BOOLEAN
 import com.github.optimisticgeek.spring.constant.FieldType
-import com.github.optimisticgeek.spring.constant.NUMBER
-import com.github.optimisticgeek.spring.constant.STRING
+import com.github.optimisticgeek.spring.constant.StringConstants.BOOLEAN
+import com.github.optimisticgeek.spring.constant.StringConstants.NUMBER
+import com.github.optimisticgeek.spring.constant.StringConstants.STRING
 import com.github.optimisticgeek.spring.model.RefClassModel
 import com.github.optimisticgeek.spring.model.className
 import com.github.optimisticgeek.spring.service.ScannerBundle
@@ -127,7 +127,7 @@ private fun AnalyzeModel.toHtml(level: Int, isLastChild: Boolean): String {
                     ("// ${if (remark.isNullOrBlank() || remark == it) it else "$it[$remark]"}").let {
                         if (level > 0) {
                             a("$PSI_ELEMENT_PROTOCOL$position", "_self", "remark") { +it }
-                        } // else span("remark") { +it }
+                        } else span("remark") { +it }
                     }
                 }
             }

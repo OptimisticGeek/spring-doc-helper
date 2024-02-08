@@ -1,6 +1,8 @@
 // Copyright 2023-2024 OptimisticGeek. Use of this source code is governed by the Apache 2.0 license that can be found in the LICENSE file.
 package com.github.optimisticgeek.spring.constant
 
+import com.github.optimisticgeek.spring.constant.QNameConstants.BIG_DECIMAL
+import com.github.optimisticgeek.spring.constant.QNameConstants.FORM_FILE
 import com.intellij.psi.CommonClassNames.*
 import com.intellij.psi.PsiClass
 
@@ -23,7 +25,7 @@ enum class FieldType(
 
     BYTE(JAVA_LANG_BYTE, ""),
 
-    DOUBLE(JAVA_LANG_DOUBLE, 0.0f, qNames = setOf("double", "float", JAVA_LANG_FLOAT, JAVA_LANG_DOUBLE, Big_Decimal)),
+    DOUBLE(JAVA_LANG_DOUBLE, 0.0f, qNames = setOf("double", "float", JAVA_LANG_FLOAT, JAVA_LANG_DOUBLE, BIG_DECIMAL)),
 
     LONG(JAVA_LANG_LONG, 0, qNames = setOf("long", JAVA_LANG_LONG)),
 
