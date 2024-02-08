@@ -16,6 +16,7 @@ This is a plugin for spring interface documentation. With this plugin, you can q
 - 快速文档提示复制model的html、json
 - GET|POST|PUT|DELETE左侧小图标，支持复制操作
 - controller缓存逻辑
+- 复制接口Curl请求
 
 ## Todo
 - [ ] 基于接口的搜索
@@ -23,7 +24,6 @@ This is a plugin for spring interface documentation. With this plugin, you can q
 - [ ] 针对指定类的自定义fields
 - [ ] 导入到Yapi
 - [ ] 导入到Postman
-- [ ] 复制接口Curl请求
 - [ ] swagger文档分析
 <!-- Plugin description end -->
 

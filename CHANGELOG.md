@@ -8,7 +8,6 @@
 - [ ] 针对指定类的自定义fields
 - [ ] 导入到Yapi
 - [ ] 导入到Postman
-- [ ] 复制接口Curl请求
 - [ ] swagger文档分析
 
 ## [0.1.0]
@@ -19,5 +18,9 @@
 - GET|POST|PUT|DELETE左侧小图标，支持复制操作
 - controller缓存逻辑
 
+## [0.1.1]
+- 复制接口Curl请求
+
 [Unreleased]: https://github.com/OptimisticGeek/spring-doc-helper/compare/v0.1.0...HEAD
 [0.1.0]: https://github.com/OptimisticGeek/spring-doc-helper/releases/tag/v0.1.0
+[0.1.1]: https://github.com/OptimisticGeek/spring-doc-helper/releases/tag/v0.1.1

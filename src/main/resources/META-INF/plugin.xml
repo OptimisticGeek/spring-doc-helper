@@ -3,23 +3,23 @@
   -->
 <!-- Plugin Configuration File. Read more: https://plugins.jetbrains.com/docs/intellij/plugin-configuration-file.html -->
 <idea-plugin>
-  <version>0.1.0</version>
+  <version>0.1.1</version>
   <idea-version since-build="203.5981.155" until-build="233.*" />
   <id>com.github.optimisticGeek.spring-doc-helper</id>
   <name>SpringDocHelper</name>
   <vendor email="optimisticgeekone@gmail.com">optimisticGeek</vendor>
   <depends>com.intellij.modules.platform</depends>
   <depends>com.intellij.java</depends>
-  <description>&lt;p&gt;This is a plugin for spring interface documentation. With this plugin, you can quickly view and copy interface documentation in HTML, JSON, Markdown, cURL, etc., and generate interface test cases for import into Yapi, Postman, etc.&lt;/p&gt;
+  <description><![CDATA[<p>This is a plugin for spring interface documentation. With this plugin, you can quickly view and copy interface documentation in HTML, JSON, Markdown, cURL, etc., and generate interface test cases for import into Yapi, Postman, etc.</p>
 
-&lt;p&gt;这是一款针对spring的接口文档插件，通过本插件获取接口文档，快速查看接口文档，快速复制接口文档的html、json、markdown、cURL等，生成接口用例，导入到yapi、postman等。&lt;/p&gt;
+<p>这是一款针对spring的接口文档插件，通过本插件获取接口文档，快速查看接口文档，快速复制接口文档的html、json、markdown、cURL等，生成接口用例，导入到yapi、postman等。</p>
 
-&lt;h2&gt;支持功能&lt;/h2&gt;
-&lt;ul&gt;&lt;li&gt;接口文档分析&lt;/li&gt;&lt;li&gt;鼠标悬浮文档提示（class、field、response、params、method）&lt;/li&gt;&lt;li&gt;Object与泛型返回值真实类型推断&lt;/li&gt;&lt;li&gt;快速文档提示复制model的html、json&lt;/li&gt;&lt;li&gt;GET|POST|PUT|DELETE左侧小图标，支持复制操作&lt;/li&gt;&lt;li&gt;controller缓存逻辑&lt;/li&gt;&lt;/ul&gt;
+<h2>支持功能</h2>
+<ul><li>接口文档分析</li><li>鼠标悬浮文档提示（class、field、response、params、method）</li><li>Object与泛型返回值真实类型推断</li><li>快速文档提示复制model的html、json</li><li>GET|POST|PUT|DELETE左侧小图标，支持复制操作</li><li>controller缓存逻辑</li><li>复制接口Curl请求</li></ul>
 
-&lt;h2&gt;Todo&lt;/h2&gt;
-&lt;ul&gt;&lt;li class="task-list-item"&gt;&lt;input type="checkbox" class="task-list-item-checkbox" disabled /&gt;基于接口的搜索&lt;/li&gt;&lt;li class="task-list-item"&gt;&lt;input type="checkbox" class="task-list-item-checkbox" disabled /&gt;生成接口请求用例&lt;/li&gt;&lt;li class="task-list-item"&gt;&lt;input type="checkbox" class="task-list-item-checkbox" disabled /&gt;针对指定类的自定义fields&lt;/li&gt;&lt;li class="task-list-item"&gt;&lt;input type="checkbox" class="task-list-item-checkbox" disabled /&gt;导入到Yapi&lt;/li&gt;&lt;li class="task-list-item"&gt;&lt;input type="checkbox" class="task-list-item-checkbox" disabled /&gt;导入到Postman&lt;/li&gt;&lt;li class="task-list-item"&gt;&lt;input type="checkbox" class="task-list-item-checkbox" disabled /&gt;复制接口Curl请求&lt;/li&gt;&lt;li class="task-list-item"&gt;&lt;input type="checkbox" class="task-list-item-checkbox" disabled /&gt;swagger文档分析&lt;/li&gt;&lt;/ul&gt;</description>
-  <change-notes>&lt;ul&gt;&lt;li&gt;接口文档分析&lt;/li&gt;&lt;li&gt;鼠标悬浮文档提示（class、field、response、params、method）&lt;/li&gt;&lt;li&gt;Object与泛型返回值真实类型推断&lt;/li&gt;&lt;li&gt;快速文档提示复制model的html、json&lt;/li&gt;&lt;li&gt;GET|POST|PUT|DELETE左侧小图标，支持复制操作&lt;/li&gt;&lt;li&gt;controller缓存逻辑&lt;/li&gt;&lt;/ul&gt;</change-notes>
+<h2>Todo</h2>
+<ul><li class="task-list-item"><input type="checkbox" class="task-list-item-checkbox" disabled />基于接口的搜索</li><li class="task-list-item"><input type="checkbox" class="task-list-item-checkbox" disabled />生成接口请求用例</li><li class="task-list-item"><input type="checkbox" class="task-list-item-checkbox" disabled />针对指定类的自定义fields</li><li class="task-list-item"><input type="checkbox" class="task-list-item-checkbox" disabled />导入到Yapi</li><li class="task-list-item"><input type="checkbox" class="task-list-item-checkbox" disabled />导入到Postman</li><li class="task-list-item"><input type="checkbox" class="task-list-item-checkbox" disabled />swagger文档分析</li></ul>]]></description>
+  <change-notes><![CDATA[<ul><li>复制接口Curl请求</li></ul>]]></change-notes>
   <resource-bundle>messages.Scanner</resource-bundle>
   <extensions defaultExtensionNs="com.intellij">
     <codeInsight.lineMarkerProvider implementationClass="com.github.optimisticgeek.editor.listener.ControllerLineMarkerProvider" language="JAVA" />

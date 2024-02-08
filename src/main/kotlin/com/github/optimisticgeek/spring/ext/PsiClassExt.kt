@@ -69,8 +69,7 @@ fun PsiTypeElement.toRefClassModel(): RefClassModel? {
 }
 
 fun PsiParameter.buildField(remark: String): FieldModel? {
-    val type = this.typeElement?.toRefClassModel() ?: return null
-    return FieldModel(name, remark, type)
+    return this.typeElement?.toRefClassModel()?.let { FieldModel(name, remark, it) }
 }
 
 /**

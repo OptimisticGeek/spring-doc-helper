@@ -2,6 +2,7 @@
 package com.github.optimisticgeek.editor.listener
 
 import com.github.optimisticgeek.analyze.model.AnalyzeMethod
+import com.github.optimisticgeek.analyze.model.toCurlStr
 import com.github.optimisticgeek.spring.ext.analyze
 import com.github.optimisticgeek.spring.ext.createControllerModel
 import com.github.optimisticgeek.spring.model.MethodModel
@@ -68,6 +69,12 @@ private fun AnalyzeMethod.createLineMarkerInfo(
         { e, ele ->
             run {
                 val smartPopupActionGroup = SmartPopupActionGroup()
+                smartPopupActionGroup.add(object :
+                    AnAction(ScannerBundle.message("copy.title", ScannerBundle.message("document.curl"))) {
+                    override fun actionPerformed(e: AnActionEvent) {
+                        toCurlStr().let { e.project?.copyString(it) }
+                    }
+                })
                 smartPopupActionGroup.add(object :
                     AnAction(ScannerBundle.message("copy.title", ScannerBundle.message("document.url"))) {
                     override fun actionPerformed(e: AnActionEvent) {
