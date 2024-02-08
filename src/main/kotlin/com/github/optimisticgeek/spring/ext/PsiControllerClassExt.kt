@@ -26,13 +26,13 @@ fun PsiMethod.buildParameters(methodModel: MethodModel) {
         // requestBody
         if (it.hasAnnotation(REQUEST_BODY)) {
             methodModel.requestBody = fieldModel.also { it.name = null }.also { it.aliasName = null }
-            return
+            return@forEach
         }
         // pathVariables
         if (it.hasAnnotation(PATH_VARIABLE)) {
             fieldModel.aliasName = it.getAnnotationValue(PATH_VARIABLE, DEFAULT)
             methodModel.pathVariables.add(fieldModel)
-            return
+            return@forEach
         }
         // requestParams
         if (it.hasAnnotation(REQUEST_PARAM)) {
