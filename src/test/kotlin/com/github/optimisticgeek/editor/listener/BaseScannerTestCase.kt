@@ -185,6 +185,7 @@ abstract class BaseScannerTestCase : LightJavaCodeInsightFixtureTestCase() {
     }
 }
 
+@JvmName("appendFields")
 private fun StringBuilder.appendFields(fields: ArrayList<FieldModel>?) {
     fields ?: return
     fields.forEach {

@@ -54,33 +54,38 @@ open class ClassModel(
 }
 
 
+@JvmName("isRef")
 fun ClassModel?.isRef(): Boolean {
     return this != null && type.isRef
 }
 
+@JvmName("hasRefField")
 fun ClassModel?.hasRefField(): Boolean {
     return this != null && this.fields?.firstOrNull { it.classType.source.isRef() } != null
 }
 
+@JvmName("isNull")
 fun ClassModel?.isNull(): Boolean {
     return this == null || type == FieldType.OTHER
 }
 
-fun String.// Copyright 2023-2024 OptimisticGeek. Use of this source code is governed by the Apache 2.0 license that can be found in the LICENSE file.
-packageName(): String {
+fun String.packageName(): String {
     if (!this.contains(".")) return this
     return this.substring(0, this.lastIndexOf("."))
 }
 
+@JvmName("className")
 fun String.className(): String {
     if (!this.contains(".")) return this
     return this.substring(this.lastIndexOf(".") + 1)
 }
 
+@JvmName("toRefClassModel")
 fun ClassModel.toRefClassModel(): RefClassModel {
     return RefClassModel(this)
 }
 
+@JvmName("toRefClassModel")
 fun ClassModel.toRefClassModel(ref: RefClassModel?): RefClassModel {
     return RefClassModel(this, ref)
 }

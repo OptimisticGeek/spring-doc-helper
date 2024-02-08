@@ -14,18 +14,22 @@ import org.apache.commons.lang3.StringUtils
 import java.util.*
 import java.util.stream.Collectors
 
+@JvmName("getAnnotationValue")
 fun PsiModifierListOwner.getAnnotationValue(qName: String, valueName: String): String {
     return this.getAnnotationValues(qName, valueName).firstOrNull() ?: StringUtils.EMPTY
 }
 
+@JvmName("getAnnotationValues")
 fun PsiModifierListOwner.getAnnotationValues(qName: String, valueName: String): List<String> {
     return this.getAnnotation(qName)?.getAnnotationValues(valueName) ?: return Collections.emptyList()
 }
 
+@JvmName("getAnnotationValue")
 fun PsiAnnotation.getAnnotationValue(valueName: String): String {
     return this.getAnnotationValues(valueName).firstOrNull() ?: StringUtils.EMPTY
 }
 
+@JvmName("getAnnotationValues")
 fun PsiAnnotation.getAnnotationValues(valueName: String): List<String> {
     val attributeValue = this.findAttributeValue(valueName) ?: return Collections.emptyList()
     val values = PsiTreeUtil.findChildrenOfType(attributeValue, PsiLiteralExpression::class.java)
@@ -35,6 +39,7 @@ fun PsiAnnotation.getAnnotationValues(valueName: String): List<String> {
     return values.stream().map { it.text.replace("\"", "").replace("{}", "") }.collect(Collectors.toList())
 }
 
+@JvmName("getHttpMethod")
 fun PsiAnnotation.getHttpMethod(): HTTPMethod? {
     if (BooleanUtils.isNotTrue(this.qualifiedName?.endsWith("Mapping"))) {
         return null

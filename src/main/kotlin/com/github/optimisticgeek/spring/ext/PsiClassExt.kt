@@ -14,6 +14,7 @@ import com.intellij.psi.*
 import com.intellij.psi.util.PsiTreeUtil
 import java.util.*
 
+@JvmName("toClassModel")
 fun PsiClass.toClassModel(useCache: Boolean = true): ClassModel? {
 
     val type = FieldType.getType(this, this.qualifiedName ?: this.name).takeIf { it != FieldType.OTHER } ?: return null
@@ -30,6 +31,7 @@ fun PsiClass.toClassModel(useCache: Boolean = true): ClassModel? {
     }
 }
 
+@JvmName("fields")
 fun PsiClass.fields(): List<FieldModel> {
     return this.allFields.filter { !(it.hasModifierProperty(PsiModifier.FINAL) || it.hasModifierProperty(PsiModifier.STATIC)) }
         .mapNotNull {
@@ -38,6 +40,7 @@ fun PsiClass.fields(): List<FieldModel> {
         }.toList()
 }
 
+@JvmName("findClassModels")
 fun PsiTypeElement.findClassModels(): LinkedList<ClassModel>? {
     if (this.text.equals(VOID)) return null
     val list = LinkedList<ClassModel>()
@@ -57,6 +60,7 @@ fun PsiTypeElement.findClassModels(): LinkedList<ClassModel>? {
     return if (list.size > 0) list else null
 }
 
+@JvmName("toRefClassModel")
 fun PsiTypeElement.toRefClassModel(): RefClassModel? {
     // ResultData<List<String>>
     // 1.String -> source, ref = tmp(String)
@@ -68,6 +72,7 @@ fun PsiTypeElement.toRefClassModel(): RefClassModel? {
     return root
 }
 
+@JvmName("buildField")
 fun PsiParameter.buildField(remark: String): FieldModel? {
     return this.typeElement?.toRefClassModel()?.let { FieldModel(name, remark, it) }
 }
@@ -81,6 +86,7 @@ fun PsiParameter.buildField(remark: String): FieldModel? {
  *     <li>java.lang.String</li>
  * </ul>
  */
+@JvmName("analyzeRefClassModel")
 fun PsiType?.analyzeRefClassModel(project: Project): RefClassModel? {
     var fullClassName = this?.internalCanonicalText?.replace(Regex("[\\w.]+,|\\s+"), "") ?: return null
     if (fullClassName.endsWith(ARRAY_TAG)) {
@@ -100,6 +106,7 @@ fun PsiType?.analyzeRefClassModel(project: Project): RefClassModel? {
     return root
 }
 
+@JvmName("resolvePsiClass")
 fun PsiTypeElement.resolvePsiClass(): PsiClass? {
     val resolve = this.innermostComponentReferenceElement?.resolve() ?: return null
     return if (resolve is PsiClass) resolve else null

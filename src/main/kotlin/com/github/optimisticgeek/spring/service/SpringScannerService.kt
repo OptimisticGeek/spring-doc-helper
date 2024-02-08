@@ -62,18 +62,22 @@ class SpringScannerService(private val myProject: Project) {
 
 }
 
+@JvmName("clearModelCache")
 fun PsiClass?.clearModelCache(){
     this?.let { if(it.isControllerClass()) it.clearControllerCache() else it.clearClassModelCache() }
 }
 
+@JvmName("clearClassModelCache")
 fun PsiClass.clearClassModelCache() {
     project.scannerService().cacheMap[this.qualifiedName]?.also { it.setDefaultStatus() }
 }
 
+@JvmName("scannerService")
 fun PsiElement.scannerService(): SpringScannerService {
     return this.project.service<SpringScannerService>()
 }
 
+@JvmName("scannerService")
 fun Project.scannerService(): SpringScannerService {
     return this.service<SpringScannerService>()
 }

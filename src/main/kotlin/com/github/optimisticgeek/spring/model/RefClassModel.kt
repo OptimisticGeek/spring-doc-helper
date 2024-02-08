@@ -46,6 +46,7 @@ class RefClassModel(val source: ClassModel, var ref: RefClassModel? = null) : Ba
         get() = source.fields?.firstOrNull { it.classType.isRef() || it.classType.isObj() }
 }
 
+@JvmName("updateRef")
 fun RefClassModel.updateRef(newRef: RefClassModel?): RefClassModel {
     newRef ?: return this
     if (ref == null || newRef.getScore() > ref.getScore()) ref = newRef
@@ -54,6 +55,7 @@ fun RefClassModel.updateRef(newRef: RefClassModel?): RefClassModel {
     return this
 }
 
+@JvmName("getScore")
 private fun RefClassModel?.getScore(): Int {
     if (this == null) return 1
     // 泛型不是真实类型没有作用
@@ -62,22 +64,27 @@ private fun RefClassModel?.getScore(): Int {
     return ref.getScore() * 10
 }
 
+@JvmName("isNull")
 fun RefClassModel?.isNull(): Boolean {
     return this == null || source.isNull()
 }
 
+@JvmName("isRef")
 fun RefClassModel.isRef(): Boolean {
     return source.isRef()
 }
 
+@JvmName("isBase")
 fun RefClassModel.isBase(): Boolean {
     return sourceType.isBase
 }
 
+@JvmName("isObj")
 fun RefClassModel.isObj(): Boolean {
     return sourceType.isObj
 }
 
+@JvmName("fullClassName")
 fun RefClassModel?.fullClassName(): String {
     this?.source ?: return StringUtils.EMPTY
     return when {

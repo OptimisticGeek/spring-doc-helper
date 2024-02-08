@@ -33,6 +33,7 @@ class BulkFileListenerImpl(private val project: Project) : BulkFileListener {
     }
 }
 
+@JvmName("toPsiClass")
 fun VirtualFile.toPsiClass(project: Project): PsiClass? {
     return PsiManager.getInstance(project).findFile(this)
         ?.let { PsiTreeUtil.getChildOfAnyType(it.originalElement, PsiClass::class.java) }

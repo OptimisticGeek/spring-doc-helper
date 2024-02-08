@@ -42,6 +42,7 @@ data class AnalyzeMethod(val methodModel: MethodModel) : BaseAnalyzeModel(method
 /**
  * 仅适用于queryParams与pathParams
  */
+@JvmName("toParams")
 private fun List<FieldModel>.toParams(): AnalyzeModel? {
     this.map(FieldModel::analyze)
         .flatMap { if (it.type.isBase) listOf(it) else it.children ?: Collections.emptyList() }.toList()
@@ -49,6 +50,7 @@ private fun List<FieldModel>.toParams(): AnalyzeModel? {
         .let { return if (!it.isNullOrEmpty()) AnalyzeModel(FieldType.OBJECT, it) else null }
 }
 
+@JvmName("toCurlStr")
 fun AnalyzeMethod.toCurlStr(): String {
     val sb = StringBuilder("curl -X $httpMethod ")
     requestBody?.let { sb.append(" -H \"Content-Type: application/json\" ") }

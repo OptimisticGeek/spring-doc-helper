@@ -19,6 +19,7 @@ import java.util.*
 /**
  * build requestBody requestParams pathVariables
  */
+@JvmName("buildParameters")
 fun PsiMethod.buildParameters(methodModel: MethodModel) {
     if (!this.hasParameters()) return
     this.parameterList.parameters.forEach {
@@ -47,6 +48,7 @@ fun PsiMethod.buildParameters(methodModel: MethodModel) {
 /**
  * 首先基于typeElement分析，之后尝试对method代码块中的return进行分析
  */
+@JvmName("buildResponseBody")
 fun PsiMethod.buildResponseBody(): RefClassModel? {
     val responseBody =
         this.returnTypeElement?.toRefClassModel()?.also { it.remark = this.getDocumentTag(RETURN) } ?: return null
@@ -58,10 +60,12 @@ fun PsiMethod.buildResponseBody(): RefClassModel? {
     return responseBody
 }
 
+@JvmName("toRefClassModel")
 fun PsiVariable.toRefClassModel(): RefClassModel? {
     return this.typeElement?.toRefClassModel()?.apply { this.ref = buildRefClassModel(this) }
 }
 
+@JvmName("buildRefClassModel")
 private fun PsiVariable.buildRefClassModel(root: RefClassModel): RefClassModel? {
     root.takeIf { !it.isBase() } ?: return null
     val variableName = nameIdentifier?.text
@@ -88,6 +92,7 @@ private fun PsiVariable.buildRefClassModel(root: RefClassModel): RefClassModel? 
     return root.ref
 }
 
+@JvmName("analyzeResponseBody")
 private fun PsiMethod.analyzeResponseBody(root: RefClassModel): RefClassModel? {
     // 泛型或者Object的字段
     val refField = root.refField
@@ -120,6 +125,7 @@ private fun PsiMethod.analyzeResponseBody(root: RefClassModel): RefClassModel? {
 /**
  * 例子：return result
  */
+@JvmName("analyzeResponseBody")
 private fun PsiReferenceExpressionImpl.analyzeResponseBody(root: RefClassModel, fieldName: String?): RefClassModel? {
     if (!(this.parent is PsiReturnStatement || this.parent.parent is PsiReturnStatement)) return null
     return when (val element = resolve()) {
@@ -129,6 +135,7 @@ private fun PsiReferenceExpressionImpl.analyzeResponseBody(root: RefClassModel, 
     }
 }
 
+@JvmName("analyzeResponseBody")
 fun PsiMethodCallExpression.analyzeResponseBody(): RefClassModel? {
     return this.resolveMethod()?.returnTypeElement?.toRefClassModel()?.also { root ->
         this.analyzeResponseBody(root, root.refField?.name).let { root.updateRef(it) }
@@ -139,6 +146,7 @@ fun PsiMethodCallExpression.analyzeResponseBody(): RefClassModel? {
  * 例子：return ResultData.success(); 【忽略】
  * 例子：return ResultData.success(data); 】【收集该data值，放到ref】
  */
+@JvmName("analyzeResponseBody")
 private fun PsiMethodCallExpression.analyzeResponseBody(root: RefClassModel, fieldName: String?): RefClassModel? {
     // 分析返回值，存在三种情况
     // 1.source类型一致，当前评分高于原有评分
@@ -155,6 +163,7 @@ private fun PsiMethodCallExpression.analyzeResponseBody(root: RefClassModel, fie
  * 例子：return new ResultData(); 【忽略】
  * 例子：return new ResultData(data); 】【收集该data值，放到ref】
  */
+@JvmName("analyzeResponseBody")
 private fun PsiCallExpression.analyzeResponseBody(fieldName: String?): RefClassModel? {
     val params = this.argumentList?.expressions
     if (params.isNullOrEmpty()) return null
@@ -169,10 +178,12 @@ private fun PsiCallExpression.analyzeResponseBody(fieldName: String?): RefClassM
 }
 
 private val CACHE_KEY_CONTROLLER: Key<ControllerModel> = Key.create("springDocHelper.controller.cache")
+@JvmName("clearControllerCache")
 fun PsiClass.clearControllerCache() {
     this.putUserData(CACHE_KEY_CONTROLLER, null)
 }
 
+@JvmName("createControllerModel")
 fun PsiClass.createControllerModel(): ControllerModel? {
     if (!this.isControllerClass()) return null
 
@@ -186,6 +197,7 @@ fun PsiClass.createControllerModel(): ControllerModel? {
     return controller.also { this.putUserData(CACHE_KEY_CONTROLLER, controller) }
 }
 
+@JvmName("buildMethodModel")
 fun PsiMethod.buildMethodModel(controller: ControllerModel): MethodModel {
     return MethodModel(this).apply {
         if (this.author.isNullOrBlank()) this.author = controller.author
@@ -208,11 +220,13 @@ private fun joinerUrl(controllerUrls: List<String>?, methodUrls: List<String>?):
     }
 }
 
+@JvmName("getHttpRequestAnnotation")
 fun PsiMethod.getHttpRequestAnnotation(): PsiAnnotation? {
     return this.getAnnotation(GET_MAPPING) ?: this.getAnnotation(POST_MAPPING) ?: this.getAnnotation(PUT_MAPPING)
     ?: this.getAnnotation(DELETE_MAPPING) ?: this.getAnnotation(REQUEST_MAPPING)
 }
 
+@JvmName("isControllerClass")
 fun PsiClass.isControllerClass(): Boolean {
     if (this.methods.isEmpty()) {
         return false

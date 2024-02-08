@@ -14,14 +14,17 @@ import com.github.optimisticgeek.spring.model.*
  * @date 2024/1/16
  */
 
+@JvmName("analyze")
 fun ControllerModel.analyze(): List<AnalyzeMethod>? {
     return this.methodMap?.values?.map(MethodModel::analyze)?.toList()
 }
 
+@JvmName("analyze")
 fun MethodModel.analyze(): AnalyzeMethod {
     return AnalyzeMethod(this)
 }
 
+@JvmName("analyze")
 fun FieldModel.analyze(): AnalyzeModel {
     return this.classType.analyze().also {
         it.name = this.realName
@@ -29,6 +32,7 @@ fun FieldModel.analyze(): AnalyzeModel {
     }
 }
 
+@JvmName("analyze")
 fun RefClassModel.analyze(ref: RefClassModel? = null, parent: AnalyzeModel? = null, isRefField: Boolean = false):
         AnalyzeModel {
 

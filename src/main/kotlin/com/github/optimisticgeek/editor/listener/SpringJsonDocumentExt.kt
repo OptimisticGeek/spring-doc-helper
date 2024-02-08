@@ -4,10 +4,12 @@ package com.github.optimisticgeek.editor.listener
 import com.github.optimisticgeek.analyze.model.AnalyzeModel
 import com.github.optimisticgeek.spring.constant.FieldType
 
+@JvmName("toJson")
 fun AnalyzeModel.toJson(showRemark: Boolean = true): String {
     return this.appendField(showRemark = showRemark).toString()
 }
 
+@JvmName("appendField")
 private fun AnalyzeModel.appendField(
     sb: StringBuilder = StringBuilder(), showRemark: Boolean = true, level: Int = 0, last: Boolean = true
 ): StringBuilder {
@@ -27,10 +29,12 @@ private fun AnalyzeModel.appendField(
     return sb
 }
 
+@JvmName("appendSpace")
 private fun StringBuilder.appendSpace(level: Int): StringBuilder {
     return this.append("    ".repeat(level))
 }
 
+@JvmName("appendRemark")
 private fun StringBuilder.appendRemark(model: AnalyzeModel, showRemark: Boolean, level: Int): StringBuilder {
     if (!showRemark || model.remark.isNullOrBlank()) return this
     if (isNotEmpty() && last() != '\n') appendLine()

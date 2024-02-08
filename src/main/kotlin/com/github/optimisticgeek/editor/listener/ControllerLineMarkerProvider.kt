@@ -60,6 +60,7 @@ class ControllerLineMarkerProvider : JavaLineMarkerProvider() {
     }
 }
 
+@JvmName("createLineMarkerInfo")
 private fun AnalyzeMethod.createLineMarkerInfo(
     identifier: PsiIdentifier?, range: TextRange, title: String, icon: Icon
 ): LineMarkerInfo<PsiIdentifier> {
@@ -131,18 +132,22 @@ private fun AnalyzeMethod.createLineMarkerInfo(
     )
 }
 
+@JvmName("textRange")
 private fun MethodModel.textRange(): TextRange {
     return psiMethodAnnotation.textRange
 }
 
+@JvmName("icon")
 private fun MethodModel.icon(): Icon {
     return IconUtil.textToIcon(this.requestMethod.name, JLabel(), JBUIScale.scale(10.0f))
 }
 
+@JvmName("title")
 private fun MethodModel.title(): String {
     return this.remark ?: this.name ?: ""
 }
 
+@JvmName("copyString")
 fun Project.copyString(str: String) {
     CopyPasteManager.getInstance().setContents(StringSelection(str))
 

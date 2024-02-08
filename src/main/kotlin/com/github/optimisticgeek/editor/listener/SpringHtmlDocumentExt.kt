@@ -19,6 +19,7 @@ import kotlinx.html.dom.createHTMLDocument
 import kotlinx.html.dom.serialize
 import kotlinx.html.stream.createHTML
 
+@JvmName("toHtmlDocument")
 fun AnalyzeMethod.toHtmlDocument(): String {
     val html = createHTMLDocument().html {
         head {
@@ -59,6 +60,7 @@ fun AnalyzeMethod.toHtmlDocument(): String {
     return html.serialize(false)
 }
 
+@JvmName("toHtmlDocument")
 fun AnalyzeModel.toHtmlDocument(): String {
     val toHtml = this.toHtml(modelKey)
 
@@ -82,11 +84,13 @@ private fun message(key: String): String {
     return ScannerBundle.message(key) + ":"
 }
 
+@JvmName("getHtmlColor")
 private fun TextAttributesKey.getHtmlColor(): String {
     defaultAttributes.foregroundColor ?: return ""
     return ColorUtil.toHtmlColor(defaultAttributes.foregroundColor)
 }
 
+@JvmName("isShowHtmlDocument")
 fun RefClassModel?.isShowHtmlDocument(): Boolean {
     this ?: return false
     // 基本类型不显示
@@ -95,6 +99,7 @@ fun RefClassModel?.isShowHtmlDocument(): Boolean {
     return !this.source.fields.isNullOrEmpty() || this.ref.isShowHtmlDocument()
 }
 
+@JvmName("toHtml")
 private fun AnalyzeModel.toHtml(title: String): String {
     return createHTML(false).div("model") {
         span { +message(title) }
@@ -110,6 +115,7 @@ private fun AnalyzeModel.toHtml(title: String): String {
     }
 }
 
+@JvmName("toHtml")
 private fun AnalyzeModel.toHtml(level: Int, isLastChild: Boolean): String {
     return createHTML(false).div("level${if (level == 0) "_root" else ""}") {
         // 注释在字段上方
@@ -220,6 +226,7 @@ private fun getHtmlStyle(): String {
             """
 }
 
+@JvmName("getStyleName")
 private fun AnalyzeModel.getStyleName(): String {
     return when (type) {
         FieldType.INTEGER, FieldType.DOUBLE, FieldType.LONG -> NUMBER

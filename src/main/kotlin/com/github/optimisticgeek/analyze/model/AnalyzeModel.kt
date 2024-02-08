@@ -23,6 +23,7 @@ class AnalyzeModel(
 /**
  * 循环调用返回true
  */
+@JvmName("isLoopCall")
 fun AnalyzeModel.isLoopCall(): Boolean {
     if (type != FieldType.OBJECT || parent == null || this.position.isNullOrBlank()) return false
     var current = this.parent

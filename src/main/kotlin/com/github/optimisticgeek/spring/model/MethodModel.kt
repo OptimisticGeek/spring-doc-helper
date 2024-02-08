@@ -39,6 +39,7 @@ class MethodModel(val psiMethod: PsiMethod) : BaseModel(
     }
 }
 
+@JvmName("getPosition")
 fun PsiMethod.getPosition(): String {
     return "${this.containingClass!!.qualifiedName}#$name"
 }
