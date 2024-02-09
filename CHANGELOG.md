@@ -2,13 +2,8 @@
 
 # springDocHelper Changelog
 
-## [Unreleased]
-- [ ] 基于接口的搜索
-- [ ] 生成接口请求用例
-- [ ] 针对指定类的自定义fields
-- [ ] 导入到Yapi
-- [ ] 导入到Postman
-- [ ] swagger文档分析
+## [0.1.1]
+- 复制接口Curl请求
 
 ## [0.1.0]
 - 接口文档分析
@@ -18,8 +13,13 @@
 - GET|POST|PUT|DELETE左侧小图标，支持复制操作
 - controller缓存逻辑
 
-## [0.1.1]
-- 复制接口Curl请求
+## [Unreleased]
+- [ ] 基于接口的搜索
+- [ ] 生成接口请求用例
+- [ ] 针对指定类的自定义fields
+- [ ] 导入到Yapi
+- [ ] 导入到Postman
+- [ ] swagger文档分析
 
 [Unreleased]: https://github.com/OptimisticGeek/spring-doc-helper/compare/v0.1.0...HEAD
 [0.1.0]: https://github.com/OptimisticGeek/spring-doc-helper/releases/tag/v0.1.0
