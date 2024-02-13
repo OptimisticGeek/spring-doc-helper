@@ -1,9 +1,10 @@
 // Copyright 2023-2024 OptimisticGeek. Use of this source code is governed by the Apache 2.0 license that can be found in the LICENSE file.
 package com.github.optimisticgeek.spring.ext
 
+import com.github.optimisticgeek.spring.constant.ARRAY_TAG
 import com.github.optimisticgeek.spring.constant.FieldType
-import com.github.optimisticgeek.spring.constant.StringConstants.ARRAY_TAG
-import com.github.optimisticgeek.spring.constant.StringConstants.VOID
+import com.github.optimisticgeek.spring.constant.VOID
+import com.github.optimisticgeek.spring.constant.getType
 import com.github.optimisticgeek.spring.model.ClassModel
 import com.github.optimisticgeek.spring.model.FieldModel
 import com.github.optimisticgeek.spring.model.RefClassModel
@@ -17,7 +18,7 @@ import java.util.*
 @JvmName("toClassModel")
 fun PsiClass.toClassModel(useCache: Boolean = true): ClassModel? {
 
-    val type = FieldType.getType(this, this.qualifiedName ?: this.name).takeIf { it != FieldType.OTHER } ?: return null
+    val type = getType(this, this.qualifiedName ?: this.name).takeIf { it != FieldType.OTHER } ?: return null
 
     val source = this.scannerService().buildSourceModel(this.qualifiedName ?: this.text, type, useCache)
     if (source.isInit) return source

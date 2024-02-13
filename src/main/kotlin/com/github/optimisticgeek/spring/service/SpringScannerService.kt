@@ -2,6 +2,7 @@
 package com.github.optimisticgeek.spring.service
 
 import com.github.optimisticgeek.spring.constant.FieldType
+import com.github.optimisticgeek.spring.constant.getType
 import com.github.optimisticgeek.spring.ext.*
 import com.github.optimisticgeek.spring.model.ClassModel
 import com.intellij.openapi.components.Service
@@ -41,7 +42,7 @@ class SpringScannerService(private val myProject: Project) {
     fun findClassModel(qName: String): ClassModel? {
         if (qName == "null" || qName == "void") return null
 
-        FieldType.getType(null, qName).takeIf { it != FieldType.OBJECT }
+        getType(null, qName).takeIf { it != FieldType.OBJECT }
             ?.let { fieldType -> return buildSourceModel(qName, fieldType) }
 
         ProjectScope.getProjectScope(myProject).let {

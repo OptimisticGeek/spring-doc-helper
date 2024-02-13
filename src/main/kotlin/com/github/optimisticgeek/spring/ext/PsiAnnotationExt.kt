@@ -1,11 +1,11 @@
 // Copyright 2023-2024 OptimisticGeek. Use of this source code is governed by the Apache 2.0 license that can be found in the LICENSE file.
 package com.github.optimisticgeek.spring.ext
 
-import com.github.optimisticgeek.spring.constant.QNameConstants.DELETE_MAPPING
-import com.github.optimisticgeek.spring.constant.QNameConstants.GET_MAPPING
-import com.github.optimisticgeek.spring.constant.QNameConstants.POST_MAPPING
-import com.github.optimisticgeek.spring.constant.QNameConstants.PUT_MAPPING
-import com.github.optimisticgeek.spring.constant.StringConstants.METHOD
+import com.github.optimisticgeek.spring.constant.DELETE_MAPPING
+import com.github.optimisticgeek.spring.constant.GET_MAPPING
+import com.github.optimisticgeek.spring.constant.POST_MAPPING
+import com.github.optimisticgeek.spring.constant.PUT_MAPPING
+import com.github.optimisticgeek.spring.constant.METHOD
 import com.intellij.psi.PsiAnnotation
 import com.intellij.psi.PsiLiteralExpression
 import com.intellij.psi.PsiModifierListOwner

@@ -3,7 +3,7 @@
   -->
 <!-- Plugin Configuration File. Read more: https://plugins.jetbrains.com/docs/intellij/plugin-configuration-file.html -->
 <idea-plugin>
-  <version>0.1.1</version>
+  <version>0.1.2</version>
   <idea-version since-build="222" until-build="233.*" />
   <id>com.github.optimisticGeek.spring-doc-helper</id>
   <name>SpringDocHelper</name>
@@ -22,7 +22,8 @@
   <change-notes><![CDATA[<ul><li>复制接口Curl请求</li></ul>]]></change-notes>
   <resource-bundle>messages.Scanner</resource-bundle>
   <extensions defaultExtensionNs="com.intellij">
-    <codeInsight.lineMarkerProvider implementationClass="com.github.optimisticgeek.editor.listener.ControllerLineMarkerProvider" language="JAVA" />
+    <codeInsight.lineMarkerProvider
+      implementationClass="com.github.optimisticgeek.editor.listener.ControllerLineMarkerProvider" language="JAVA"/>
     <!--文档提示-->
     <lang.documentationProvider language="JAVA" implementationClass="com.github.optimisticgeek.editor.listener.SpringApiDocumentProvider" order="first" />
   </extensions>

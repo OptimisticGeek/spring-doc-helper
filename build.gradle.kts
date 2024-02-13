@@ -74,12 +74,16 @@ koverReport {
 }
 
 tasks {
-    wrapper {
-        gradleVersion = properties("gradleVersion").get()
+    runIde{
+        autoReloadPlugins = true
     }
 
     buildSearchableOptions{
         enabled = false
+    }
+
+    wrapper {
+        gradleVersion = properties("gradleVersion").get()
     }
 
     patchPluginXml {

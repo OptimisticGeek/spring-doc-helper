@@ -1,8 +1,7 @@
 // Copyright 2023-2024 OptimisticGeek. Use of this source code is governed by the Apache 2.0 license that can be found in the LICENSE file.
 package com.github.optimisticgeek.spring.ext
-
-import com.github.optimisticgeek.spring.constant.StringConstants.AUTHOR
-import com.github.optimisticgeek.spring.constant.StringConstants.PARAM
+import com.github.optimisticgeek.spring.constant.AUTHOR
+import com.github.optimisticgeek.spring.constant.PARAM
 import com.intellij.psi.PsiJavaDocumentedElement
 import org.apache.commons.lang3.StringUtils
 

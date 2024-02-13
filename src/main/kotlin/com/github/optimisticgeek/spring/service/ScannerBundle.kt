@@ -2,7 +2,6 @@
 package com.github.optimisticgeek.spring.service
 
 import com.intellij.DynamicBundle
-import org.jetbrains.annotations.NonNls
 import org.jetbrains.annotations.PropertyKey
 
 /**
@@ -11,7 +10,6 @@ import org.jetbrains.annotations.PropertyKey
  * @author OptimisticGeek
  * @date 2023/12/24
  */
-@NonNls
 private const val BUNDLE = "messages.Scanner"
 
 object ScannerBundle : DynamicBundle(BUNDLE) {

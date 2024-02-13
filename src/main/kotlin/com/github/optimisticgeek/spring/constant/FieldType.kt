@@ -1,8 +1,6 @@
 // Copyright 2023-2024 OptimisticGeek. Use of this source code is governed by the Apache 2.0 license that can be found in the LICENSE file.
 package com.github.optimisticgeek.spring.constant
 
-import com.github.optimisticgeek.spring.constant.QNameConstants.BIG_DECIMAL
-import com.github.optimisticgeek.spring.constant.QNameConstants.FORM_FILE
 import com.intellij.psi.CommonClassNames.*
 import com.intellij.psi.PsiClass
 
@@ -108,21 +106,19 @@ enum class FieldType(
         if (!this.contains(".")) return this
         return this.substring(this.lastIndexOf(".") + 1)
     }
+}
 
-    companion object {
-        @JvmStatic
-        fun getType(psiClass: PsiClass?, qualifiedName: String?): FieldType {
-            if (psiClass == null && qualifiedName.isNullOrBlank()) return OTHER
-            val qName = qualifiedName ?: psiClass?.qualifiedName ?: return OTHER
-            if (qName.length == 1) return SUBSTITUTE
-            if (psiClass?.isEnum == true) return ENUM
+@JvmName("getType")
+fun getType(psiClass: PsiClass?, qualifiedName: String?): FieldType {
+    if (psiClass == null && qualifiedName.isNullOrBlank()) return FieldType.OTHER
+    val qName = qualifiedName ?: psiClass?.qualifiedName ?: return FieldType.OTHER
+    if (qName.length == 1) return FieldType.SUBSTITUTE
+    if (psiClass?.isEnum == true) return FieldType.ENUM
 
-            val supers = "$qName," + psiClass?.let {
-                 psiClass.interfaces.mapNotNull { it.qualifiedName }
-                    .joinToString(",") + "," + psiClass.supers.mapNotNull { it.qualifiedName }
-                    .filter { it != JAVA_LANG_OBJECT }.joinToString(",")
-            }
-            return values().firstOrNull { it.isFieldType(qName) || it.isThisOrSupers(supers) } ?: OBJECT
-        }
+    val supers = "$qName," + psiClass?.let {
+        psiClass.interfaces.mapNotNull { it.qualifiedName }
+            .joinToString(",") + "," + psiClass.supers.mapNotNull { it.qualifiedName }
+            .filter { it != JAVA_LANG_OBJECT }.joinToString(",")
     }
+    return FieldType.values().firstOrNull { it.isFieldType(qName) || it.isThisOrSupers(supers) } ?: FieldType.OBJECT
 }

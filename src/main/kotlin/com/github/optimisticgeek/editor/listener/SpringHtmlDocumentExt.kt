@@ -4,9 +4,15 @@ package com.github.optimisticgeek.editor.listener
 import com.github.optimisticgeek.analyze.model.AnalyzeMethod
 import com.github.optimisticgeek.analyze.model.AnalyzeModel
 import com.github.optimisticgeek.spring.constant.FieldType
-import com.github.optimisticgeek.spring.constant.StringConstants.BOOLEAN
-import com.github.optimisticgeek.spring.constant.StringConstants.NUMBER
-import com.github.optimisticgeek.spring.constant.StringConstants.STRING
+import com.github.optimisticgeek.spring.constant.BOOLEAN
+import com.github.optimisticgeek.spring.constant.NUMBER
+import com.github.optimisticgeek.spring.constant.STRING
+import com.github.optimisticgeek.spring.constant.linkKey
+import com.github.optimisticgeek.spring.constant.modelKey
+import com.github.optimisticgeek.spring.constant.pathParamsKey
+import com.github.optimisticgeek.spring.constant.queryParamsKey
+import com.github.optimisticgeek.spring.constant.requestBodyKey
+import com.github.optimisticgeek.spring.constant.responseKey
 import com.github.optimisticgeek.spring.model.RefClassModel
 import com.github.optimisticgeek.spring.model.className
 import com.github.optimisticgeek.spring.service.ScannerBundle
@@ -237,11 +243,3 @@ private fun AnalyzeModel.getStyleName(): String {
         else -> ""
     }
 }
-
-
-internal val pathParamsKey = "document.pathParams"
-internal val queryParamsKey = "document.queryParams"
-internal val requestBodyKey = "document.requestBody"
-internal val responseKey = "document.response"
-internal val linkKey = "link"
-internal val modelKey = "document.model"
