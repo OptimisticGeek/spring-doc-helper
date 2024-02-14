@@ -3,7 +3,7 @@
 # springDocHelper Changelog
 
 ## [0.1.2]
-- 两下shift搜索接口（search everywhere），支持url+注释+作者模糊搜索，支持按http方法过滤
+- 双击shift搜索接口（search everywhere），支持url+注释+作者模糊搜索，支持按http方法过滤，支持异步搜索
 - Http请求方法小图标展示
 - controller缓存逻辑优化
 - fix - queryParams的fieldType是list时，未正常加载参数名

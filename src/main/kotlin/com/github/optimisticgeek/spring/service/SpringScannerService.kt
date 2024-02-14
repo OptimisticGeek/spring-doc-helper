@@ -8,15 +8,21 @@ import com.github.optimisticgeek.spring.ext.createControllerModel
 import com.github.optimisticgeek.spring.ext.isControllerClass
 import com.github.optimisticgeek.spring.ext.toClassModel
 import com.github.optimisticgeek.spring.model.ClassModel
-import com.github.optimisticgeek.spring.model.MethodModel
+import com.github.optimisticgeek.spring.model.ControllerModel
 import com.intellij.openapi.components.Service
 import com.intellij.openapi.components.service
+import com.intellij.openapi.project.DumbService
 import com.intellij.openapi.project.PossiblyDumbAware
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.Key
-import com.intellij.psi.*
+import com.intellij.psi.JavaPsiFacade
+import com.intellij.psi.PsiClass
+import com.intellij.psi.PsiDocumentManager
+import com.intellij.psi.PsiElement
 import com.intellij.psi.search.ProjectScope
 import com.intellij.psi.search.searches.AllClassesSearch
+import com.intellij.util.Consumer
+import java.util.*
 
 /**
  * SpringScannerService
@@ -27,22 +33,26 @@ import com.intellij.psi.search.searches.AllClassesSearch
 @Service(Service.Level.PROJECT)
 class SpringScannerService(private val myProject: Project) : PossiblyDumbAware {
     val cacheMap: HashMap<String, ClassModel> = HashMap(888)
-    val methodCache: HashMap<PsiMethod, MethodModel> = HashMap()
     private val javaPsiFacade: JavaPsiFacade = JavaPsiFacade.getInstance(myProject)
     private val psiDocumentManager: PsiDocumentManager = myProject.service<PsiDocumentManager>()
-    private val CACHE_KEY_SCANNER_STATE: Key<Boolean> = Key.create("springDocHelper.scanner.state")
+    private val scannerStateKey: Key<Boolean> = Key.create("springDocHelper.scanner.state")
+    val controllerPsiClassSet: HashSet<PsiClass> = HashSet(888)
 
     @Synchronized
-    fun scanning(useCache: Boolean = true) {
+    fun scanning(useCache: Boolean = true, func: Consumer<ControllerModel>? = null): List<ControllerModel> {
+        if (myProject.isDumb()) {
+            return Collections.emptyList()
+        }
         // 使用缓存 && 已扫描过，直接跳过
-        if (useCache && myProject.getUserData(CACHE_KEY_SCANNER_STATE) == true) return
-        AllClassesSearch.search(ProjectScope.getProjectScope(myProject), myProject).findAll()
-            .filter { it.isControllerClass() }.mapNotNull { it.createControllerModel(useCache) }
-            .map {
-                it.methodMap?.let { it1 -> methodCache.putAll(it1) }
-                it
-            }.toList()
-        myProject.putUserData(CACHE_KEY_SCANNER_STATE, true)
+        val psiClasses =
+            if (useCache && myProject.getUserData(scannerStateKey) == true) controllerPsiClassSet else
+                AllClassesSearch.search(ProjectScope.getProjectScope(myProject), myProject)
+
+        return psiClasses.filter { it.isControllerClass() }
+            .mapNotNull { it.createControllerModel(useCache) }
+            .onEach { func?.consume(it) }
+            .toList()
+            .also { myProject.putUserData(scannerStateKey, true) }
     }
 
     fun findClassModel(qName: String): ClassModel? {
@@ -87,4 +97,8 @@ fun PsiElement.scannerService(): SpringScannerService {
 @JvmName("scannerService")
 fun Project.scannerService(): SpringScannerService {
     return this.service<SpringScannerService>()
+}
+
+fun Project.isDumb(): Boolean {
+    return this.service<DumbService>().isDumb
 }

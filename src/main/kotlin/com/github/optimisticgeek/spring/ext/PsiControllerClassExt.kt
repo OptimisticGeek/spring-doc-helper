@@ -3,6 +3,7 @@ package com.github.optimisticgeek.spring.ext
 
 import com.github.optimisticgeek.spring.constant.*
 import com.github.optimisticgeek.spring.model.*
+import com.github.optimisticgeek.spring.service.scannerService
 import com.intellij.openapi.util.Key
 import com.intellij.psi.*
 import com.intellij.psi.impl.source.PsiMethodImpl
@@ -183,6 +184,7 @@ private val CACHE_KEY_CONTROLLER: Key<ControllerModel> = Key.create("springDocHe
 
 @JvmName("clearControllerCache")
 fun PsiClass.clearControllerCache() {
+    project.scannerService().controllerPsiClassSet.remove(this)
     this.putUserData(CACHE_KEY_CONTROLLER, null)
 }
 
@@ -190,6 +192,8 @@ fun PsiClass.clearControllerCache() {
 fun PsiClass.createControllerModel(useCache: Boolean = true): ControllerModel? {
     if (!this.isControllerClass()) return null
     if (useCache) this.getUserData(CACHE_KEY_CONTROLLER)?.let { return it }
+
+    project.scannerService().controllerPsiClassSet.add(this)
 
     val controller = ControllerModel(this).also { if (CollectionUtils.isEmpty(it.urls)) return null }
 

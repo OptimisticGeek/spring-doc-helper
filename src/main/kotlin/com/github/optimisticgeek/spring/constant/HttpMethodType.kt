@@ -31,7 +31,7 @@ enum class HttpMethodType {
 
     companion object {
         @JvmStatic
-        val LIST = HttpMethodType.values().toList()
+        val LIST = arrayListOf(ALL, GET, POST, PUT, DELETE)
     }
 
 }

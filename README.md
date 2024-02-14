@@ -15,7 +15,7 @@ This is a plugin for spring interface documentation. With this plugin, you can q
 - Object与泛型返回值真实类型推断
 - 快速文档提示复制model的html、json、curl
 - GET|POST|PUT|DELETE左侧小图标，支持复制操作
-- 两下shift搜索接口（search everywhere），支持url+注释+作者模糊搜索，支持按http方法过滤
+- 双击shift搜索接口（search everywhere），支持url+注释+作者模糊搜索，支持按http方法过滤，支持异步搜索
 
 ## Todo
 - [ ] 生成接口请求用例
@@ -23,7 +23,6 @@ This is a plugin for spring interface documentation. With this plugin, you can q
 - [ ] 导入到Yapi
 - [ ] 导入到Postman
 - [ ] swagger文档分析
-- [ ] 异步展示search everywhere的搜索结果
 <!-- Plugin description end -->
 
 ## Installation

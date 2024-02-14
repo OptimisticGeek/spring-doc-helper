@@ -69,7 +69,7 @@ class MethodModel(val psiMethod: PsiMethod) : BaseModel(
         }
     }
 
-    fun getKeyword(): String = "${getUrl()} ${methodName} $author $remark"
+    fun getKeyword(): String = "${getUrl()} ${methodName} $remark $author ${position!!.className()}"
 }
 
 @JvmName("getPosition")

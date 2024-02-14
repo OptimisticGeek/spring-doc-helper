@@ -18,7 +18,6 @@ import com.intellij.openapi.project.Project
 import com.intellij.psi.codeStyle.MinusculeMatcher
 import com.intellij.psi.codeStyle.NameUtil
 import com.intellij.util.Processor
-import com.intellij.util.containers.ContainerUtil
 
 // Copyright 2023-2024 OptimisticGeek. Use of this source code is governed by the Apache 2.0 license that can be found in the LICENSE file.. Use of this source code is governed by the Apache 2.0 license that can be found in the LICENSE file.
 
@@ -52,15 +51,13 @@ class SpringApiSearchEverywhereClassifier(val event: AnActionEvent) : AbstractGo
     ) {
         val matcher = createMatcher(this.filterControlSymbols(pattern))
         ProgressIndicatorUtils.yieldToPendingWriteActions()
-        // todo 异步更新逻辑
         ProgressIndicatorUtils.runInReadActionWithWriteActionPriority({
-            myService.scanning()
-            val res: ArrayList<FoundItemDescriptor<Any>> = ArrayList()
-            myService.methodCache.values
-                .filter { myFilter.isSelected(it.requestMethod) || myFilter.isSelected(HttpMethodType.ALL) }
-                .filter { matcher.matches(it.getKeyword()) }
-                .forEach { res.add(FoundItemDescriptor(it, 100)) }
-            ContainerUtil.process(res, consumer)
+            myService.scanning {
+                it.methodMap?.values
+                    ?.filter { myFilter.isSelected(it.requestMethod) || myFilter.isSelected(HttpMethodType.ALL) }
+                    ?.filter { matcher.matches(it.getKeyword()) }
+                    ?.forEach { consumer.process(FoundItemDescriptor(it, 100)) }
+            }
         }, progressIndicator)
     }
 
@@ -73,7 +70,7 @@ class SpringApiSearchEverywhereClassifier(val event: AnActionEvent) : AbstractGo
 
     internal class Factory : SearchEverywhereContributorFactory<Any> {
         override fun createContributor(anActionEvent: AnActionEvent): SearchEverywhereContributor<Any> =
-            PSIPresentationBgRendererWrapper.wrapIfNecessary(SpringApiSearchEverywhereClassifier(anActionEvent))
+            SpringApiSearchEverywhereClassifier(anActionEvent)
     }
 
     /**
