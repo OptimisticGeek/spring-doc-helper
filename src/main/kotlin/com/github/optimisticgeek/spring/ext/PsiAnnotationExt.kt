@@ -1,18 +1,12 @@
 // Copyright 2023-2024 OptimisticGeek. Use of this source code is governed by the Apache 2.0 license that can be found in the LICENSE file.
 package com.github.optimisticgeek.spring.ext
 
-import com.github.optimisticgeek.spring.constant.DELETE_MAPPING
-import com.github.optimisticgeek.spring.constant.GET_MAPPING
-import com.github.optimisticgeek.spring.constant.POST_MAPPING
-import com.github.optimisticgeek.spring.constant.PUT_MAPPING
-import com.github.optimisticgeek.spring.constant.METHOD
+import com.github.optimisticgeek.spring.constant.*
 import com.intellij.psi.PsiAnnotation
 import com.intellij.psi.PsiLiteralExpression
 import com.intellij.psi.PsiModifierListOwner
 import com.intellij.psi.util.PsiTreeUtil
-import com.intellij.util.containers.orNull
 import com.intellij.util.containers.stream
-import com.intellij.util.net.HTTPMethod
 import org.apache.commons.lang3.BooleanUtils
 import org.apache.commons.lang3.StringUtils
 import java.util.*
@@ -43,8 +37,8 @@ fun PsiAnnotation.getAnnotationValues(valueName: String): List<String> {
     return values.stream().map { it.text.replace("\"", "").replace("{}", "") }.collect(Collectors.toList())
 }
 
-@JvmName("getHttpMethod")
-fun PsiAnnotation.getHttpMethod(): HTTPMethod? {
+@JvmName("getHttpMethodType")
+fun PsiAnnotation.getHttpMethodType(): HttpMethodType? {
     if (BooleanUtils.isNotTrue(this.qualifiedName?.endsWith("Mapping"))) {
         return null
     }
@@ -52,16 +46,18 @@ fun PsiAnnotation.getHttpMethod(): HTTPMethod? {
         return null
     }
     return when (this.qualifiedName) {
-        GET_MAPPING -> HTTPMethod.GET
-        POST_MAPPING -> HTTPMethod.POST
-        PUT_MAPPING -> HTTPMethod.PUT
-        DELETE_MAPPING -> HTTPMethod.DELETE
+        GET_MAPPING -> HttpMethodType.GET
+        POST_MAPPING -> HttpMethodType.POST
+        PUT_MAPPING -> HttpMethodType.PUT
+        DELETE_MAPPING -> HttpMethodType.DELETE
         else -> {
             val value = this.getAnnotationValue(METHOD)
             if (StringUtils.isBlank(value)) {
                 return null
             }
-            return HTTPMethod.values().stream().filter { value.endsWith(it.name) }.findAny().orNull()
+            return HttpMethodType.values().stream().filter { value.endsWith(it.name) }.findAny().orElseGet {
+                HttpMethodType.ALL
+            }
         }
     }
 }

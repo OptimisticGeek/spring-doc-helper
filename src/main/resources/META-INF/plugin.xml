@@ -1,5 +1,5 @@
 <!--
-  ~ // Copyright 2023-2024 OptimisticGeek. Use of this source code is governed by the Apache 2.0 license that can be found in the LICENSE file.
+  ~ Copyright 2023-2024 OptimisticGeek. Use of this source code is governed by the Apache 2.0 license that can be found in the LICENSE file.
   -->
 <!-- Plugin Configuration File. Read more: https://plugins.jetbrains.com/docs/intellij/plugin-configuration-file.html -->
 <idea-plugin>
@@ -15,17 +15,18 @@
 <p>这是一款针对spring的接口文档插件，通过本插件获取接口文档，快速查看接口文档，快速复制接口文档的html、json、markdown、cURL等，生成接口用例，导入到yapi、postman等。</p>
 
 <h2>支持功能</h2>
-<ul><li>接口文档分析</li><li>鼠标悬浮文档提示（class、field、response、params、method）</li><li>Object与泛型返回值真实类型推断</li><li>快速文档提示复制model的html、json</li><li>GET|POST|PUT|DELETE左侧小图标，支持复制操作</li><li>controller缓存逻辑</li><li>复制接口Curl请求</li></ul>
+<ul><li>鼠标悬浮文档提示（class、field、response、params、method）</li><li>Object与泛型返回值真实类型推断</li><li>快速文档提示复制model的html、json、curl</li><li>GET|POST|PUT|DELETE左侧小图标，支持复制操作</li><li>两下shift搜索接口（search everywhere），支持url+注释+作者模糊搜索，支持按http方法过滤</li></ul>
 
 <h2>Todo</h2>
-<ul><li class="task-list-item"><input type="checkbox" class="task-list-item-checkbox" disabled />基于接口的搜索</li><li class="task-list-item"><input type="checkbox" class="task-list-item-checkbox" disabled />生成接口请求用例</li><li class="task-list-item"><input type="checkbox" class="task-list-item-checkbox" disabled />针对指定类的自定义fields</li><li class="task-list-item"><input type="checkbox" class="task-list-item-checkbox" disabled />导入到Yapi</li><li class="task-list-item"><input type="checkbox" class="task-list-item-checkbox" disabled />导入到Postman</li><li class="task-list-item"><input type="checkbox" class="task-list-item-checkbox" disabled />swagger文档分析</li></ul>]]></description>
-  <change-notes><![CDATA[<ul><li>复制接口Curl请求</li></ul>]]></change-notes>
+<ul><li class="task-list-item"><input type="checkbox" class="task-list-item-checkbox" disabled />生成接口请求用例</li><li class="task-list-item"><input type="checkbox" class="task-list-item-checkbox" disabled />针对指定类的自定义fields</li><li class="task-list-item"><input type="checkbox" class="task-list-item-checkbox" disabled />导入到Yapi</li><li class="task-list-item"><input type="checkbox" class="task-list-item-checkbox" disabled />导入到Postman</li><li class="task-list-item"><input type="checkbox" class="task-list-item-checkbox" disabled />swagger文档分析</li><li class="task-list-item"><input type="checkbox" class="task-list-item-checkbox" disabled />异步展示search everywhere的搜索结果</li></ul>]]></description>
+  <change-notes><![CDATA[<ul><li>两下shift搜索接口（search everywhere），支持url+注释+作者模糊搜索，支持按http方法过滤</li><li>Http请求方法小图标展示</li><li>controller缓存逻辑优化</li><li>fix - queryParams的fieldType是list时，未正常加载参数名</li></ul>]]></change-notes>
   <resource-bundle>messages.Scanner</resource-bundle>
+  <extensionPoints />
   <extensions defaultExtensionNs="com.intellij">
-    <codeInsight.lineMarkerProvider
-      implementationClass="com.github.optimisticgeek.editor.listener.ControllerLineMarkerProvider" language="JAVA"/>
+    <codeInsight.lineMarkerProvider implementationClass="com.github.optimisticgeek.editor.listener.ControllerLineMarkerProvider" language="JAVA" />
     <!--文档提示-->
     <lang.documentationProvider language="JAVA" implementationClass="com.github.optimisticgeek.editor.listener.SpringApiDocumentProvider" order="first" />
+    <searchEverywhereContributor implementation="com.github.optimisticgeek.editor.listener.SpringApiSearchEverywhereClassifier$Factory" />
   </extensions>
   <projectListeners>
     <listener class="com.github.optimisticgeek.editor.listener.BulkFileListenerImpl" topic="com.intellij.openapi.vfs.newvfs.BulkFileListener" />

@@ -27,13 +27,10 @@ import com.intellij.psi.PsiClass
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiIdentifier
 import com.intellij.ui.awt.RelativePoint
-import com.intellij.ui.scale.JBUIScale
-import com.intellij.util.IconUtil
 import com.intellij.util.concurrency.AppExecutorUtil
 import java.awt.datatransfer.StringSelection
 import java.util.concurrent.TimeUnit
 import javax.swing.Icon
-import javax.swing.JLabel
 
 /**
  * ControllerLineMarkerListener
@@ -139,7 +136,7 @@ private fun MethodModel.textRange(): TextRange {
 
 @JvmName("icon")
 private fun MethodModel.icon(): Icon {
-    return IconUtil.textToIcon(this.requestMethod.name, JLabel(), JBUIScale.scale(10.0f))
+    return requestMethod.icon
 }
 
 @JvmName("title")

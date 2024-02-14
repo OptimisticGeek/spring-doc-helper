@@ -3,15 +3,15 @@ package com.github.optimisticgeek.analyze.model
 
 import com.github.optimisticgeek.editor.listener.toJson
 import com.github.optimisticgeek.spring.constant.FieldType
+import com.github.optimisticgeek.spring.constant.HttpMethodType
 import com.github.optimisticgeek.spring.ext.analyze
 import com.github.optimisticgeek.spring.model.FieldModel
 import com.github.optimisticgeek.spring.model.MethodModel
-import com.intellij.util.net.HTTPMethod
 import org.apache.commons.lang3.StringUtils
 import java.util.*
 
 data class AnalyzeMethod(val methodModel: MethodModel) : BaseAnalyzeModel(methodModel) {
-    val httpMethod: HTTPMethod = methodModel.requestMethod
+    val httpMethod: HttpMethodType = methodModel.requestMethod
 
     val urls: List<String> = methodModel.urls!!
 

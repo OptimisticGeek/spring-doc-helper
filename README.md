@@ -11,21 +11,19 @@ This is a plugin for spring interface documentation. With this plugin, you can q
 这是一款针对spring的接口文档插件，通过本插件获取接口文档，快速查看接口文档，快速复制接口文档的html、json、markdown、cURL等，生成接口用例，导入到yapi、postman等。
 
 ## 支持功能
-- 接口文档分析
 - 鼠标悬浮文档提示（class、field、response、params、method）
 - Object与泛型返回值真实类型推断
-- 快速文档提示复制model的html、json
+- 快速文档提示复制model的html、json、curl
 - GET|POST|PUT|DELETE左侧小图标，支持复制操作
-- controller缓存逻辑
-- 复制接口Curl请求
+- 两下shift搜索接口（search everywhere），支持url+注释+作者模糊搜索，支持按http方法过滤
 
 ## Todo
-- [ ] 基于接口的搜索
 - [ ] 生成接口请求用例
 - [ ] 针对指定类的自定义fields
 - [ ] 导入到Yapi
 - [ ] 导入到Postman
 - [ ] swagger文档分析
+- [ ] 异步展示search everywhere的搜索结果
 <!-- Plugin description end -->
 
 ## Installation

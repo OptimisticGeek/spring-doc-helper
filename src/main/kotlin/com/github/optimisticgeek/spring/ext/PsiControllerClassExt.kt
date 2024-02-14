@@ -187,11 +187,11 @@ fun PsiClass.clearControllerCache() {
 }
 
 @JvmName("createControllerModel")
-fun PsiClass.createControllerModel(): ControllerModel? {
+fun PsiClass.createControllerModel(useCache: Boolean = true): ControllerModel? {
     if (!this.isControllerClass()) return null
+    if (useCache) this.getUserData(CACHE_KEY_CONTROLLER)?.let { return it }
 
-    val controller = this.getUserData(CACHE_KEY_CONTROLLER)
-        ?: ControllerModel(this).also { if (CollectionUtils.isEmpty(it.urls)) return null }
+    val controller = ControllerModel(this).also { if (CollectionUtils.isEmpty(it.urls)) return null }
 
     this.methods.filter { it.hasModifierProperty(PsiModifier.PUBLIC) && it.getHttpRequestAnnotation() != null }
         .mapNotNull { it.buildMethodModel(controller) }.associateBy { it.psiMethod }.let { controller.methodMap = it }

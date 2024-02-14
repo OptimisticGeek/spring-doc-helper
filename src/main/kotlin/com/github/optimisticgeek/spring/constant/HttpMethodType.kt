@@ -1,0 +1,44 @@
+// Copyright 2023-2024 OptimisticGeek. Use of this source code is governed by the Apache 2.0 license that can be found in the LICENSE file.
+
+package com.github.optimisticgeek.spring.constant
+
+import com.intellij.openapi.util.IconLoader
+import com.intellij.ui.scale.JBUIScale
+import com.intellij.util.IconUtil
+import javax.swing.Icon
+import javax.swing.JLabel
+
+// Copyright 2023-2024 OptimisticGeek. Use of this source code is governed by the Apache 2.0 license that can be found in the LICENSE file.. Use of this source code is governed by the Apache 2.0 license that can be found in the LICENSE file.
+
+/**
+ * HttpMethodType
+
+ * @author OptimisticGeek
+ * @date 2024/2/14
+ */
+enum class HttpMethodType {
+    ALL,
+    GET,
+    POST,
+    PUT,
+    DELETE,
+    HEAD,
+    OPTIONS,
+    TRACE,
+    PATCH;
+
+    val icon: Icon = getIconByPath(name) ?: IconUtil.textToIcon(name.first().toString(), JLabel(), JBUIScale.scale(10.0f))
+
+    companion object {
+        @JvmStatic
+        val LIST = HttpMethodType.values().toList()
+    }
+
+}
+private fun getIconByPath(name: String): Icon? {
+    return try {
+        IconLoader.getIcon("/icon/method/${name}.png", HttpMethodType::class.java)
+    } catch (e: Exception) {
+        null
+    }
+}

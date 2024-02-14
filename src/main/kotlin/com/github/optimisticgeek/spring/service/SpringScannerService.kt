@@ -3,16 +3,18 @@ package com.github.optimisticgeek.spring.service
 
 import com.github.optimisticgeek.spring.constant.FieldType
 import com.github.optimisticgeek.spring.constant.getType
-import com.github.optimisticgeek.spring.ext.*
+import com.github.optimisticgeek.spring.ext.clearControllerCache
+import com.github.optimisticgeek.spring.ext.createControllerModel
+import com.github.optimisticgeek.spring.ext.isControllerClass
+import com.github.optimisticgeek.spring.ext.toClassModel
 import com.github.optimisticgeek.spring.model.ClassModel
+import com.github.optimisticgeek.spring.model.MethodModel
 import com.intellij.openapi.components.Service
 import com.intellij.openapi.components.service
-import com.intellij.openapi.diagnostic.thisLogger
+import com.intellij.openapi.project.PossiblyDumbAware
 import com.intellij.openapi.project.Project
-import com.intellij.psi.JavaPsiFacade
-import com.intellij.psi.PsiClass
-import com.intellij.psi.PsiDocumentManager
-import com.intellij.psi.PsiElement
+import com.intellij.openapi.util.Key
+import com.intellij.psi.*
 import com.intellij.psi.search.ProjectScope
 import com.intellij.psi.search.searches.AllClassesSearch
 
@@ -23,20 +25,24 @@ import com.intellij.psi.search.searches.AllClassesSearch
  * @date 2023/12/24
  */
 @Service(Service.Level.PROJECT)
-class SpringScannerService(private val myProject: Project) {
+class SpringScannerService(private val myProject: Project) : PossiblyDumbAware {
     val cacheMap: HashMap<String, ClassModel> = HashMap(888)
+    val methodCache: HashMap<PsiMethod, MethodModel> = HashMap()
     private val javaPsiFacade: JavaPsiFacade = JavaPsiFacade.getInstance(myProject)
     private val psiDocumentManager: PsiDocumentManager = myProject.service<PsiDocumentManager>()
+    private val CACHE_KEY_SCANNER_STATE: Key<Boolean> = Key.create("springDocHelper.scanner.state")
 
-    fun scanning() {
-        psiDocumentManager.commitAndRunReadAction {
-            val t = System.currentTimeMillis()
-            val list = AllClassesSearch.search(ProjectScope.getProjectScope(myProject), myProject).findAll()
-                .filter { it.isControllerClass() }.mapNotNull { it.createControllerModel() }.toList()
-            var toList = list.map { it.analyze() }.toList()
-            println(list)
-            thisLogger().warn("${System.currentTimeMillis() - t}")
-        }
+    @Synchronized
+    fun scanning(useCache: Boolean = true) {
+        // 使用缓存 && 已扫描过，直接跳过
+        if (useCache && myProject.getUserData(CACHE_KEY_SCANNER_STATE) == true) return
+        AllClassesSearch.search(ProjectScope.getProjectScope(myProject), myProject).findAll()
+            .filter { it.isControllerClass() }.mapNotNull { it.createControllerModel(useCache) }
+            .map {
+                it.methodMap?.let { it1 -> methodCache.putAll(it1) }
+                it
+            }.toList()
+        myProject.putUserData(CACHE_KEY_SCANNER_STATE, true)
     }
 
     fun findClassModel(qName: String): ClassModel? {
