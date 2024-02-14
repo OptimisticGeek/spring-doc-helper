@@ -45,7 +45,7 @@ data class AnalyzeMethod(val methodModel: MethodModel) : BaseAnalyzeModel(method
 @JvmName("toParams")
 private fun List<FieldModel>.toParams(): AnalyzeModel? {
     this.map(FieldModel::analyze)
-        .flatMap { if (it.type.isBase) listOf(it) else it.children ?: Collections.emptyList() }.toList()
+        .flatMap { if (!it.type.isObj) listOf(it) else it.children ?: Collections.emptyList() }.toList()
         .takeIf { it.isNotEmpty() }
         .let { return if (!it.isNullOrEmpty()) AnalyzeModel(FieldType.OBJECT, it) else null }
 }
