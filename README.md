@@ -14,7 +14,7 @@ This is a plugin for spring interface documentation. With this plugin, you can q
 - 鼠标悬浮文档提示（class、field、response、params、method）
 - Object与泛型返回值真实类型推断
 - 快速文档提示复制model的html、json、curl
-- GET|POST|PUT|DELETE左侧小图标，支持复制操作
+- ![GET](./src/main/resources/icon/method/GET.png)GET|![POST](./src/main/resources/icon/method/POST.png)POST|![PUT](./src/main/resources/icon/method/PUT.png)PUT|![DELETE](./src/main/resources/icon/method/DELETE.png)DELETE左侧小图标，支持复制操作
 - 双击shift搜索接口（search everywhere），支持url+注释+作者模糊搜索，支持按http方法过滤，支持异步搜索
 
 ## Todo
