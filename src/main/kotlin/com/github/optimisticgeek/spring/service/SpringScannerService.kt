@@ -1,6 +1,7 @@
 // Copyright 2023-2024 OptimisticGeek. Use of this source code is governed by the Apache 2.0 license that can be found in the LICENSE file.
 package com.github.optimisticgeek.spring.service
 
+import com.github.optimisticgeek.editor.listener.toPsiClass
 import com.github.optimisticgeek.spring.constant.FieldType
 import com.github.optimisticgeek.spring.constant.getType
 import com.github.optimisticgeek.spring.ext.clearControllerCache
@@ -9,6 +10,8 @@ import com.github.optimisticgeek.spring.ext.isControllerClass
 import com.github.optimisticgeek.spring.ext.toClassModel
 import com.github.optimisticgeek.spring.model.ClassModel
 import com.github.optimisticgeek.spring.model.ControllerModel
+import com.github.optimisticgeek.spring.model.MethodModel
+import com.intellij.ide.highlighter.JavaFileType
 import com.intellij.openapi.components.Service
 import com.intellij.openapi.components.service
 import com.intellij.openapi.project.DumbService
@@ -19,8 +22,8 @@ import com.intellij.psi.JavaPsiFacade
 import com.intellij.psi.PsiClass
 import com.intellij.psi.PsiDocumentManager
 import com.intellij.psi.PsiElement
+import com.intellij.psi.search.FileTypeIndex
 import com.intellij.psi.search.ProjectScope
-import com.intellij.psi.search.searches.AllClassesSearch
 import com.intellij.util.Consumer
 import java.util.*
 
@@ -38,19 +41,22 @@ class SpringScannerService(private val myProject: Project) : PossiblyDumbAware {
     private val scannerStateKey: Key<Boolean> = Key.create("springDocHelper.scanner.state")
     val controllerPsiClassSet: HashSet<PsiClass> = HashSet(888)
 
-    @Synchronized
-    fun scanning(useCache: Boolean = true, func: Consumer<ControllerModel>? = null): List<ControllerModel> {
+    fun scanning(
+        useCache: Boolean = true, controllerFunc: Consumer<ControllerModel>? = null,
+        methodFunc: Consumer<MethodModel>? = null
+    ): List<ControllerModel> {
         if (myProject.isDumb()) {
             return Collections.emptyList()
         }
         // 使用缓存 && 已扫描过，直接跳过
-        val psiClasses =
-            if (useCache && myProject.getUserData(scannerStateKey) == true) controllerPsiClassSet else
-                AllClassesSearch.search(ProjectScope.getProjectScope(myProject), myProject)
-
+        val psiClasses = if (useCache && myProject.getUserData(scannerStateKey) == true)
+            controllerPsiClassSet
+        else
+            FileTypeIndex.getFiles(JavaFileType.INSTANCE, ProjectScope.getProjectScope(myProject))
+                .mapNotNull { it.toPsiClass(myProject) }
         return psiClasses.filter { it.isControllerClass() }
-            .mapNotNull { it.createControllerModel(useCache) }
-            .onEach { func?.consume(it) }
+            .mapNotNull { it.createControllerModel(useCache)?.also { controllerFunc?.consume(it) } }
+            .onEach { it.methodMap?.values?.forEach { methodFunc?.consume(it) } }
             .toList()
             .also { myProject.putUserData(scannerStateKey, true) }
     }

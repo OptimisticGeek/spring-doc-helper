@@ -1,6 +1,6 @@
 // Copyright 2023-2024 OptimisticGeek. Use of this source code is governed by the Apache 2.0 license that can be found in the LICENSE file.
 
-package com.github.optimisticgeek.editor.listener
+package com.github.optimisticgeek.editor.search
 
 import com.github.optimisticgeek.spring.constant.HttpMethodType
 import com.intellij.ide.util.gotoByName.ChooseByNameFilterConfiguration
@@ -17,7 +17,7 @@ import com.intellij.openapi.project.Project
  * @author OptimisticGeek
  * @date 2024/2/14
  */
-@Service
+@Service(Service.Level.PROJECT)
 @State(name = "HttpMethodFilterConfiguration", storages = [Storage("\$WORKSPACE_FILE$")])
 class HttpMethodFilterConfiguration : ChooseByNameFilterConfiguration<HttpMethodType>() {
     override fun nameForElement(p0: HttpMethodType): String = p0.name

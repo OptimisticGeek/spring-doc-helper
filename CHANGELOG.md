@@ -2,6 +2,10 @@
 
 # springDocHelper Changelog
 
+## [0.1.3]
+- search everywhere加载更快速，支持正则、单词、大小写方式匹配，也支持*/空格模糊匹配
+- fix - 修复搜索接口时，分页重复数据
+
 ## [0.1.2]
 - 双击shift搜索接口（search everywhere），支持url+注释+作者模糊搜索，支持按http方法过滤，支持异步搜索
 - Http请求方法小图标展示
@@ -30,3 +34,4 @@
 [0.1.0]: https://github.com/OptimisticGeek/spring-doc-helper/releases/tag/v0.1.0
 [0.1.1]: https://github.com/OptimisticGeek/spring-doc-helper/releases/tag/v0.1.1
 [0.1.2]: https://github.com/OptimisticGeek/spring-doc-helper/releases/tag/v0.1.2
+[0.1.3]: https://github.com/OptimisticGeek/spring-doc-helper/releases/tag/v0.1.3
