@@ -12,6 +12,7 @@ const val ARRAY_TAG = "[]"
 const val STRING = "string"
 const val NUMBER = "number"
 const val BOOLEAN = "boolean"
+const val DESCRIPTION = "description"
 
 const val pathParamsKey = "document.pathParams"
 const val queryParamsKey = "document.queryParams"

@@ -1,8 +1,9 @@
 // Copyright 2023-2024 OptimisticGeek. Use of this source code is governed by the Apache 2.0 license that can be found in the LICENSE file.
 package com.github.optimisticgeek.spring.ext
-import com.github.optimisticgeek.spring.constant.AUTHOR
-import com.github.optimisticgeek.spring.constant.PARAM
+
+import com.github.optimisticgeek.spring.constant.*
 import com.intellij.psi.PsiJavaDocumentedElement
+import com.intellij.psi.PsiModifierListOwner
 import org.apache.commons.lang3.StringUtils
 
 @JvmName("getDocumentTitle")
@@ -35,7 +36,20 @@ fun PsiJavaDocumentedElement.getAuthor(): String {
 
 @JvmName("getRemark")
 fun PsiJavaDocumentedElement.getRemark(): String {
+    // 优先使用swagger的文档
+    if (this is PsiModifierListOwner) getSwaggerRemark()?.takeIf { it.isNotBlank() }?.let { return it }
     return this.getDocumentTitle()
+}
+
+@JvmName("getSwaggerRemark")
+fun PsiModifierListOwner.getSwaggerRemark(): String? {
+    val swaggerModel = getAnnotation(SWAGGER_API)
+        ?: getAnnotation(SWAGGER_METHOD)
+        ?: getAnnotation(SWAGGER_FIELD)
+        ?: getAnnotation(SWAGGER_MODEL) ?: return null
+    swaggerModel.getAnnotationValue(DESCRIPTION).takeIf { it.isNotBlank() }?.let { return it }
+    swaggerModel.getAnnotationValue(DEFAULT).takeIf { it.isNotBlank() }?.let { return it }
+    return null
 }
 
 @JvmName("trimHtmlTag")
