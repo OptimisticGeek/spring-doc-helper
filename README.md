@@ -16,12 +16,12 @@ This is a plugin for spring interface documentation. With this plugin, you can q
 - 快速文档提示复制model的html、json、curl
 - ![GET](./src/main/resources/icon/method/GET.png)GET|![POST](./src/main/resources/icon/method/POST.png)POST|![PUT](./src/main/resources/icon/method/PUT.png)PUT|![DELETE](./src/main/resources/icon/method/DELETE.png)DELETE左侧小图标，支持复制操作、生成测试用例
 - 双击shift搜索接口（search everywhere），支持*通配和单词、正则、区分大小写和http请求方法搜索
+- 支持swagger文档解析
 
 ## Todo
 - [ ] 针对指定类的自定义fields
 - [ ] 导入到Yapi
 - [ ] 导入到Postman
-- [ ] swagger文档分析
 <!-- Plugin description end -->
 
 ## Installation
