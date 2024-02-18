@@ -8,6 +8,7 @@
   <id>com.github.optimisticGeek.spring-doc-helper</id>
   <name>SpringDocHelper</name>
   <vendor email="optimisticgeekone@gmail.com">optimisticGeek</vendor>
+  <depends>com.intellij.modules.platform</depends>
   <depends>com.intellij.java</depends>
   <description><![CDATA[<p>This is a plugin for spring interface documentation. With this plugin, you can quickly view and copy interface documentation in HTML, JSON, Markdown, cURL, etc., and generate interface test cases for import into Yapi, Postman, etc.</p>
 
