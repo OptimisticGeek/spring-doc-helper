@@ -81,7 +81,7 @@ private fun Project.getHttpTestFile(qName: String, isCreate: Boolean = true): Fi
 
 @JvmName("createHttpTestEvnFile")
 private fun Project.createHttpTestEvnFile(qName: String): File {
-    return File("${getHttpTestFile(qName).parentFile.path}${File.separator}http-client.env.json")
+    return File("$basePath${File.separator}.http${File.separator}http-client.env.json")
         .apply { if (exists()) return@apply }
         .apply { parentFile.mkdirs();createNewFile() }
         .apply { appendText(http_client_evn) }
