@@ -3,29 +3,29 @@
   -->
 <!-- Plugin Configuration File. Read more: https://plugins.jetbrains.com/docs/intellij/plugin-configuration-file.html -->
 <idea-plugin>
-  <version>0.1.3</version>
+  <version>0.1.4</version>
   <idea-version since-build="222" until-build="233.*" />
   <id>com.github.optimisticGeek.spring-doc-helper</id>
   <name>SpringDocHelper</name>
   <vendor email="optimisticgeekone@gmail.com">optimisticGeek</vendor>
-  <depends>com.intellij.modules.platform</depends>
   <depends>com.intellij.java</depends>
   <description><![CDATA[<p>This is a plugin for spring interface documentation. With this plugin, you can quickly view and copy interface documentation in HTML, JSON, Markdown, cURL, etc., and generate interface test cases for import into Yapi, Postman, etc.</p>
 
 <p>这是一款针对spring的接口文档插件，通过本插件获取接口文档，快速查看接口文档，快速复制接口文档的html、json、markdown、cURL等，生成接口用例，导入到yapi、postman等。</p>
 
 <h2>支持功能</h2>
-<ul><li>鼠标悬浮文档提示（class、field、response、params、method）</li><li>Object与泛型返回值真实类型推断</li><li>快速文档提示复制model的html、json、curl</li><li>GET|POST|PUT|DELETE左侧小图标，支持复制操作</li><li>双击shift搜索接口（search everywhere），支持*通配和单词、正则、区分大小写和http请求方法搜索</li></ul>
+<ul><li>鼠标悬浮文档提示（class、field、response、params、method）</li><li>Object与泛型返回值真实类型推断</li><li>快速文档提示复制model的html、json、curl</li><li><img src="./src/main/resources/icon/method/GET.png" alt="GET" />GET|<img src="./src/main/resources/icon/method/POST.png" alt="POST" />POST|<img src="./src/main/resources/icon/method/PUT.png" alt="PUT" />PUT|<img src="./src/main/resources/icon/method/DELETE.png" alt="DELETE" />DELETE左侧小图标，支持复制操作、生成测试用例</li><li>双击shift搜索接口（search everywhere），支持*通配和单词、正则、区分大小写和http请求方法搜索</li></ul>
 
 <h2>Todo</h2>
-<ul><li class="task-list-item"><input type="checkbox" class="task-list-item-checkbox" disabled />生成接口请求用例</li><li class="task-list-item"><input type="checkbox" class="task-list-item-checkbox" disabled />针对指定类的自定义fields</li><li class="task-list-item"><input type="checkbox" class="task-list-item-checkbox" disabled />导入到Yapi</li><li class="task-list-item"><input type="checkbox" class="task-list-item-checkbox" disabled />导入到Postman</li><li class="task-list-item"><input type="checkbox" class="task-list-item-checkbox" disabled />swagger文档分析</li></ul>]]></description>
-  <change-notes><![CDATA[<ul><li>search everywhere加载更快速，支持正则、单词、大小写方式匹配，也支持*/空格模糊匹配</li><li>fix - 修复搜索接口时，分页重复数据</li></ul>]]></change-notes>
+<ul><li class="task-list-item"><input type="checkbox" class="task-list-item-checkbox" disabled />针对指定类的自定义fields</li><li class="task-list-item"><input type="checkbox" class="task-list-item-checkbox" disabled />导入到Yapi</li><li class="task-list-item"><input type="checkbox" class="task-list-item-checkbox" disabled />导入到Postman</li><li class="task-list-item"><input type="checkbox" class="task-list-item-checkbox" disabled />swagger文档分析</li></ul>]]></description>
+  <change-notes><![CDATA[<ul><li>接口左侧小图标，支持创建接口测试操作，需要Idea支持<a href="https://www.jetbrains.com/help/idea/2023.3/http-client-in-product-code-editor.html">HttpClient</a></li></ul>]]></change-notes>
   <resource-bundle>messages.Scanner</resource-bundle>
   <extensionPoints />
   <extensions defaultExtensionNs="com.intellij">
     <codeInsight.lineMarkerProvider implementationClass="com.github.optimisticgeek.editor.listener.ControllerLineMarkerProvider" language="JAVA" />
     <!--文档提示-->
     <lang.documentationProvider language="JAVA" implementationClass="com.github.optimisticgeek.editor.listener.SpringApiDocumentProvider" order="first" />
+    <lang.documentationProvider implementationClass="com.github.optimisticgeek.editor.listener.SpringApiDocumentProvider" order="first" language="" />
     <searchEverywhereContributor implementation="com.github.optimisticgeek.editor.search.SpringApiSearchEverywhereClassifier$Factory" />
   </extensions>
   <projectListeners>

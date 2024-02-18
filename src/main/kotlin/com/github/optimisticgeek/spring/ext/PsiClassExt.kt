@@ -35,6 +35,7 @@ fun PsiClass.toClassModel(useCache: Boolean = true): ClassModel? {
 @JvmName("fields")
 fun PsiClass.fields(): List<FieldModel> {
     return this.allFields.filter { !(it.hasModifierProperty(PsiModifier.FINAL) || it.hasModifierProperty(PsiModifier.STATIC)) }
+        .distinctBy { it.name }
         .mapNotNull {
             val refClassModel = it.typeElement?.toRefClassModel() ?: return@mapNotNull null
             FieldModel(it.name, it.getRemark(), refClassModel).also { "${this.qualifiedName}#${it.name}" }

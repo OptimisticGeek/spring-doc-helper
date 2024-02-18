@@ -3,6 +3,8 @@ package com.github.optimisticgeek.editor.listener
 
 import com.github.optimisticgeek.analyze.model.AnalyzeMethod
 import com.github.optimisticgeek.analyze.model.toCurlStr
+import com.github.optimisticgeek.editor.httpClient.createHttpTestFile
+import com.github.optimisticgeek.editor.httpClient.hasHttpTestMethod
 import com.github.optimisticgeek.spring.ext.analyze
 import com.github.optimisticgeek.spring.ext.createControllerModel
 import com.github.optimisticgeek.spring.model.MethodModel
@@ -17,6 +19,7 @@ import com.intellij.notification.NotificationType
 import com.intellij.notification.Notifications
 import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent
+import com.intellij.openapi.actionSystem.DefaultActionGroup
 import com.intellij.openapi.editor.markup.GutterIconRenderer
 import com.intellij.openapi.fileEditor.FileEditorManager
 import com.intellij.openapi.ide.CopyPasteManager
@@ -28,7 +31,9 @@ import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiIdentifier
 import com.intellij.ui.awt.RelativePoint
 import com.intellij.util.concurrency.AppExecutorUtil
+import java.awt.Dimension
 import java.awt.datatransfer.StringSelection
+import java.awt.event.MouseEvent
 import java.util.concurrent.TimeUnit
 import javax.swing.Icon
 
@@ -64,85 +69,87 @@ private fun AnalyzeMethod.createLineMarkerInfo(
     return LineMarkerInfo<PsiIdentifier>(/* element = */ identifier!!, /* range = */ range, /* icon = */ icon,
         /* tooltipProvider = */ { title },
         /* navHandler = */
-        { e, ele ->
-            run {
-                val smartPopupActionGroup = SmartPopupActionGroup()
-                smartPopupActionGroup.add(object :
-                    AnAction(ScannerBundle.message("copy.title", ScannerBundle.message("document.curl"))) {
-                    override fun actionPerformed(e: AnActionEvent) {
-                        toCurlStr().let { e.project?.copyString(it) }
-                    }
-                })
-                smartPopupActionGroup.add(object :
-                    AnAction(ScannerBundle.message("copy.title", ScannerBundle.message("document.url"))) {
-                    override fun actionPerformed(e: AnActionEvent) {
-                        urls.joinToString(",").let { e.project?.copyString(it) }
-                    }
-                })
-                pathParams?.let {
-                    smartPopupActionGroup.add(object :
-                        AnAction(ScannerBundle.message("copy.title", ScannerBundle.message("document.pathParams"))) {
-                        override fun actionPerformed(e: AnActionEvent) {
-                            it.toJson().let { e.project?.copyString(it) }
-                        }
-                    })
+        { e, _ ->
+            SmartPopupActionGroup.createPopupGroup { title }
+                .apply {
+                    if (hasHttpTestMethod()) {
+                        add(ScannerBundle.message("action.api.show")) { createHttpTestFile() }
+                        add(ScannerBundle.message("action.api.flushed")) { createHttpTestFile(flushed = true) }
+                    } else add(ScannerBundle.message("action.api.create")) { createHttpTestFile() }
                 }
-
-                queryParams?.let {
-                    smartPopupActionGroup.add(object :
-                        AnAction(ScannerBundle.message("copy.title", ScannerBundle.message("document.queryParams"))) {
-                        override fun actionPerformed(e: AnActionEvent) {
-                            it.toJson().let { e.project?.copyString(it) }
-                        }
-                    })
-                }
-
-                requestBody?.let {
-                    smartPopupActionGroup.add(object :
-                        AnAction(ScannerBundle.message("copy.title", ScannerBundle.message("document.requestBody"))) {
-                        override fun actionPerformed(e: AnActionEvent) {
-                            it.toJson().let { e.project?.copyString(it) }
-                        }
-                    })
-                }
-
-                response?.let {
-                    smartPopupActionGroup.add(object :
-                        AnAction(ScannerBundle.message("copy.title", ScannerBundle.message("document.response"))) {
-                        override fun actionPerformed(e: AnActionEvent) {
-                            it.toJson().let { e.project?.copyString(it) }
-                        }
-                    })
-                }
-
-                val editor = FileEditorManager.getInstance(ele.project).selectedTextEditor
-                val dataContext = DataManager.getInstance().getDataContext(editor!!.contentComponent)
-                val actionGroupPopup = JBPopupFactory.getInstance().createActionGroupPopup(
-                    null, smartPopupActionGroup, dataContext, JBPopupFactory.ActionSelectionAid.SPEEDSEARCH, true
-                )
-                actionGroupPopup.show(RelativePoint(e))
-            }
-        },
-        /* alignment = */
+                .apply { add(createCopyActionGroup()) }
+                .also { popupActionGroup(it, e) }
+        },/* alignment = */
         GutterIconRenderer.Alignment.LEFT, /* accessibleNameProvider = */
-        { title }
-    )
+        { title })
+}
+
+@JvmName("popupActionGroup")
+private fun AnalyzeMethod.popupActionGroup(group: DefaultActionGroup, e: MouseEvent) {
+    FileEditorManager.getInstance(project).selectedTextEditor!!.let {
+        DataManager.getInstance().getDataContext(it.contentComponent)
+    }.let {
+        JBPopupFactory.getInstance().createActionGroupPopup(
+            null, group, it, JBPopupFactory.ActionSelectionAid.SPEEDSEARCH, true
+        )
+    }.apply { setShowSubmenuOnHover(true) }.apply { setMinimumSize(Dimension(10, 0)) }.show(RelativePoint(e))
+}
+
+/*
+@JvmName("createHttpClientActionGroup")
+private fun AnalyzeMethod.createHttpClientActionGroup(isCreated: Boolean): DefaultActionGroup {
+    return SmartPopupActionGroup.createPopupGroup { ScannerBundle.message("action.api.test") }.apply {
+        if (!isCreated)
+            add(ScannerBundle.message("action.api.create")) { createHttpTestFile() }
+        else {
+            add(ScannerBundle.message("action.api.show")) { createHttpTestFile() }
+            add(ScannerBundle.message("action.api.flushed")) { createHttpTestFile(reCreate = true) }
+        }
+    }
+}
+*/
+
+@JvmName("createCopyActionGroup")
+private fun AnalyzeMethod.createCopyActionGroup(): DefaultActionGroup {
+    return SmartPopupActionGroup.createPopupGroup { ScannerBundle.message("action.copy") }.apply {
+        add(ScannerBundle.message("document.curl")) { toCurlStr().let { project.copyString(it) } }
+        add(ScannerBundle.message("document.url")) { urls.joinToString(",").let { project.copyString(it) } }
+    }.apply {
+        pathParams?.let {
+            add(ScannerBundle.message("document.pathParams")) { it.toJson().let { project.copyString(it) } }
+        }
+
+        queryParams?.let {
+            add(ScannerBundle.message("document.queryParams")) { it.toJson().let { project.copyString(it) } }
+        }
+
+        requestBody?.let {
+            add(ScannerBundle.message("document.requestBody")) { it.toJson().let { project.copyString(it) } }
+        }
+
+        response?.let {
+            add(ScannerBundle.message("document.response")) { it.toJson().let { project.copyString(it) } }
+        }
+    }
+}
+
+@JvmName("addAnAction")
+private fun DefaultActionGroup.add(title: String, function: () -> Unit) {
+    add(object : AnAction(title) {
+        override fun actionPerformed(e: AnActionEvent) {
+            function.invoke()
+        }
+    })
 }
 
 @JvmName("textRange")
-private fun MethodModel.textRange(): TextRange {
-    return psiMethodAnnotation.textRange
-}
+private fun MethodModel.textRange(): TextRange = psiMethodAnnotation.textRange
 
 @JvmName("icon")
-private fun MethodModel.icon(): Icon {
-    return requestMethod.icon
-}
+private fun MethodModel.icon(): Icon = requestMethod.icon
 
 @JvmName("title")
-private fun MethodModel.title(): String {
-    return this.remark ?: this.name ?: ""
-}
+private fun MethodModel.title(): String = this.remark ?: this.name ?: ""
 
 @JvmName("copyString")
 fun Project.copyString(str: String) {
@@ -150,11 +157,12 @@ fun Project.copyString(str: String) {
 
     Notification(
         NOTIFICATION_GROUP_ID,
-        ScannerBundle.message("copy.title", ""),
-        ScannerBundle.message("copy.success", str.substring(0, if (str.length > 50) 50 else str.length)),
+        ScannerBundle.message("action.copy", ""),
+        ScannerBundle.message("action.copy.success", str.substring(0, if (str.length > 50) 50 else str.length)),
         NotificationType.INFORMATION
     ).let { notification: Notification ->
         Notifications.Bus.notify(notification, this)
         AppExecutorUtil.getAppScheduledExecutorService().schedule({ notification.expire() }, 2, TimeUnit.SECONDS)
     }
 }
+

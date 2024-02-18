@@ -7,6 +7,7 @@ import com.github.optimisticgeek.spring.constant.HttpMethodType
 import com.github.optimisticgeek.spring.ext.analyze
 import com.github.optimisticgeek.spring.model.FieldModel
 import com.github.optimisticgeek.spring.model.MethodModel
+import com.intellij.openapi.project.Project
 import org.apache.commons.lang3.StringUtils
 import java.util.*
 
@@ -25,30 +26,33 @@ data class AnalyzeMethod(val methodModel: MethodModel) : BaseAnalyzeModel(method
 
     val response: AnalyzeModel? = methodModel.responseBody?.analyze()?.also { it.name = null }
 
-    fun getUrl(hasParams: Boolean = true): String {
-        var url = urls.firstOrNull() ?: return StringUtils.EMPTY
-        if (!hasParams) return url
-        // 拼接url和参数
-        url.also {
-            pathParams?.children?.forEach { url = url.replace(Regex("(\\{${it.name}(:\\S+)*})"), it.type.defaultValue
-                .toString()) }
-        }.also {
-            return url + queryParams?.children?.joinToString("&") { "${it.name}=${it.type.defaultValue}" }
-                ?.let { "?$it" }.let { it ?: "" }
-        }
-    }
+    val project: Project = methodModel.psiMethod.project
+
+    fun getUrl(hasParams: Boolean = true): String = urls.firstOrNull()
+        ?.let { if (hasParams) it.replaceUrlPathParams(pathParams).joinQueryParams(queryParams) else it }
+        ?: StringUtils.EMPTY
 }
+
+@JvmName("replaceUrlPathParams")
+private fun String.replaceUrlPathParams(pathParams: AnalyzeModel?): String {
+    var url = this
+    pathParams?.children
+        ?.forEach { url = url.replace(Regex("(\\{${it.name}(:\\S+)*})"), it.type.getDefaultValue()) }
+        .let { return url }
+}
+
+@JvmName("joinQueryParams")
+private fun String.joinQueryParams(queryParams: AnalyzeModel?): String =
+    queryParams?.children?.joinToString("&") { "${it.name}=${it.type.getDefaultValue()}" }?.let { "$this?$it" } ?: this
 
 /**
  * 仅适用于queryParams与pathParams
  */
 @JvmName("toParams")
-private fun List<FieldModel>.toParams(): AnalyzeModel? {
-    this.map(FieldModel::analyze)
-        .flatMap { if (!it.type.isObj) listOf(it) else it.children ?: Collections.emptyList() }.toList()
-        .takeIf { it.isNotEmpty() }
-        .let { return if (!it.isNullOrEmpty()) AnalyzeModel(FieldType.OBJECT, it) else null }
-}
+private fun List<FieldModel>.toParams(): AnalyzeModel? = this.map(FieldModel::analyze)
+    .flatMap { if (!it.type.isObj) listOf(it) else it.children ?: Collections.emptyList() }.toList()
+    .takeIf { it.isNotEmpty() }
+    .let { return if (!it.isNullOrEmpty()) AnalyzeModel(FieldType.OBJECT, it) else null }
 
 @JvmName("toCurlStr")
 fun AnalyzeMethod.toCurlStr(): String {

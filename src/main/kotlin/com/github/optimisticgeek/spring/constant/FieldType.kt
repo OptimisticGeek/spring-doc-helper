@@ -89,6 +89,7 @@ enum class FieldType(
     private val className: String = qName.className()
     val isBase: Boolean = !(this.isObj || this.isRef)
     private val regex = Regex("(${(qNames?.let { it.joinToString("|") + "|" + qName } ?: qName)})(,|$)")
+    fun getDefaultValue(): String = defaultValue?.toString()?.replace("\"", "") ?: ""
 
     override fun toString(): String {
         return className
