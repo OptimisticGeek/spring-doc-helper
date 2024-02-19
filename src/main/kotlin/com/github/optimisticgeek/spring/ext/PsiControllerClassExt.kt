@@ -13,27 +13,26 @@ import com.intellij.psi.impl.source.tree.java.PsiNewExpressionImpl
 import com.intellij.psi.impl.source.tree.java.PsiReferenceExpressionImpl
 import com.intellij.psi.util.PsiTreeUtil
 import com.intellij.psi.util.parentOfType
+import com.intellij.util.Consumer
 import org.apache.commons.collections.CollectionUtils
 import org.apache.commons.lang3.BooleanUtils
 import java.util.*
 
-/**
- * build requestBody requestParams pathVariables
- */
 @JvmName("buildParameters")
-fun PsiMethod.buildParameters(methodModel: MethodModel) {
+fun PsiMethod.buildParameters(pathParams: ArrayList<FieldModel>, queryParams: ArrayList<FieldModel>, requestBody: Consumer<FieldModel>
+) {
     if (!this.hasParameters()) return
     this.parameterList.parameters.forEach {
         val fieldModel = it.buildField(this.getDocumentTagParam(it.name)) ?: return@forEach
         // requestBody
         if (it.hasAnnotation(REQUEST_BODY)) {
-            methodModel.requestBody = fieldModel.also { it.name = null }.also { it.aliasName = null }
+            requestBody.consume(fieldModel.also { it.name = null }.also { it.aliasName = null })
             return@forEach
         }
         // pathVariables
         if (it.hasAnnotation(PATH_VARIABLE)) {
             fieldModel.aliasName = it.getAnnotationValue(PATH_VARIABLE, DEFAULT)
-            methodModel.pathVariables.add(fieldModel)
+            pathParams.add(fieldModel)
             return@forEach
         }
         // requestParams
@@ -41,8 +40,15 @@ fun PsiMethod.buildParameters(methodModel: MethodModel) {
             fieldModel.aliasName = it.getAnnotationValue(REQUEST_PARAM, DEFAULT)
             fieldModel.isRequired = BooleanUtils.toBoolean(it.getAnnotationValue(REQUEST_PARAM, REQUIRED))
         }
-        methodModel.queryParams.add(fieldModel)
+        queryParams.add(fieldModel)
     }
+}
+/**
+ * build requestBody requestParams pathVariables
+ */
+@JvmName("buildParameters")
+fun PsiMethod.buildParameters(methodModel: MethodModel) {
+    this.buildParameters(methodModel.pathVariables, methodModel.queryParams) { methodModel.requestBody = it }
 }
 
 

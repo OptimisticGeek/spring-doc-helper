@@ -7,7 +7,7 @@ import com.intellij.psi.PsiModifierListOwner
 import org.apache.commons.lang3.StringUtils
 
 @JvmName("getDocumentTitle")
-fun PsiJavaDocumentedElement.getDocumentTitle(): String {
+private fun PsiJavaDocumentedElement.getDocumentTitle(): String {
     return this.docComment?.descriptionElements?.getOrNull(1)?.text.trimHtmlTag()
 }
 
