@@ -25,21 +25,21 @@ import javax.swing.Icon
 @Service(Service.Level.PROJECT)
 class SpringApiService(private val myProject: Project) {
     private val cacheManager = CachedValuesManager.getManager(myProject)
-    val modules = myProject.service<ModuleManager>().modules.filter {
-        ModuleRootManager.getInstance(it).sourceRoots.isNotEmpty()
-    }
 
     /**
      * 获取所有方法
      */
     fun searchMethods(
-        modules: List<Module> = this.modules,
+        modules: List<Module> = myProject.getSourceModules(),
+        limit: Int? = null,
         filter: Function<BaseMethodModel, Boolean>? = null
     ): List<BaseMethodModel> {
-        return modules.flatMap { SpringMvcUtils.getUrlMappings(it) }
+        return modules.asSequence()
+            .flatMap { SpringMvcUtils.getUrlMappings(it) }
             .filter { it.method.isNotEmpty() && it.navigationTarget is PsiMethod }
             .map { BaseMethodModel(it) }
             .filter { filter?.apply(it) ?: true }
+            .take(limit ?: Int.MAX_VALUE)
             .toList()
     }
 }
@@ -50,3 +50,8 @@ fun Module.getIcon(): Icon = AllIcons.Actions.ModuleDirectory
 // todo 存在多配置文件，根路径不一样的问题
 @JvmName("getRootUrl")
 fun Module.getRootUrl(): String = getApplicationPaths(this).firstOrNull() ?: ""
+
+@JvmName("getSourceModules")
+fun Project.getSourceModules() = this.service<ModuleManager>().modules.filter {
+    ModuleRootManager.getInstance(it).sourceRoots.isNotEmpty()
+}

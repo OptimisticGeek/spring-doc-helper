@@ -7,6 +7,7 @@ import com.github.optimisticgeek.spring.model.BaseMethodModel
 import com.github.optimisticgeek.spring.service.ScannerBundle
 import com.github.optimisticgeek.spring.service.SpringApiService
 import com.github.optimisticgeek.spring.service.getIcon
+import com.github.optimisticgeek.spring.service.getSourceModules
 import com.intellij.find.FindManager
 import com.intellij.find.FindModel
 import com.intellij.ide.actions.searcheverywhere.*
@@ -165,7 +166,7 @@ private class MyFilter(myProject: Project) {
 
     // httpMethod过滤器
     val moduleFilter = PersistentSearchEverywhereContributorFilter(
-        myProject.service<SpringApiService>().modules,
+        myProject.getSourceModules(),
         myProject.service<ModuleFilterConfiguration>(),
         Module::getName, Module::getIcon
     )
