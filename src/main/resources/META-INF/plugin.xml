@@ -3,13 +3,14 @@
   -->
 <!-- Plugin Configuration File. Read more: https://plugins.jetbrains.com/docs/intellij/plugin-configuration-file.html -->
 <idea-plugin>
-  <version>0.1.4</version>
+  <version>1.0.0</version>
   <idea-version since-build="222" until-build="233.*" />
   <id>com.github.optimisticGeek.spring-doc-helper</id>
   <name>SpringDocHelper</name>
   <vendor email="optimisticgeekone@gmail.com">optimisticGeek</vendor>
   <depends>com.intellij.modules.platform</depends>
   <depends>com.intellij.java</depends>
+  <depends>com.intellij.spring.mvc</depends>
   <description><![CDATA[<p>This is a plugin for spring interface documentation. With this plugin, you can quickly view and copy interface documentation in HTML, JSON, Markdown, cURL, etc., and generate interface test cases for import into Yapi, Postman, etc.</p>
 
 <p>这是一款针对spring的接口文档插件，通过本插件获取接口文档，快速查看接口文档，快速复制接口文档的html、json、markdown、cURL等，生成接口用例，导入到yapi、postman等。</p>
