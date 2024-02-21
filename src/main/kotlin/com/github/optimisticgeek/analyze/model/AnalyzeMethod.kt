@@ -5,16 +5,16 @@ import com.github.optimisticgeek.editor.listener.toJson
 import com.github.optimisticgeek.spring.constant.FieldType
 import com.github.optimisticgeek.spring.constant.HttpMethodType
 import com.github.optimisticgeek.spring.ext.analyze
-import com.github.optimisticgeek.spring.model.FieldModel
 import com.github.optimisticgeek.spring.model.MethodModel
+import com.github.optimisticgeek.spring.model.FieldModel
 import com.intellij.openapi.project.Project
 import org.apache.commons.lang3.StringUtils
 import java.util.*
 
 data class AnalyzeMethod(val methodModel: MethodModel) : BaseAnalyzeModel(methodModel) {
-    val httpMethod: HttpMethodType = methodModel.requestMethod
+    val httpMethod: HttpMethodType = methodModel.httpMethod
 
-    val urls: List<String> = methodModel.urls!!
+    val urls: List<String> = listOf(methodModel.url)
 
     val createTime: Date = Date()
 

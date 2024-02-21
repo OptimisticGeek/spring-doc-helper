@@ -6,6 +6,7 @@ import com.github.optimisticgeek.analyze.model.AnalyzeModel
 import com.github.optimisticgeek.analyze.model.BaseAnalyzeModel
 import com.github.optimisticgeek.spring.ext.*
 import com.github.optimisticgeek.spring.model.toRefClassModel
+import com.github.optimisticgeek.spring.service.getHttpMethod
 import com.intellij.lang.java.JavaDocumentationProvider
 import com.intellij.psi.*
 import com.intellij.psi.util.parentOfType
@@ -21,8 +22,7 @@ class SpringApiDocumentProvider : JavaDocumentationProvider() {
      * 鼠标悬浮在@[Get|Post|Put|Delete|request]Mapping注解时，显示完整的api文档
      */
     override fun generateDoc(element: PsiElement?, originalElement: PsiElement?): String? {
-        buildModel(element, originalElement)
-            .also {
+        buildModel(element, originalElement).also {
                 return when (it) {
                     is AnalyzeModel -> if (it.children.isNullOrEmpty())
                         super.generateDoc(element, originalElement) else it.toHtmlDocument()
@@ -45,7 +45,7 @@ class SpringApiDocumentProvider : JavaDocumentationProvider() {
         return when (element) {
             // Api接口 或者 普通方法的返回值
             is PsiMethod -> {
-                element.containingClass?.createControllerModel()?.methodMap?.get(element)?.analyze()
+                element.getHttpMethod()?.analyze()
                     ?: originalElement?.parentOfType<PsiMethodCallExpression>()?.analyzeResponseBody()?.analyze()
                     ?: element.buildResponseBody()?.analyze()
             }

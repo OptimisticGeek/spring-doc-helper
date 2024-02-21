@@ -3,8 +3,6 @@ package com.github.optimisticgeek.spring.ext
 
 import com.github.optimisticgeek.spring.constant.*
 import com.github.optimisticgeek.spring.model.*
-import com.github.optimisticgeek.spring.service.scannerService
-import com.intellij.openapi.util.Key
 import com.intellij.psi.*
 import com.intellij.psi.impl.source.PsiMethodImpl
 import com.intellij.psi.impl.source.tree.java.PsiAssignmentExpressionImpl
@@ -14,9 +12,7 @@ import com.intellij.psi.impl.source.tree.java.PsiReferenceExpressionImpl
 import com.intellij.psi.util.PsiTreeUtil
 import com.intellij.psi.util.parentOfType
 import com.intellij.util.Consumer
-import org.apache.commons.collections.CollectionUtils
 import org.apache.commons.lang3.BooleanUtils
-import java.util.*
 
 @JvmName("buildParameters")
 fun PsiMethod.buildParameters(pathParams: ArrayList<FieldModel>, queryParams: ArrayList<FieldModel>, requestBody: Consumer<FieldModel>
@@ -43,14 +39,6 @@ fun PsiMethod.buildParameters(pathParams: ArrayList<FieldModel>, queryParams: Ar
         queryParams.add(fieldModel)
     }
 }
-/**
- * build requestBody requestParams pathVariables
- */
-@JvmName("buildParameters")
-fun PsiMethod.buildParameters(methodModel: MethodModel) {
-    this.buildParameters(methodModel.pathVariables, methodModel.queryParams) { methodModel.requestBody = it }
-}
-
 
 /**
  * 首先基于typeElement分析，之后尝试对method代码块中的return进行分析
@@ -184,53 +172,6 @@ private fun PsiCallExpression.analyzeResponseBody(fieldName: String?): RefClassM
     } ?: return null
     // 查找字段在方法中的顺序，用以确定入参类型
     return params[fieldIndex]?.type.analyzeRefClassModel(project)
-}
-
-private val CACHE_KEY_CONTROLLER: Key<ControllerModel> = Key.create("springDocHelper.controller.cache")
-
-@JvmName("clearControllerCache")
-fun PsiClass.clearControllerCache() {
-    project.scannerService().controllerPsiClassSet.remove(this)
-    this.putUserData(CACHE_KEY_CONTROLLER, null)
-}
-
-@JvmName("createControllerModel")
-fun PsiClass.createControllerModel(useCache: Boolean = true): ControllerModel? {
-    if (!this.isControllerClass()) return null
-    if (useCache) this.getUserData(CACHE_KEY_CONTROLLER)?.let { return it }
-
-    project.scannerService().controllerPsiClassSet.add(this)
-
-    val controller = ControllerModel(this).also { if (CollectionUtils.isEmpty(it.urls)) return null }
-
-    this.methods.filter { it.hasModifierProperty(PsiModifier.PUBLIC) && it.getHttpRequestAnnotation() != null }
-        .mapNotNull { it.buildMethodModel(controller) }.associateBy { it.psiMethod }.let { controller.methodMap = it }
-
-    if (controller.methodMap.isNullOrEmpty()) return null
-    return controller.also { this.putUserData(CACHE_KEY_CONTROLLER, controller) }
-}
-
-@JvmName("buildMethodModel")
-fun PsiMethod.buildMethodModel(controller: ControllerModel): MethodModel {
-    return MethodModel(this).apply {
-        if (this.author.isNullOrBlank()) this.author = controller.author
-        urls = joinerUrl(controller.urls, psiMethodAnnotation.getAnnotationValues(DEFAULT))
-        isViewer = BooleanUtils.isTrue(controller.isViewer) && !this@buildMethodModel.hasAnnotation(RESPONSE_BODY)
-        responseBody = this@buildMethodModel.buildResponseBody()
-        this@buildMethodModel.buildParameters(this)
-    }
-}
-
-private fun joinerUrl(controllerUrls: List<String>?, methodUrls: List<String>?): List<String>? {
-    if (methodUrls.isNullOrEmpty()) {
-        return Collections.emptyList()
-    }
-    if (controllerUrls.isNullOrEmpty()) {
-        return methodUrls
-    }
-    return controllerUrls.flatMap { controller ->
-        methodUrls.map { "${controller.removeSuffix("/")}/${it.removePrefix("/").removeSuffix("/")}" }
-    }
 }
 
 @JvmName("getHttpRequestAnnotation")

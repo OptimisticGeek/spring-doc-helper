@@ -21,7 +21,7 @@ fun AnalyzeMethod.createHttpTestFile(isShow: Boolean = true, flushed: Boolean = 
             FileDocumentManager.getInstance().getDocument(this)?.apply {
                 runWriteAction {
                     // 创建多环境变量文件
-                    LocalFileSystem.getInstance().refreshAndFindFileByIoFile(project.createHttpTestEvnFile(position!!))
+                    LocalFileSystem.getInstance().refreshAndFindFileByIoFile(project.createHttpTestEvnFile())
 
                     if (text.indexOf(keyword) == -1) {
                         setText(text + createHttpTestStr())
@@ -80,7 +80,7 @@ private fun Project.getHttpTestFile(qName: String, isCreate: Boolean = true): Fi
 }
 
 @JvmName("createHttpTestEvnFile")
-private fun Project.createHttpTestEvnFile(qName: String): File {
+private fun Project.createHttpTestEvnFile(): File {
     return File("$basePath${File.separator}.http${File.separator}http-client.env.json")
         .apply { if (exists()) return@apply }
         .apply { parentFile.mkdirs();createNewFile() }

@@ -5,10 +5,10 @@ import com.github.optimisticgeek.analyze.model.AnalyzeMethod
 import com.github.optimisticgeek.analyze.model.toCurlStr
 import com.github.optimisticgeek.editor.httpClient.createHttpTestFile
 import com.github.optimisticgeek.editor.httpClient.hasHttpTestMethod
-import com.github.optimisticgeek.spring.ext.analyze
-import com.github.optimisticgeek.spring.ext.createControllerModel
+import com.github.optimisticgeek.spring.ext.getHttpRequestAnnotation
 import com.github.optimisticgeek.spring.model.MethodModel
 import com.github.optimisticgeek.spring.service.ScannerBundle
+import com.github.optimisticgeek.spring.service.getHttpMethod
 import com.intellij.codeInsight.daemon.LineMarkerInfo
 import com.intellij.codeInsight.daemon.impl.JavaLineMarkerProvider
 import com.intellij.configurationStore.NOTIFICATION_GROUP_ID
@@ -26,9 +26,9 @@ import com.intellij.openapi.ide.CopyPasteManager
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.ui.popup.JBPopupFactory
 import com.intellij.openapi.util.TextRange
-import com.intellij.psi.PsiClass
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiIdentifier
+import com.intellij.psi.PsiMethod
 import com.intellij.ui.awt.RelativePoint
 import com.intellij.util.concurrency.AppExecutorUtil
 import java.awt.Dimension
@@ -45,22 +45,16 @@ import javax.swing.Icon
  */
 class ControllerLineMarkerProvider : JavaLineMarkerProvider() {
 
-    override fun collectSlowLineMarkers(
-        elements: MutableList<out PsiElement>, result: MutableCollection<in LineMarkerInfo<*>>
-    ) {
-        elements.mapNotNull { if (it is PsiClass) it else null }.mapNotNull { it.createControllerModel() }
-            .filter { it.methodMap?.isNotEmpty() == true }
-            .forEach {
-                it.methodMap?.values?.forEach {
-                    result.add(
-                        it.analyze()
-                            .createLineMarkerInfo(it.psiMethod.nameIdentifier, it.textRange(), it.title(), it.icon())
-                    )
-                }
-            }
-        super.collectSlowLineMarkers(elements, result)
+    override fun getLineMarkerInfo(element: PsiElement): LineMarkerInfo<*>? {
+        if (element !is PsiMethod) return null
+        return element.getHttpMethod()?.let {
+            it.analyze().createLineMarkerInfo(it.psiMethod.nameIdentifier, it.textRange(), it.title(), it.icon())
+        }
     }
 }
+
+@JvmName("analyze")
+fun MethodModel.analyze(): AnalyzeMethod = AnalyzeMethod(this)
 
 @JvmName("createLineMarkerInfo")
 private fun AnalyzeMethod.createLineMarkerInfo(
@@ -143,13 +137,13 @@ private fun DefaultActionGroup.add(title: String, function: () -> Unit) {
 }
 
 @JvmName("textRange")
-private fun MethodModel.textRange(): TextRange = psiMethodAnnotation.textRange
+private fun MethodModel.textRange(): TextRange = psiMethod.getHttpRequestAnnotation()!!.textRange
 
 @JvmName("icon")
-private fun MethodModel.icon(): Icon = requestMethod.icon
+private fun MethodModel.icon(): Icon = httpMethod.icon
 
 @JvmName("title")
-private fun MethodModel.title(): String = this.remark ?: this.name ?: ""
+private fun MethodModel.title(): String = this.remark
 
 @JvmName("copyString")
 fun Project.copyString(str: String) {

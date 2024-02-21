@@ -3,16 +3,7 @@ package com.github.optimisticgeek.editor.listener
 
 import com.github.optimisticgeek.analyze.model.AnalyzeMethod
 import com.github.optimisticgeek.analyze.model.AnalyzeModel
-import com.github.optimisticgeek.spring.constant.FieldType
-import com.github.optimisticgeek.spring.constant.BOOLEAN
-import com.github.optimisticgeek.spring.constant.NUMBER
-import com.github.optimisticgeek.spring.constant.STRING
-import com.github.optimisticgeek.spring.constant.linkKey
-import com.github.optimisticgeek.spring.constant.modelKey
-import com.github.optimisticgeek.spring.constant.pathParamsKey
-import com.github.optimisticgeek.spring.constant.queryParamsKey
-import com.github.optimisticgeek.spring.constant.requestBodyKey
-import com.github.optimisticgeek.spring.constant.responseKey
+import com.github.optimisticgeek.spring.constant.*
 import com.github.optimisticgeek.spring.model.RefClassModel
 import com.github.optimisticgeek.spring.model.className
 import com.github.optimisticgeek.spring.service.ScannerBundle
@@ -109,12 +100,7 @@ fun RefClassModel?.isShowHtmlDocument(): Boolean {
 private fun AnalyzeModel.toHtml(title: String): String {
     return createHTML(false).div("model") {
         span { +message(title) }
-        /*
-        span { +"${message(title)}  - " }
-        a("$position###$title###$commandCopyHtml", classes = "button") { +"Copy" }
-        span { +" - " }
-        a("$position###$title###$commandCopyJson", classes = "button") { +"Copy JSON" }
-        */
+        a("$PSI_ELEMENT_PROTOCOL$position", classes = "button") { +message(title) }
         unsafe {
             +toHtml(0, true)
         }
