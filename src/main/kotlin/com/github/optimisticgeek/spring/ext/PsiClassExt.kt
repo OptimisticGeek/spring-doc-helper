@@ -4,33 +4,16 @@ package com.github.optimisticgeek.spring.ext
 import com.github.optimisticgeek.spring.constant.ARRAY_TAG
 import com.github.optimisticgeek.spring.constant.FieldType
 import com.github.optimisticgeek.spring.constant.VOID
-import com.github.optimisticgeek.spring.constant.getType
 import com.github.optimisticgeek.spring.model.ClassModel
 import com.github.optimisticgeek.spring.model.FieldModel
 import com.github.optimisticgeek.spring.model.RefClassModel
 import com.github.optimisticgeek.spring.model.toRefClassModel
-import com.github.optimisticgeek.spring.service.scannerService
+import com.github.optimisticgeek.spring.service.springApiService
+import com.github.optimisticgeek.spring.service.toClassModel
 import com.intellij.openapi.project.Project
 import com.intellij.psi.*
 import com.intellij.psi.util.PsiTreeUtil
 import java.util.*
-
-@JvmName("toClassModel")
-fun PsiClass.toClassModel(useCache: Boolean = true): ClassModel? {
-
-    val type = getType(this, this.qualifiedName ?: this.name).takeIf { it != FieldType.OTHER } ?: return null
-
-    val source = this.scannerService().buildSourceModel(this.qualifiedName ?: this.text, type, useCache)
-    if (source.isInit) return source
-
-    synchronized(source) {
-        source.isInit = true
-        source.author = this.getAuthor()
-        source.remark = this.getRemark().let { it.ifBlank { source.remark } }
-        if (source.type == FieldType.OBJECT) source.fields!!.addAll(this.fields())
-        return source
-    }
-}
 
 @JvmName("fields")
 fun PsiClass.fields(): List<FieldModel> {
@@ -51,7 +34,7 @@ fun PsiTypeElement.findClassModels(): LinkedList<ClassModel>? {
     psiClass.toClassModel()?.let { list.add(it) } ?: return null
     // 数组作为list，特殊处理 && 数组类型不存在泛型
     if (this.text.endsWith(ARRAY_TAG)) {
-        list.addFirst(psiClass.scannerService().buildSourceModel(null, FieldType.LIST))
+        list.addFirst(FieldType.LIST.model)
         return list
     }
     // 泛型处理
@@ -99,8 +82,8 @@ fun PsiType?.analyzeRefClassModel(project: Project): RefClassModel? {
     var root: RefClassModel? = null
     var parent: RefClassModel? = null
     // 过滤Map的key限定名 -> java.util.List<java.util.Map<java.lang.Integer>>
-    val service = project.scannerService()
-    Regex("([\\w.]+)").findAll(fullClassName).map { it.groupValues[1] }.map { service.findClassModel(it) }
+    val service = project.springApiService()
+    Regex("([\\w.]+)").findAll(fullClassName).map { it.groupValues[1] }.map { service.toClassModel(it) }
         .forEachIndexed { index, classModel ->
             classModel?.toRefClassModel()?.also { if (index == 0) root = it else parent?.ref = it }
                 ?.also { parent = it } ?: return root

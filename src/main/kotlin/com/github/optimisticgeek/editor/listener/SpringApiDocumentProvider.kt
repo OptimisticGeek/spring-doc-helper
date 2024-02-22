@@ -1,12 +1,13 @@
 // Copyright 2023-2024 OptimisticGeek. Use of this source code is governed by the Apache 2.0 license that can be found in the LICENSE file.
 package com.github.optimisticgeek.editor.listener
 
-import com.github.optimisticgeek.analyze.model.AnalyzeMethod
+import com.github.optimisticgeek.analyze.model.AnalyzeHttpMethod
 import com.github.optimisticgeek.analyze.model.AnalyzeModel
 import com.github.optimisticgeek.analyze.model.BaseAnalyzeModel
 import com.github.optimisticgeek.spring.ext.*
 import com.github.optimisticgeek.spring.model.toRefClassModel
 import com.github.optimisticgeek.spring.service.getHttpMethod
+import com.github.optimisticgeek.spring.service.toClassModel
 import com.intellij.lang.java.JavaDocumentationProvider
 import com.intellij.psi.*
 import com.intellij.psi.util.parentOfType
@@ -27,7 +28,7 @@ class SpringApiDocumentProvider : JavaDocumentationProvider() {
                     is AnalyzeModel -> if (it.children.isNullOrEmpty())
                         super.generateDoc(element, originalElement) else it.toHtmlDocument()
 
-                    is AnalyzeMethod -> it.toHtmlDocument()
+                    is AnalyzeHttpMethod -> it.toHtmlDocument()
                     else -> super.generateDoc(element, originalElement)
                 }
             }

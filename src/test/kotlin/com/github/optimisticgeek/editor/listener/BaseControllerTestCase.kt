@@ -1,7 +1,7 @@
 // Copyright 2023-2024 OptimisticGeek. Use of this source code is governed by the Apache 2.0 license that can be found in the LICENSE file.
 package com.github.optimisticgeek.editor.listener
 
-import com.github.optimisticgeek.spring.service.listHttpMethod
+import com.github.optimisticgeek.spring.service.getHttpMethodMap
 import com.intellij.openapi.diagnostic.thisLogger
 import com.intellij.psi.PsiMethod
 import java.io.File
@@ -31,7 +31,7 @@ open class BaseControllerTestCase : BaseScannerTestCase() {
     fun writeTmpDocument() {
         val tmpPath = "$testDataPath/tmp/document/controller/${this.name}"
         File(tmpPath).mkdirs()
-        controllerPsiClass.listHttpMethod().values.forEach {
+        controllerPsiClass.getHttpMethodMap()?.values?.forEach {
             val analyze = it.analyze()
             File("$tmpPath/${it.name}.html").writeBytes(
                 analyze.toHtmlDocument().toByteArray()
@@ -72,7 +72,7 @@ open class BaseControllerTestCase : BaseScannerTestCase() {
                 try {
                     findPsiClass(it)
                 } catch (e: Error) {
-                    thisLogger().warn(e.message)
+                    e.printStackTrace()
                 }
             }
         }

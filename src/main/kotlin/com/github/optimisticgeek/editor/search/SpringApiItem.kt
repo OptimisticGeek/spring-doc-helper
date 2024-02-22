@@ -2,7 +2,7 @@
 
 package com.github.optimisticgeek.editor.search
 
-import com.github.optimisticgeek.spring.model.MethodModel
+import com.github.optimisticgeek.spring.model.HttpMethodModel
 import com.github.optimisticgeek.spring.model.className
 import com.intellij.find.FindResult
 import com.intellij.openapi.util.TextRange
@@ -15,7 +15,7 @@ import org.apache.commons.lang3.StringUtils
  * @author OptimisticGeek
  * @date 2024/2/17
  */
-data class SpringApiItem(private val method: MethodModel) {
+data class SpringApiItem(private val method: HttpMethodModel) {
     private val defaultWeight = 50 - method.httpMethod.ordinal
     val icon = method.httpMethod.icon
     val title = method.url + method.remark.let { if (it.isBlank() || it == method.name) StringUtils.EMPTY else " - [$it]" }

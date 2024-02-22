@@ -1,7 +1,7 @@
 // Copyright 2023-2024 OptimisticGeek. Use of this source code is governed by the Apache 2.0 license that can be found in the LICENSE file.
 package com.github.optimisticgeek.editor.listener
 
-import com.github.optimisticgeek.analyze.model.AnalyzeMethod
+import com.github.optimisticgeek.analyze.model.AnalyzeHttpMethod
 import com.github.optimisticgeek.analyze.model.AnalyzeModel
 import com.github.optimisticgeek.spring.constant.*
 import com.github.optimisticgeek.spring.model.RefClassModel
@@ -17,7 +17,7 @@ import kotlinx.html.dom.serialize
 import kotlinx.html.stream.createHTML
 
 @JvmName("toHtmlDocument")
-fun AnalyzeMethod.toHtmlDocument(): String {
+fun AnalyzeHttpMethod.toHtmlDocument(): String {
     val html = createHTMLDocument().html {
         head {
             title(message("document.title"))
@@ -33,9 +33,7 @@ fun AnalyzeMethod.toHtmlDocument(): String {
                 }
             }
             div("url") {
-                urls.forEach {
-                    p("url") { a("$position###$linkKey###") { +"$it " } }
-                }
+                a("$position###$linkKey###") { +(getUrl(hasParams = false, hasRootUrl = true)) }
             }
 
             unsafe {
@@ -100,7 +98,6 @@ fun RefClassModel?.isShowHtmlDocument(): Boolean {
 private fun AnalyzeModel.toHtml(title: String): String {
     return createHTML(false).div("model") {
         span { +message(title) }
-        a("$PSI_ELEMENT_PROTOCOL$position", classes = "button") { +message(title) }
         unsafe {
             +toHtml(0, true)
         }

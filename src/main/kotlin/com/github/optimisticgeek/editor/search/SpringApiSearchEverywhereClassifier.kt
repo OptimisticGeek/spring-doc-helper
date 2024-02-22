@@ -3,7 +3,7 @@
 package com.github.optimisticgeek.editor.search
 
 import com.github.optimisticgeek.spring.constant.HttpMethodType
-import com.github.optimisticgeek.spring.model.MethodModel
+import com.github.optimisticgeek.spring.model.HttpMethodModel
 import com.github.optimisticgeek.spring.service.ScannerBundle
 import com.github.optimisticgeek.spring.service.SpringApiService
 import com.github.optimisticgeek.spring.service.getIcon
@@ -172,7 +172,7 @@ private class MyFilter(myProject: Project) {
     )
 
     fun match(
-        model: MethodModel,
+        model: HttpMethodModel,
         matcher: MinusculeMatcher,
         consumer: Processor<in FoundItemDescriptor<SpringApiItem>>
     ): Boolean {

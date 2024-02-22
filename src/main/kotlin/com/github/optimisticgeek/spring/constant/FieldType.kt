@@ -1,6 +1,7 @@
 // Copyright 2023-2024 OptimisticGeek. Use of this source code is governed by the Apache 2.0 license that can be found in the LICENSE file.
 package com.github.optimisticgeek.spring.constant
 
+import com.github.optimisticgeek.spring.model.ClassModel
 import com.intellij.psi.CommonClassNames.*
 import com.intellij.psi.PsiClass
 
@@ -15,7 +16,7 @@ enum class FieldType(
     val defaultValue: Any? = null,
     val isObj: Boolean = false,
     val isRef: Boolean = false,
-    qNames: Set<String>? = null
+    qNames: Set<String>? = null,
 ) {
     INTEGER(JAVA_LANG_INTEGER, 0, qNames = setOf("int", "short", JAVA_LANG_INTEGER, JAVA_LANG_SHORT)),
 
@@ -31,10 +32,7 @@ enum class FieldType(
 
     CHAR(JAVA_LANG_CHARACTER, "'a'", qNames = setOf("char", JAVA_LANG_CHAR_SEQUENCE, JAVA_LANG_CHARACTER)),
 
-    DATE(
-        JAVA_UTIL_DATE, "\"2022-02-22 22:22:22\"", qNames = setOf(JAVA_UTIL_DATE)
-
-    ) {
+    DATE(JAVA_UTIL_DATE, "\"2022-02-22 22:22:22\"", qNames = setOf(JAVA_UTIL_DATE)) {
         override fun isFieldType(qName: String): Boolean {
             return super.isFieldType(qName) || qName.startsWith("java.time.")
         }
@@ -73,7 +71,12 @@ enum class FieldType(
     /**
      * Map当做obj来处理，因为模拟了key字段
      */
-    MAP(JAVA_UTIL_MAP, isObj = true, qNames = setOf( JAVA_UTIL_HASH_MAP, JAVA_UTIL_LINKED_HASH_MAP, JAVA_UTIL_CONCURRENT_HASH_MAP, JAVA_UTIL_MAP)),
+    MAP(
+        JAVA_UTIL_MAP, isObj = true, qNames = setOf(
+            JAVA_UTIL_HASH_MAP, JAVA_UTIL_LINKED_HASH_MAP,
+            JAVA_UTIL_CONCURRENT_HASH_MAP, JAVA_UTIL_MAP
+        )
+    ),
 
     /**
      * 排除的类型或无法识别的类
@@ -86,6 +89,19 @@ enum class FieldType(
         }
     };
 
+    val model: ClassModel? by lazy {
+        if (this == OTHER || this == OBJECT || this == ENUM) return@lazy null
+        ClassModel(this).also {
+            if (this != MAP) return@also
+            it.fields = arrayListOf(
+                com.github.optimisticgeek.spring.model.FieldModel(
+                    fieldName = "data",
+                    remark = com.github.optimisticgeek.spring.service.ScannerBundle.message("scanner.map.key.remark"),
+                    classType = com.github.optimisticgeek.spring.model.RefClassModel(SUBSTITUTE.model!!)
+                )
+            )
+        }
+    }
     private val className: String = qName.className()
     val isBase: Boolean = !(this.isObj || this.isRef)
     private val regex = Regex("(${(qNames?.let { it.joinToString("|") + "|" + qName } ?: qName)})(,|$)")
@@ -110,9 +126,9 @@ enum class FieldType(
 }
 
 @JvmName("getType")
-fun getType(psiClass: PsiClass?, qualifiedName: String?): FieldType {
+fun getFieldType(psiClass: PsiClass? = null, qualifiedName: String? = null): FieldType {
     if (psiClass == null && qualifiedName.isNullOrBlank()) return FieldType.OTHER
-    val qName = qualifiedName ?: psiClass?.qualifiedName ?: return FieldType.OTHER
+    val qName = qualifiedName ?: psiClass?.qualifiedName ?: psiClass?.name ?: return FieldType.OTHER
     if (qName.length == 1) return FieldType.SUBSTITUTE
     if (psiClass?.isEnum == true) return FieldType.ENUM
 
