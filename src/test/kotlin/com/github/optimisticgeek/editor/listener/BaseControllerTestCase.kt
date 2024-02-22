@@ -1,9 +1,7 @@
 // Copyright 2023-2024 OptimisticGeek. Use of this source code is governed by the Apache 2.0 license that can be found in the LICENSE file.
 package com.github.optimisticgeek.editor.listener
 
-import com.github.optimisticgeek.spring.ext.analyze
-import com.github.optimisticgeek.spring.ext.createControllerModel
-import com.github.optimisticgeek.spring.model.ControllerModel
+import com.github.optimisticgeek.spring.service.getHttpMethodMap
 import com.intellij.openapi.diagnostic.thisLogger
 import com.intellij.psi.PsiMethod
 import java.io.File
@@ -16,8 +14,6 @@ import java.io.File
  */
 open class BaseControllerTestCase : BaseScannerTestCase() {
     open val qNameController = "com.github.optimisticgeek.controller.BaseController"
-    open val controllerModel
-        get() = qNameController.buildController()
     open val methods: Map<String, PsiMethod>
         get() = controllerPsiClass.methods.withIndex().associate { it.value.name to it.value }
 
@@ -29,17 +25,13 @@ open class BaseControllerTestCase : BaseScannerTestCase() {
     }
 
     fun testCreateTmpDocumentFile() {
-        controllerModel.writeTmpDocument()
+        writeTmpDocument()
     }
 
-    fun String.buildController(): ControllerModel {
-        return findPsiClass(this).createControllerModel()!!
-    }
-
-    fun ControllerModel.writeTmpDocument() {
+    fun writeTmpDocument() {
         val tmpPath = "$testDataPath/tmp/document/controller/${this.name}"
         File(tmpPath).mkdirs()
-        this.methodMap!!.values.forEach {
+        controllerPsiClass.getHttpMethodMap()?.values?.forEach {
             val analyze = it.analyze()
             File("$tmpPath/${it.name}.html").writeBytes(
                 analyze.toHtmlDocument().toByteArray()
@@ -80,7 +72,7 @@ open class BaseControllerTestCase : BaseScannerTestCase() {
                 try {
                     findPsiClass(it)
                 } catch (e: Error) {
-                    thisLogger().warn(e.message)
+                    e.printStackTrace()
                 }
             }
         }

@@ -3,8 +3,11 @@
 package com.github.optimisticgeek.editor.search
 
 import com.github.optimisticgeek.spring.constant.HttpMethodType
+import com.github.optimisticgeek.spring.model.HttpMethodModel
 import com.github.optimisticgeek.spring.service.ScannerBundle
-import com.github.optimisticgeek.spring.service.SpringScannerService
+import com.github.optimisticgeek.spring.service.SpringApiService
+import com.github.optimisticgeek.spring.service.getIcon
+import com.github.optimisticgeek.spring.service.getSourceModules
 import com.intellij.find.FindManager
 import com.intellij.find.FindModel
 import com.intellij.ide.actions.searcheverywhere.*
@@ -12,15 +15,15 @@ import com.intellij.openapi.Disposable
 import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.components.service
+import com.intellij.openapi.module.Module
 import com.intellij.openapi.observable.properties.AtomicBooleanProperty
 import com.intellij.openapi.progress.ProgressIndicator
 import com.intellij.openapi.progress.util.ProgressIndicatorUtils
 import com.intellij.openapi.project.DumbAware
+import com.intellij.openapi.project.Project
 import com.intellij.psi.codeStyle.MinusculeMatcher
 import com.intellij.psi.codeStyle.NameUtil
-import com.intellij.util.Consumer
 import com.intellij.util.Processor
-import com.intellij.util.containers.ContainerUtil
 import javax.swing.ListCellRenderer
 
 
@@ -29,37 +32,14 @@ import javax.swing.ListCellRenderer
 
  * @author OptimisticGeek
  * @date 2024/2/13
+ * todo 升级idea版本后需要增加PossibleSlowContributor
  */
 class SpringApiSearchEverywhereClassifier(event: AnActionEvent) : WeightedSearchEverywhereContributor<SpringApiItem>,
     DumbAware, Disposable {
     private val myProject = event.project!!
-    private val myService = myProject.service<SpringScannerService>()
-    private val findManager = FindManager.getInstance(myProject)
-
-    /**
-     * 搜索模式，正则、单词、大小写这些
-     */
-    private val myFindModel = findManager.findInProjectModel
-
-    /**
-     * 搜索缓存
-     */
-    private val searchCache: SearchCache = SearchCache()
-
-    /**
-     * search everyWhere的管理器
-     */
-    private val searchManager = SearchEverywhereManager.getInstance(myProject)
-
-    // httpMethod过滤器
-    private val myFilter = PersistentSearchEverywhereContributorFilter(
-        HttpMethodType.LIST,
-        HttpMethodFilterConfiguration.getInstance(myProject),
-        HttpMethodType::name,
-        HttpMethodType::icon
-    )
 
     private val myListRenderer = SpringApiListCellRenderer()
+    private val myFilter = MyFilter(myProject)
 
     override fun isEmptyPatternSupported(): Boolean = true
 
@@ -109,7 +89,7 @@ class SpringApiSearchEverywhereClassifier(event: AnActionEvent) : WeightedSearch
      * 输入框右侧文案
      */
     override fun getAdvertisement(): String? =
-        if (isBuiltInMatching()) null else ScannerBundle.message("search.advertisement")
+        if (myFilter.isBuiltInMatching()) null else ScannerBundle.message("search.advertisement")
 
     /**
      * 填充搜索结果
@@ -120,36 +100,23 @@ class SpringApiSearchEverywhereClassifier(event: AnActionEvent) : WeightedSearch
     ) {
         if (!isEmptyPatternSupported && pattern.isEmpty()) return
         progressIndicator.checkCanceled()
-        FindModel.initStringToFind(myFindModel, pattern)
+        FindModel.initStringToFind(myFilter.findModel, pattern)
         val matcher = createMatcher(this.filterControlSymbols(pattern))
         ProgressIndicatorUtils.yieldToPendingWriteActions()
         ProgressIndicatorUtils.runInReadActionWithWriteActionPriority({
-            // 判断搜索关键字是否刷新，关键字变更会搜索列表
-            searchCache.updateResult(pattern) { result ->
-                myService.scanning {
-                    progressIndicator.checkCanceled()
-                    it.takeIf { myFilter.isSelected(HttpMethodType.ALL) || myFilter.isSelected(it.requestMethod) }
-                        ?.let { SpringApiItem(it) }
-                        ?.takeIf {
-                            if (pattern.isEmpty()) return@takeIf true
-                            if (!isBuiltInMatching()) return@takeIf it.isFoundString(matcher)
-                            return@takeIf it.isFoundString(findManager.findString(it.title, 0, myFindModel))
-                        }
-                        ?.let { result.add(FoundItemDescriptor(it, it.weight)) }
-                }
+            myProject.service<SpringApiService>().searchMethods(myFilter.moduleFilter.selectedElements) {
+                progressIndicator.checkCanceled()
+                myFilter.match(it, matcher, consumer)
             }
-            searchCache.readResult().let { ContainerUtil.process(it, consumer) }
         }, progressIndicator)
     }
-
-    private fun isBuiltInMatching(): Boolean =
-        myFindModel.isCaseSensitive || myFindModel.isRegularExpressions || myFindModel.isWholeWordsOnly
 
     /**
      * 搜索窗体的自定义action
      */
-    override fun getActions(firstOnChanged: Runnable): MutableList<AnAction> {
+    override fun getActions(onChanged: Runnable): MutableList<AnAction> {
         // todo 原本区分大小写、正则、单词匹配应该在编辑框中，但是为了兼容低版本
+        val myFindModel = myFilter.findModel
         val case = AtomicBooleanProperty(myFindModel.isCaseSensitive).apply {
             afterChange { myFindModel.isCaseSensitive = it }
         }
@@ -162,15 +129,14 @@ class SpringApiSearchEverywhereClassifier(event: AnActionEvent) : WeightedSearch
             afterChange { myFindModel.isRegularExpressions = it; if (it) word.set(false) }
         }
 
-        val onChanged = Runnable { searchCache.clear(); firstOnChanged.run() }
         return arrayListOf(
             CaseSensitiveAction(case, onChanged),
             WordAction(word, onChanged),
             RegexpAction(regexp, onChanged),
-            SearchEverywhereFiltersAction(myFilter, onChanged)
+            SearchEverywhereFiltersAction(myFilter.moduleFilter, onChanged),
+            SearchEverywhereFiltersAction(myFilter.methodFilter, onChanged)
         )
     }
-
 
     /**
      * 拼音匹配器
@@ -186,31 +152,40 @@ class SpringApiSearchEverywhereClassifier(event: AnActionEvent) : WeightedSearch
     override fun isDumbAware(): Boolean = false
 }
 
-private data class SearchCache(var keyword: String? = null) {
-    private val limit = 30
-    private var fromIndex: Int = 0
-    private var toIndex = limit
-    private val result: ArrayList<FoundItemDescriptor<SpringApiItem>> = arrayListOf()
+private class MyFilter(myProject: Project) {
+    val findManager: FindManager = FindManager.getInstance(myProject)
+    val findModel = findManager.findInProjectModel
 
-    fun updateResult(
-        keyword: String?, keywordChange: Consumer<in ArrayList<FoundItemDescriptor<SpringApiItem>>>? = null
-    ) {
-        if (keyword == this.keyword && result.size > 0) return
-        this.clear()
-        this.keyword = keyword
-        keywordChange?.consume(result)
+    // httpMethod过滤器
+    val methodFilter = PersistentSearchEverywhereContributorFilter(
+        HttpMethodType.LIST,
+        myProject.service<HttpMethodFilterConfiguration>(),
+        HttpMethodType::name,
+        HttpMethodType::icon
+    )
+
+    // httpMethod过滤器
+    val moduleFilter = PersistentSearchEverywhereContributorFilter(
+        myProject.getSourceModules(),
+        myProject.service<ModuleFilterConfiguration>(),
+        Module::getName, Module::getIcon
+    )
+
+    fun match(
+        model: HttpMethodModel,
+        matcher: MinusculeMatcher,
+        consumer: Processor<in FoundItemDescriptor<SpringApiItem>>
+    ): Boolean {
+        FindModel.initStringToFind(findModel, matcher.pattern)
+        if (!methodFilter.isSelected(HttpMethodType.ALL) && !methodFilter.isSelected(model.httpMethod)) return false
+        SpringApiItem(model).takeIf {
+            if (matcher.pattern.isEmpty()) return@takeIf true
+            if (!isBuiltInMatching()) return@takeIf it.isFoundString(matcher)
+            return@takeIf it.isFoundString(findManager.findString(it.title, 0, findModel))
+        }?.let { consumer.process(FoundItemDescriptor(it, it.weight)) } ?: return false
+        return true
     }
 
-    fun clear() {
-        this.keyword = null
-        this.fromIndex = 0
-        this.result.clear()
-    }
-
-    fun readResult(): MutableList<FoundItemDescriptor<SpringApiItem>> {
-        if (result.isEmpty()) return arrayListOf()
-        if (fromIndex > result.size - 1) fromIndex = 0
-        toIndex = (fromIndex + limit + 1).let { if (it > result.size) result.size else it }
-        return result.subList(fromIndex, toIndex).also { fromIndex = toIndex }
-    }
+    fun isBuiltInMatching(): Boolean =
+        findModel.isCaseSensitive || findModel.isRegularExpressions || findModel.isWholeWordsOnly
 }

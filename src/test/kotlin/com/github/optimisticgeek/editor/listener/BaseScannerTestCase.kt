@@ -6,7 +6,8 @@ import com.github.optimisticgeek.spring.constant.FieldType.*
 import com.github.optimisticgeek.spring.ext.analyze
 import com.github.optimisticgeek.spring.ext.isControllerClass
 import com.github.optimisticgeek.spring.model.*
-import com.github.optimisticgeek.spring.service.SpringScannerService
+import com.github.optimisticgeek.spring.service.SpringApiService
+import com.github.optimisticgeek.spring.service.toClassModel
 import com.intellij.openapi.components.service
 import com.intellij.openapi.diagnostic.thisLogger
 import com.intellij.psi.*
@@ -25,25 +26,24 @@ import java.io.File
 @Suppress("MemberVisibilityCanBePrivate")
 @TestDataPath("\$CONTENT_ROOT/src/test/testData")
 abstract class BaseScannerTestCase : LightJavaCodeInsightFixtureTestCase() {
-    val psiFileFactory: PsiFileFactory get() = PsiFileFactory.getInstance(project)
+    val psiFileFactory: PsiFileFactory by lazy { PsiFileFactory.getInstance(project) }
     val cache: HashMap<String, PsiClass> = HashMap()
-    protected val service: SpringScannerService get() = project.service()
     val qNameResultData = "com.github.optimisticgeek.entity.ResultData"
     val qNamePager = "com.github.optimisticgeek.entity.Pager"
     val qNameProjectQuery = "com.github.optimisticgeek.query.ProjectQuery"
+    val service by lazy { project.service<SpringApiService>() }
 
     override fun setUp() {
         super.setUp()
-        values().forEach { ClassModel(it).mockClass() }
+        values().mapNotNull { it.model }.forEach { it.mockClass() }
+
         ClassModel(MAP).also { it.position = CommonClassNames.JAVA_UTIL_HASH_MAP }.mockClass()
         ClassModel(LIST).also { it.position = CommonClassNames.JAVA_UTIL_ARRAY_LIST }.mockClass()
         initConsumerModel()
         initModelPath()
     }
 
-    fun findClassModel(qName: String): ClassModel? {
-        return service.findClassModel(qName)
-    }
+    fun findClassModel(qName: String): ClassModel? = service.toClassModel(qName)
 
     fun initConsumerModel() {
         // Pager
@@ -62,11 +62,6 @@ abstract class BaseScannerTestCase : LightJavaCodeInsightFixtureTestCase() {
                 FieldModel("keyword", "关键字", LIST.mockRefClass())
             )
         ).mockClass()
-    }
-
-    fun buildSourceModel(qName: String?, type: FieldType): ClassModel {
-        val key = qName ?: type.qName
-        return service.cacheMap.getOrPut(key) { ClassModel(qName = qName ?: type.qName, type = type) }
     }
 
     fun getCurrentMethodName(): String {
@@ -106,7 +101,7 @@ abstract class BaseScannerTestCase : LightJavaCodeInsightFixtureTestCase() {
         this.appendImportList(ref.ref)
     }
 
-    private fun StringBuilder.appendImportList(fields: ArrayList<FieldModel>?): StringBuilder {
+    private fun StringBuilder.appendImportList(fields: List<FieldModel>?): StringBuilder {
         fields ?: return this
         fields.forEach { this.appendImportList(it.classType) }
         return this
@@ -125,7 +120,7 @@ abstract class BaseScannerTestCase : LightJavaCodeInsightFixtureTestCase() {
     fun String.toPsiClass(): PsiClass {
         return myFixture.addClass(this)
             .also { cache[it.qualifiedName!!] = it }
-            .also { if (it.isControllerClass().not()) service.parseClassModel(it) }
+            .also { if (it.isControllerClass().not()) it.toClassModel() }
     }
 
     fun PsiFile.toPsiClass(): PsiClass? {
@@ -149,8 +144,7 @@ abstract class BaseScannerTestCase : LightJavaCodeInsightFixtureTestCase() {
     }
 
     fun String.mockRefClass(): RefClassModel {
-        return service.cacheMap[this]?.toRefClassModel() ?: service.findClassModel(this)?.toRefClassModel()
-        ?: throw RuntimeException("class $this not found")
+        return service.toClassModel(this)?.toRefClassModel() ?: throw RuntimeException("class $this not found")
     }
 
     fun String.mockRefClass(vararg children: FieldType): RefClassModel {
@@ -159,12 +153,10 @@ abstract class BaseScannerTestCase : LightJavaCodeInsightFixtureTestCase() {
 
     fun FieldType.mockRefClass(): RefClassModel {
         assert(this != OBJECT && this != OTHER)
-        return this.qName.mockRefClass()
+        return this.model!!.toRefClassModel()
     }
 
-    fun FieldType.mockClass(): ClassModel {
-        return service.cacheMap[this.qName]!!
-    }
+    fun FieldType.mockClass(): ClassModel = this.model!!
 
     fun RefClassModel.assertFullName(qName: String, vararg children: FieldType) {
         this.fullClassName().assertFullName(qName.mockRefClass(*children).fullClassName())
@@ -172,7 +164,7 @@ abstract class BaseScannerTestCase : LightJavaCodeInsightFixtureTestCase() {
     }
 
     fun String.assertFullName(targetFullName: String) {
-        assertTrue("【response != target】 $this != $targetFullName", targetFullName.equals(this))
+        assertTrue("【response != target】 $this != $targetFullName", targetFullName == this)
     }
 
     fun RefClassModel.assertFullName(targetFullName: String) {
@@ -186,7 +178,7 @@ abstract class BaseScannerTestCase : LightJavaCodeInsightFixtureTestCase() {
 }
 
 @JvmName("appendFields")
-private fun StringBuilder.appendFields(fields: ArrayList<FieldModel>?) {
+private fun StringBuilder.appendFields(fields: List<FieldModel>?) {
     fields ?: return
     fields.forEach {
         TestCase.assertNotNull(it.classType)

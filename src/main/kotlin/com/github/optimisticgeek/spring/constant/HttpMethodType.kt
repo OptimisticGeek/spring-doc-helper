@@ -3,12 +3,11 @@
 package com.github.optimisticgeek.spring.constant
 
 import com.intellij.openapi.util.IconLoader
+import com.intellij.spring.mvc.jam.RequestMethod
 import com.intellij.ui.scale.JBUIScale
 import com.intellij.util.IconUtil
 import javax.swing.Icon
 import javax.swing.JLabel
-
-// Copyright 2023-2024 OptimisticGeek. Use of this source code is governed by the Apache 2.0 license that can be found in the LICENSE file.. Use of this source code is governed by the Apache 2.0 license that can be found in the LICENSE file.
 
 /**
  * HttpMethodType
@@ -41,4 +40,8 @@ private fun getIconByPath(name: String): Icon? {
     } catch (e: Exception) {
         null
     }
+}
+
+fun RequestMethod.getIcon(): Icon {
+    return HttpMethodType.valueOf(this.name).icon
 }

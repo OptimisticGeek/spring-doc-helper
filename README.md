@@ -9,14 +9,14 @@
 This is a plugin for spring interface documentation. With this plugin, you can quickly view and copy interface documentation in HTML, JSON, Markdown, cURL, etc., and generate interface test cases for import into Yapi, Postman, etc.
 
 这是一款针对spring的接口文档插件，通过本插件获取接口文档，快速查看接口文档，快速复制接口文档的html、json、markdown、cURL等，生成接口用例，导入到yapi、postman等。
-
+https://github.com/OptimisticGeek/spring-doc-helper/blob/main/src/main/resources/icon/method/GET.png
 ## 支持功能
 - 鼠标悬浮文档提示（class、field、response、params、method）
 - Object与泛型返回值真实类型推断
-- 快速文档提示复制model的html、json、curl
-- ![GET](./src/main/resources/icon/method/GET.png)GET|![POST](./src/main/resources/icon/method/POST.png)POST|![PUT](./src/main/resources/icon/method/PUT.png)PUT|![DELETE](./src/main/resources/icon/method/DELETE.png)DELETE左侧小图标，支持复制操作、生成测试用例
+- ![GET](https://github.com/OptimisticGeek/spring-doc-helper/blob/main/src/main/resources/icon/method/GET.png)GET|![POST](https://github.com/OptimisticGeek/spring-doc-helper/blob/main/src/main/resources/icon/method/POST.png)POST|![PUT](https://github.com/OptimisticGeek/spring-doc-helper/blob/main/src/main/resources/icon/method/PUT.png)PUT|![DELETE](https://github.com/OptimisticGeek/spring-doc-helper/blob/main/src/main/resources/icon/method/DELETE.png)DELETE左侧小图标，支持复制操作、生成测试用例
 - 双击shift搜索接口（search everywhere），支持*通配和单词、正则、区分大小写和http请求方法搜索
 - 支持swagger文档解析
+- 优化缓存逻辑，减少内存占用
 
 ## Todo
 - [ ] 针对指定类的自定义fields

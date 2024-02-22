@@ -6,29 +6,33 @@ import com.github.optimisticgeek.spring.constant.FieldType
 import com.github.optimisticgeek.spring.constant.HttpMethodType
 import com.github.optimisticgeek.spring.ext.analyze
 import com.github.optimisticgeek.spring.model.FieldModel
-import com.github.optimisticgeek.spring.model.MethodModel
+import com.github.optimisticgeek.spring.model.HttpMethodModel
+import com.github.optimisticgeek.spring.service.getRootUrl
 import com.intellij.openapi.project.Project
 import org.apache.commons.lang3.StringUtils
 import java.util.*
 
-data class AnalyzeMethod(val methodModel: MethodModel) : BaseAnalyzeModel(methodModel) {
-    val httpMethod: HttpMethodType = methodModel.requestMethod
+data class AnalyzeHttpMethod(val httpMethodModel: HttpMethodModel) : BaseAnalyzeModel(httpMethodModel) {
+    val httpMethod: HttpMethodType = httpMethodModel.httpMethod
 
-    val urls: List<String> = methodModel.urls!!
+    val urls: List<String> = listOf(httpMethodModel.url)
 
     val createTime: Date = Date()
 
-    val pathParams: AnalyzeModel? = methodModel.pathVariables.toParams()
+    val pathParams: AnalyzeModel? = httpMethodModel.pathVariables.toParams()
 
-    val queryParams: AnalyzeModel? = methodModel.queryParams.toParams()
+    val queryParams: AnalyzeModel? = httpMethodModel.queryParams.toParams()
 
-    val requestBody: AnalyzeModel? = methodModel.requestBody?.analyze()?.also { it.name = null }
+    val requestBody: AnalyzeModel? = httpMethodModel.requestBody?.analyze()?.also { it.name = null }
 
-    val response: AnalyzeModel? = methodModel.responseBody?.analyze()?.also { it.name = null }
+    val response: AnalyzeModel? = httpMethodModel.responseBody?.analyze()?.also { it.name = null }
 
-    val project: Project = methodModel.psiMethod.project
+    val project: Project = httpMethodModel.psiMethod.project
 
-    fun getUrl(hasParams: Boolean = true): String = urls.firstOrNull()
+    val myModule = httpMethodModel.myModule
+
+    fun getUrl(hasParams: Boolean = true, hasRootUrl: Boolean = false): String = urls.firstOrNull()
+        ?.let { if (hasRootUrl) myModule.getRootUrl() + it else it }
         ?.let { if (hasParams) it.replaceUrlPathParams(pathParams).joinQueryParams(queryParams) else it }
         ?: StringUtils.EMPTY
 }
@@ -55,7 +59,7 @@ private fun List<FieldModel>.toParams(): AnalyzeModel? = this.map(FieldModel::an
     .let { return if (!it.isNullOrEmpty()) AnalyzeModel(FieldType.OBJECT, it) else null }
 
 @JvmName("toCurlStr")
-fun AnalyzeMethod.toCurlStr(): String {
+fun AnalyzeHttpMethod.toCurlStr(): String {
     val sb = StringBuilder("curl -X $httpMethod ")
     requestBody?.let { sb.append(" -H \"Content-Type: application/json\" ") }
         ?.let { sb.append(" -d '${requestBody.toJson(false).replace(Regex("\\s+"), "")}'") }

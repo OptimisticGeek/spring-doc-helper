@@ -23,7 +23,7 @@ class RefClassModel(val source: ClassModel, var ref: RefClassModel? = null) : Ba
         }
 
     override fun toString(): String {
-        return fullClassName()
+        return fullClassName() + source
     }
 
     override fun equals(other: Any?): Boolean {

@@ -1,7 +1,6 @@
 // Copyright 2023-2024 OptimisticGeek. Use of this source code is governed by the Apache 2.0 license that can be found in the LICENSE file.
 package com.github.optimisticgeek.spring.ext
 
-import com.github.optimisticgeek.analyze.model.AnalyzeMethod
 import com.github.optimisticgeek.analyze.model.AnalyzeModel
 import com.github.optimisticgeek.analyze.model.isLoopCall
 import com.github.optimisticgeek.spring.constant.FieldType
@@ -13,17 +12,6 @@ import com.github.optimisticgeek.spring.model.*
  * @author OptimisticGeek
  * @date 2024/1/16
  */
-
-@JvmName("analyze")
-fun ControllerModel.analyze(): List<AnalyzeMethod>? {
-    return this.methodMap?.values?.map(MethodModel::analyze)?.toList()
-}
-
-@JvmName("analyze")
-fun MethodModel.analyze(): AnalyzeMethod {
-    return AnalyzeMethod(this)
-}
-
 @JvmName("analyze")
 fun FieldModel.analyze(): AnalyzeModel {
     return this.classType.analyze().also {

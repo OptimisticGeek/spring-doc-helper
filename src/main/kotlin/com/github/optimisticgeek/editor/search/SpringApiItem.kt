@@ -2,7 +2,7 @@
 
 package com.github.optimisticgeek.editor.search
 
-import com.github.optimisticgeek.spring.model.MethodModel
+import com.github.optimisticgeek.spring.model.HttpMethodModel
 import com.github.optimisticgeek.spring.model.className
 import com.intellij.find.FindResult
 import com.intellij.openapi.util.TextRange
@@ -15,26 +15,29 @@ import org.apache.commons.lang3.StringUtils
  * @author OptimisticGeek
  * @date 2024/2/17
  */
-data class SpringApiItem(private val method: MethodModel) {
-    val icon = method.requestMethod.icon
-    val title = method.getUrl() + method.remark.let { if (it.isNullOrBlank()) StringUtils.EMPTY else " - [$it]" }
+data class SpringApiItem(private val method: HttpMethodModel) {
+    private val defaultWeight = 50 - method.httpMethod.ordinal
+    val icon = method.httpMethod.icon
+    val title = method.url + method.remark.let { if (it.isBlank() || it == method.name) StringUtils.EMPTY else " - [$it]" }
     val descriptor =
-        method.author.let { if (it.isNullOrBlank()) StringUtils.EMPTY else "[$it] - " } + method.position.let { if (it.isNullOrBlank()) StringUtils.EMPTY else "[${it.className()}]" }
+        method.author.let { if (it.isBlank()) StringUtils.EMPTY else "[$it] - " } +
+                method.position.let { if (it.isBlank()) StringUtils.EMPTY else "[${it.className()}]" } + " "
     var textRanges: List<TextRange>? = null
-    var weight = 100 - method.requestMethod.ordinal
-
+    var weight = defaultWeight
     fun isFoundString(findResult: FindResult): Boolean {
-        updateFindRanges(if (findResult.isStringFound) arrayListOf(findResult) else null)
+        updateFindRanges(arrayListOf(findResult))
         return findResult.isStringFound
     }
 
     fun isFoundString(matcher: MinusculeMatcher): Boolean {
-        updateFindRanges(if (matcher.matches(title)) matcher.matchingFragments(title) else null)
+        updateFindRanges(matcher.matchingFragments(title))
         return matcher.matches(title)
     }
 
     private fun updateFindRanges(textRanges: List<TextRange>?) {
-        this.textRanges = textRanges?.also { weight -= textRanges.first().startOffset }
+        if (textRanges.isNullOrEmpty()) return
+        this.textRanges = textRanges
+        this.weight = defaultWeight - textRanges.first().startOffset
     }
 
     fun navigate(p0: Boolean) = method.psiMethod.navigate(p0)

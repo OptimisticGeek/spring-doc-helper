@@ -2,7 +2,6 @@
 package com.github.optimisticgeek.spring.model
 
 import com.github.optimisticgeek.spring.constant.FieldType
-import com.github.optimisticgeek.spring.service.ScannerBundle
 
 /**
  * ClassModel
@@ -11,10 +10,8 @@ import com.github.optimisticgeek.spring.service.ScannerBundle
  * @date 2023/12/27
  */
 open class ClassModel(
-    qName: String, remark: String? = null, val type: FieldType, var fields: ArrayList<FieldModel>? = null
-) : BaseModel(
-    position = qName, remark = remark
-) {
+    qName: String, remark: String? = null, var type: FieldType, var fields: List<FieldModel>? = null
+) : BaseModel(position = qName, name = qName.className(), remark = remark) {
     constructor(type: FieldType) : this(type.qName, null, type = type)
 
     constructor(qName: String, remark: String?, fields: ArrayList<FieldModel>) : this(
@@ -23,33 +20,19 @@ open class ClassModel(
 
     var isInit: Boolean = false
 
-    val qName: String
-        get() = this.position!!
+    val qName get() = this.position!!
 
-    val className: String
-        get() = this.qName.className()
+    val className get() = this.qName.className()
 
     init {
-        setDefaultStatus()
+        isInit = type != FieldType.OBJECT || !fields.isNullOrEmpty()
     }
 
     fun setDefaultStatus() {
-        if (fields.isNullOrEmpty() && type == FieldType.OBJECT) fields = ArrayList() else isInit = true
+        if (this == type.model) return
         this.position = if (this.position.isNullOrBlank() || !type.isObj) type.qName else this.position!!
         this.name = this.qName.className()
-        if (type == FieldType.MAP) {
-            fields = arrayListOf(
-                FieldModel(
-                    fieldName = "data",
-                    remark = ScannerBundle.message("scanner.map.key.remark"),
-                    classType = RefClassModel(ClassModel(FieldType.SUBSTITUTE))
-                )
-            )
-        }
-    }
-
-    override fun toString(): String {
-        return "ClassModel(qualifiedName=$qName, fields=$fields)"
+        isInit = type != FieldType.OBJECT
     }
 }
 

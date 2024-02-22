@@ -1,14 +1,14 @@
 // Copyright 2023-2024 OptimisticGeek. Use of this source code is governed by the Apache 2.0 license that can be found in the LICENSE file.
 package com.github.optimisticgeek.editor.listener
 
-import com.github.optimisticgeek.analyze.model.AnalyzeMethod
+import com.github.optimisticgeek.analyze.model.AnalyzeHttpMethod
 import com.github.optimisticgeek.analyze.model.toCurlStr
 import com.github.optimisticgeek.editor.httpClient.createHttpTestFile
 import com.github.optimisticgeek.editor.httpClient.hasHttpTestMethod
-import com.github.optimisticgeek.spring.ext.analyze
-import com.github.optimisticgeek.spring.ext.createControllerModel
-import com.github.optimisticgeek.spring.model.MethodModel
+import com.github.optimisticgeek.spring.ext.getHttpRequestAnnotation
+import com.github.optimisticgeek.spring.model.HttpMethodModel
 import com.github.optimisticgeek.spring.service.ScannerBundle
+import com.github.optimisticgeek.spring.service.getHttpMethodMap
 import com.intellij.codeInsight.daemon.LineMarkerInfo
 import com.intellij.codeInsight.daemon.impl.JavaLineMarkerProvider
 import com.intellij.configurationStore.NOTIFICATION_GROUP_ID
@@ -46,24 +46,22 @@ import javax.swing.Icon
 class ControllerLineMarkerProvider : JavaLineMarkerProvider() {
 
     override fun collectSlowLineMarkers(
-        elements: MutableList<out PsiElement>, result: MutableCollection<in LineMarkerInfo<*>>
+        elements: MutableList<out PsiElement>,
+        result: MutableCollection<in LineMarkerInfo<*>>
     ) {
-        elements.mapNotNull { if (it is PsiClass) it else null }.mapNotNull { it.createControllerModel() }
-            .filter { it.methodMap?.isNotEmpty() == true }
-            .forEach {
-                it.methodMap?.values?.forEach {
-                    result.add(
-                        it.analyze()
-                            .createLineMarkerInfo(it.psiMethod.nameIdentifier, it.textRange(), it.title(), it.icon())
-                    )
-                }
-            }
-        super.collectSlowLineMarkers(elements, result)
+        elements.filterIsInstance<PsiClass>().forEach {
+            it.getHttpMethodMap()?.values?.asSequence()?.map {
+                it.analyze().createLineMarkerInfo(it.psiMethod.nameIdentifier, it.textRange(), it.title(), it.icon())
+            }?.forEach(result::add)
+        }
     }
 }
 
+@JvmName("analyze")
+fun HttpMethodModel.analyze(): AnalyzeHttpMethod = AnalyzeHttpMethod(this)
+
 @JvmName("createLineMarkerInfo")
-private fun AnalyzeMethod.createLineMarkerInfo(
+private fun AnalyzeHttpMethod.createLineMarkerInfo(
     identifier: PsiIdentifier?, range: TextRange, title: String, icon: Icon
 ): LineMarkerInfo<PsiIdentifier> {
     return LineMarkerInfo<PsiIdentifier>(/* element = */ identifier!!, /* range = */ range, /* icon = */ icon,
@@ -85,7 +83,7 @@ private fun AnalyzeMethod.createLineMarkerInfo(
 }
 
 @JvmName("popupActionGroup")
-private fun AnalyzeMethod.popupActionGroup(group: DefaultActionGroup, e: MouseEvent) {
+private fun AnalyzeHttpMethod.popupActionGroup(group: DefaultActionGroup, e: MouseEvent) {
     FileEditorManager.getInstance(project).selectedTextEditor!!.let {
         DataManager.getInstance().getDataContext(it.contentComponent)
     }.let {
@@ -110,10 +108,10 @@ private fun AnalyzeMethod.createHttpClientActionGroup(isCreated: Boolean): Defau
 */
 
 @JvmName("createCopyActionGroup")
-private fun AnalyzeMethod.createCopyActionGroup(): DefaultActionGroup {
+private fun AnalyzeHttpMethod.createCopyActionGroup(): DefaultActionGroup {
     return SmartPopupActionGroup.createPopupGroup { ScannerBundle.message("action.copy") }.apply {
         add(ScannerBundle.message("document.curl")) { toCurlStr().let { project.copyString(it) } }
-        add(ScannerBundle.message("document.url")) { urls.joinToString(",").let { project.copyString(it) } }
+        add(ScannerBundle.message("document.url")) { getUrl(false, hasRootUrl = true).let { project.copyString(it) } }
     }.apply {
         pathParams?.let {
             add(ScannerBundle.message("document.pathParams")) { it.toJson().let { project.copyString(it) } }
@@ -143,13 +141,13 @@ private fun DefaultActionGroup.add(title: String, function: () -> Unit) {
 }
 
 @JvmName("textRange")
-private fun MethodModel.textRange(): TextRange = psiMethodAnnotation.textRange
+private fun HttpMethodModel.textRange(): TextRange = psiMethod.getHttpRequestAnnotation()!!.textRange
 
 @JvmName("icon")
-private fun MethodModel.icon(): Icon = requestMethod.icon
+private fun HttpMethodModel.icon(): Icon = httpMethod.icon
 
 @JvmName("title")
-private fun MethodModel.title(): String = this.remark ?: this.name ?: ""
+private fun HttpMethodModel.title(): String = this.remark
 
 @JvmName("copyString")
 fun Project.copyString(str: String) {

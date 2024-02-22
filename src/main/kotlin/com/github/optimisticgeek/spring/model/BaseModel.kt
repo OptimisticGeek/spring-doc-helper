@@ -15,9 +15,5 @@ open class BaseModel(
     var remark: String? = null,
     internal var position: String? = null
 ) {
-    constructor(model: BaseModel?) : this(model?.name, model?.author, model?.remark ?: model?.name, model?.position)
-
-    override fun toString(): String {
-        return "BaseModel(name=$name, author=$author, remark=$remark, position=$position"
-    }
+    constructor(model: BaseModel? = null) : this(model?.name, model?.author, model?.remark ?: model?.name, model?.position)
 }

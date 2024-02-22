@@ -2,11 +2,11 @@
 
 package com.github.optimisticgeek.editor.search
 
-import com.github.optimisticgeek.spring.constant.HttpMethodType
 import com.intellij.ide.util.gotoByName.ChooseByNameFilterConfiguration
 import com.intellij.openapi.components.Service
 import com.intellij.openapi.components.State
 import com.intellij.openapi.components.Storage
+import com.intellij.openapi.module.Module
 
 
 /**
@@ -16,7 +16,7 @@ import com.intellij.openapi.components.Storage
  * @date 2024/2/14
  */
 @Service(Service.Level.PROJECT)
-@State(name = "HttpMethodFilterConfiguration", storages = [Storage("\$WORKSPACE_FILE$")])
-class HttpMethodFilterConfiguration : ChooseByNameFilterConfiguration<HttpMethodType>() {
-    override fun nameForElement(p0: HttpMethodType): String = p0.name
+@State(name = "ModuleFilterConfiguration", storages = [Storage("\$WORKSPACE_FILE$")])
+class ModuleFilterConfiguration : ChooseByNameFilterConfiguration<Module>() {
+    override fun nameForElement(p0: Module): String = p0.name
 }

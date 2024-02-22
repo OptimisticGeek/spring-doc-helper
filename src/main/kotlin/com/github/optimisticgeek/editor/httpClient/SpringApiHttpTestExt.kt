@@ -2,7 +2,7 @@
 
 package com.github.optimisticgeek.editor.httpClient
 
-import com.github.optimisticgeek.analyze.model.AnalyzeMethod
+import com.github.optimisticgeek.analyze.model.AnalyzeHttpMethod
 import com.github.optimisticgeek.editor.listener.toJson
 import com.intellij.openapi.application.runWriteAction
 import com.intellij.openapi.fileEditor.FileDocumentManager
@@ -12,7 +12,7 @@ import com.intellij.openapi.vfs.LocalFileSystem
 import java.io.File
 
 @JvmName("createHttpTestFile")
-fun AnalyzeMethod.createHttpTestFile(isShow: Boolean = true, flushed: Boolean = false) {
+fun AnalyzeHttpMethod.createHttpTestFile(isShow: Boolean = true, flushed: Boolean = false) {
     val keyword = "### $position"
 
     project.getHttpTestFile(position!!)
@@ -21,7 +21,7 @@ fun AnalyzeMethod.createHttpTestFile(isShow: Boolean = true, flushed: Boolean = 
             FileDocumentManager.getInstance().getDocument(this)?.apply {
                 runWriteAction {
                     // 创建多环境变量文件
-                    LocalFileSystem.getInstance().refreshAndFindFileByIoFile(project.createHttpTestEvnFile(position!!))
+                    LocalFileSystem.getInstance().refreshAndFindFileByIoFile(project.createHttpTestEvnFile())
 
                     if (text.indexOf(keyword) == -1) {
                         setText(text + createHttpTestStr())
@@ -38,7 +38,7 @@ fun AnalyzeMethod.createHttpTestFile(isShow: Boolean = true, flushed: Boolean = 
 }
 
 @JvmName("hasHttpTestFile")
-fun AnalyzeMethod.hasHttpTestMethod(): Boolean {
+fun AnalyzeHttpMethod.hasHttpTestMethod(): Boolean {
     return project.getHttpTestFile(position!!, false)
         .also { if (!it.exists()) return false }
         .readText().contains("### $position")
@@ -47,10 +47,10 @@ fun AnalyzeMethod.hasHttpTestMethod(): Boolean {
 private const val END_FIX = "### END\n\n\n\n"
 
 @JvmName("createHttpTestStr")
-private fun AnalyzeMethod.createHttpTestStr(): String {
+private fun AnalyzeHttpMethod.createHttpTestStr(): String {
     val sb = StringBuilder("### $position\n")
     sb.appendLine("# @name ${if (remark.isNullOrBlank()) name else remark} $author").appendLine()
-    sb.appendLine("$httpMethod {{host}}${getUrl(true)}")
+    sb.appendLine("$httpMethod {{host}}${getUrl(true, hasRootUrl = true)}")
     requestBody?.let { sb.appendLine("Content-Type: application/json") }
     response?.let { sb.appendLine("Accept: application/json") }
     sb.appendLine("Authorization: {{token}}").appendLine("Cookie: {{cookie}}")
@@ -80,7 +80,7 @@ private fun Project.getHttpTestFile(qName: String, isCreate: Boolean = true): Fi
 }
 
 @JvmName("createHttpTestEvnFile")
-private fun Project.createHttpTestEvnFile(qName: String): File {
+private fun Project.createHttpTestEvnFile(): File {
     return File("$basePath${File.separator}.http${File.separator}http-client.env.json")
         .apply { if (exists()) return@apply }
         .apply { parentFile.mkdirs();createNewFile() }
