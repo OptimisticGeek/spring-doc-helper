@@ -21,6 +21,7 @@ This is a plugin for spring interface documentation. With this plugin, you can q
 - [ ] 针对指定类的自定义fields
 - [ ] 导入到Yapi
 - [ ] 导入到Postman
+- [ ] 方法责任链（以时间轴倒序展示接口修改记录）
 <!-- Plugin description end -->
 
 ## Installation

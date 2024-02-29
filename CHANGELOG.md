@@ -2,6 +2,9 @@
 
 # springDocHelper Changelog
 
+## [1.0.1]
+- fix - Object对象fields解析失败
+
 ## [1.0.0]
 - 重构代码，接入SpringMvc插件
 - 项目启动预加载数据，更快的Search EveryWhere和LinkMarker显示
@@ -45,3 +48,4 @@
 [0.1.3]: https://github.com/OptimisticGeek/spring-doc-helper/releases/tag/v0.1.3
 [0.1.4]: https://github.com/OptimisticGeek/spring-doc-helper/releases/tag/v0.1.4
 [1.0.0]: https://github.com/OptimisticGeek/spring-doc-helper/releases/tag/v1.0.0
+[1.0.1]: https://github.com/OptimisticGeek/spring-doc-helper/releases/tag/v1.0.1

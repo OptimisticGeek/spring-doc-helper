@@ -13,13 +13,12 @@
   <depends>com.intellij.spring.mvc</depends>
   <description><![CDATA[<p>This is a plugin for spring interface documentation. With this plugin, you can quickly view and copy interface documentation in HTML, JSON, Markdown, cURL, etc., and generate interface test cases for import into Yapi, Postman, etc.</p>
 
-<p>这是一款针对spring的接口文档插件，通过本插件获取接口文档，快速查看接口文档，快速复制接口文档的html、json、markdown、cURL等，生成接口用例，导入到yapi、postman等。
-<a href="https://github.com/OptimisticGeek/spring-doc-helper/blob/main/src/main/resources/icon/method/GET.png">https://github.com/OptimisticGeek/spring-doc-helper/blob/main/src/main/resources/icon/method/GET.png</a></p>
+<p>这是一款针对spring的接口文档插件，通过本插件获取接口文档，快速查看接口文档，快速复制接口文档的html、json、markdown、cURL等，生成接口用例，导入到yapi、postman等。</p>
 <h2>支持功能</h2>
-<ul><li>鼠标悬浮文档提示（class、field、response、params、method）</li><li>Object与泛型返回值真实类型推断</li><li><img src="https://github.com/OptimisticGeek/spring-doc-helper/blob/main/src/main/resources/icon/method/GET.png" alt="GET" />GET|<img src="https://github.com/OptimisticGeek/spring-doc-helper/blob/main/src/main/resources/icon/method/POST.png" alt="POST" />POST|<img src="https://github.com/OptimisticGeek/spring-doc-helper/blob/main/src/main/resources/icon/method/PUT.png" alt="PUT" />PUT|<img src="https://github.com/OptimisticGeek/spring-doc-helper/blob/main/src/main/resources/icon/method/DELETE.png" alt="DELETE" />DELETE左侧小图标，支持复制操作、生成测试用例</li><li>双击shift搜索接口（search everywhere），支持*通配和单词、正则、区分大小写和http请求方法搜索</li><li>支持swagger文档解析</li><li>优化缓存逻辑，减少内存占用</li></ul>
+<ul><li>鼠标悬浮文档提示（class、field、response、params、method）</li><li>Object与泛型返回值真实类型推断</li><li><img src="https://raw.githubusercontent.com/OptimisticGeek/spring-doc-helper/main/src/main/resources/icon/method/GET.png" alt="GET" />GET|<img src="https://raw.githubusercontent.com/OptimisticGeek/spring-doc-helper/main/src/main/resources/icon/method/POST.png" alt="POST" />POST|<img src="https://raw.githubusercontent.com/OptimisticGeek/spring-doc-helper/main/src/main/resources/icon/method/PUT.png" alt="PUT" />PUT|<img src="https://raw.githubusercontent.com/OptimisticGeek/spring-doc-helper/main/src/main/resources/icon/method/DELETE.png" alt="DELETE" />DELETE左侧小图标，支持复制操作、生成测试用例</li><li>双击shift搜索接口（search everywhere），支持*通配和单词、正则、区分大小写和http请求方法搜索</li><li>支持swagger文档解析</li><li>优化缓存逻辑，减少内存占用</li></ul>
 
 <h2>Todo</h2>
-<ul><li class="task-list-item"><input type="checkbox" class="task-list-item-checkbox" disabled />针对指定类的自定义fields</li><li class="task-list-item"><input type="checkbox" class="task-list-item-checkbox" disabled />导入到Yapi</li><li class="task-list-item"><input type="checkbox" class="task-list-item-checkbox" disabled />导入到Postman</li></ul>]]></description>
+<ul><li class="task-list-item"><input type="checkbox" class="task-list-item-checkbox" disabled />针对指定类的自定义fields</li><li class="task-list-item"><input type="checkbox" class="task-list-item-checkbox" disabled />导入到Yapi</li><li class="task-list-item"><input type="checkbox" class="task-list-item-checkbox" disabled />导入到Postman</li><li class="task-list-item"><input type="checkbox" class="task-list-item-checkbox" disabled />方法责任链（以时间轴倒序展示接口修改记录）</li></ul>]]></description>
   <change-notes><![CDATA[<ul><li>重构代码，接入SpringMvc插件</li><li>项目启动预加载数据，更快的Search EveryWhere和LinkMarker显示</li><li>使用UserData，更快的响应速度，更小的内存消耗</li></ul>]]></change-notes>
   <resource-bundle>messages.Scanner</resource-bundle>
   <extensionPoints />
@@ -27,7 +26,6 @@
     <codeInsight.lineMarkerProvider implementationClass="com.github.optimisticgeek.editor.listener.ControllerLineMarkerProvider" language="JAVA" />
     <!--文档提示-->
     <lang.documentationProvider language="JAVA" implementationClass="com.github.optimisticgeek.editor.listener.SpringApiDocumentProvider" order="first" />
-    <lang.documentationProvider implementationClass="com.github.optimisticgeek.editor.listener.SpringApiDocumentProvider" order="first" language="" />
     <searchEverywhereContributor implementation="com.github.optimisticgeek.editor.search.SpringApiSearchEverywhereClassifier$Factory" />
     <backgroundPostStartupActivity implementation="com.github.optimisticgeek.editor.listener.StartupActivityImpl" />
   </extensions>
