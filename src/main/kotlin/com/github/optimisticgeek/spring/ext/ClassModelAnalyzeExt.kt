@@ -34,8 +34,8 @@ fun RefClassModel.analyze(ref: RefClassModel? = null, parent: AnalyzeModel? = nu
         return model.also { realRefModel?.analyze(null, model)?.let { model.children = listOf(it) } }
     }
 
-    if (source.isRef() || isRefField) {
-        return realRefModel?.analyze(null, model) ?: model
+    if (realRefModel != null && (source.isRef() || isRefField)) {
+        return realRefModel.analyze(null, model)
     }
 
     // 通过parent避免循环调用，result -> result || result -> List<Result>
