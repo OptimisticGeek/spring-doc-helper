@@ -3,7 +3,7 @@
   -->
 <!-- Plugin Configuration File. Read more: https://plugins.jetbrains.com/docs/intellij/plugin-configuration-file.html -->
 <idea-plugin>
-  <version>1.0.0</version>
+  <version>1.0.1</version>
   <idea-version since-build="222" until-build="233.*" />
   <id>com.github.optimisticGeek.spring-doc-helper</id>
   <name>SpringDocHelper</name>
@@ -19,7 +19,7 @@
 
 <h2>Todo</h2>
 <ul><li class="task-list-item"><input type="checkbox" class="task-list-item-checkbox" disabled />针对指定类的自定义fields</li><li class="task-list-item"><input type="checkbox" class="task-list-item-checkbox" disabled />导入到Yapi</li><li class="task-list-item"><input type="checkbox" class="task-list-item-checkbox" disabled />导入到Postman</li><li class="task-list-item"><input type="checkbox" class="task-list-item-checkbox" disabled />方法责任链（以时间轴倒序展示接口修改记录）</li></ul>]]></description>
-  <change-notes><![CDATA[<ul><li>重构代码，接入SpringMvc插件</li><li>项目启动预加载数据，更快的Search EveryWhere和LinkMarker显示</li><li>使用UserData，更快的响应速度，更小的内存消耗</li></ul>]]></change-notes>
+  <change-notes><![CDATA[<ul><li>fix - Object对象fields解析失败</li></ul>]]></change-notes>
   <resource-bundle>messages.Scanner</resource-bundle>
   <extensionPoints />
   <extensions defaultExtensionNs="com.intellij">
