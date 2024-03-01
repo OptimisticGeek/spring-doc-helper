@@ -42,6 +42,8 @@ import javax.swing.Icon
 class SpringApiService(private val myProject: Project) : Disposable {
     private val javaPsiFacade: JavaPsiFacade = JavaPsiFacade.getInstance(myProject)
     private val projectScope = ProjectScope.getProjectScope(myProject)
+    var myModules = myProject.service<ModuleManager>().modules
+        .filter { ModuleRootManager.getInstance(it).sourceRoots.isNotEmpty() }
 
     fun getHttpMethodMap(psiClass: PsiClass): Map<PsiMethod, HttpMethodModel>? {
         if (!psiClass.isControllerClass()) return null
@@ -52,7 +54,7 @@ class SpringApiService(private val myProject: Project) : Disposable {
      * 获取所有方法
      */
     fun searchMethods(
-        modules: List<Module> = myProject.getSourceModules(),
+        modules: List<Module> = myModules,
         limit: Int? = null,
         filter: Function<HttpMethodModel, Boolean>? = null
     ): List<HttpMethodModel> {
@@ -129,7 +131,7 @@ fun <T> UserDataHolder.clearUserData(key: Key<T>) = this.putUserData(key, null)
 
 @JvmName("clearUserData")
 fun PsiClass.clearUserData() {
-    if (this.isControllerClass()) {
+    if (this.isControllerClass() || this.isInterface) {
         // 接口或接口方法更新，需要清除方法的cache
         this.containingFile.getUserData(httpMethodModelMapKey)
             ?.let { it.keys.forEach { it.clearUserData(httpMethodModelKey) } }
@@ -151,11 +153,6 @@ fun Module.getIcon(): Icon = AllIcons.Actions.ModuleDirectory
 // todo 存在多配置文件，根路径不一样的问题
 @JvmName("getRootUrl")
 fun Module.getRootUrl(): String = getApplicationPaths(this).firstOrNull() ?: ""
-
-@JvmName("getSourceModules")
-fun Project.getSourceModules() = this.service<ModuleManager>().modules.filter {
-    ModuleRootManager.getInstance(it).sourceRoots.isNotEmpty()
-}
 
 @JvmName("getHttpMethod")
 fun PsiMethod.getHttpMethod(): HttpMethodModel? = this.containingClass?.getHttpMethodMap()?.get(this)

@@ -2,6 +2,7 @@
 
 package com.github.optimisticgeek.spring.model
 
+import com.github.optimisticgeek.spring.constant.FieldType
 import com.github.optimisticgeek.spring.constant.HttpMethodType
 import com.github.optimisticgeek.spring.constant.REST_CONTROLLER
 import com.github.optimisticgeek.spring.ext.buildParameters
@@ -12,6 +13,7 @@ import com.intellij.openapi.module.ModuleUtilCore
 import com.intellij.psi.PsiMethod
 import com.intellij.spring.mvc.SpringMvcConstants.RESPONSE_BODY
 import com.intellij.spring.mvc.mapping.UrlMappingElement
+import org.apache.commons.lang3.BooleanUtils
 
 // Copyright 2023-2024 OptimisticGeek. Use of this source code is governed by the Apache 2.0 license that can be found in the LICENSE file.. Use of this source code is governed by the Apache 2.0 license that can be found in the LICENSE file.
 
@@ -43,8 +45,12 @@ class HttpMethodModel(val element: UrlMappingElement) {
     val responseBody get() = params.responseBody
 
     val isViewer: Boolean by lazy {
-        return@lazy psiMethod.hasAnnotation(RESPONSE_BODY)
-                || psiClass.hasAnnotation(REST_CONTROLLER) || psiClass.hasAnnotation(RESPONSE_BODY)
+        requestBody?.classType?.sourceType == FieldType.STRING &&
+                !BooleanUtils.or(
+                    psiMethod.hasAnnotation(RESPONSE_BODY),
+                    psiClass.hasAnnotation(REST_CONTROLLER),
+                    psiClass.hasAnnotation(RESPONSE_BODY)
+                )
     }
 
 
