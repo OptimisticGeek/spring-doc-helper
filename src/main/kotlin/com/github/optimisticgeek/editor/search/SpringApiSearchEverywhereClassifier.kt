@@ -97,6 +97,7 @@ class SpringApiSearchEverywhereClassifier(event: AnActionEvent) : WeightedSearch
         pattern: String,
         progressIndicator: ProgressIndicator, consumer: Processor<in FoundItemDescriptor<SpringApiItem>>
     ) {
+        if (myFilter.moduleFilter.selectedElements.isEmpty()) return
         if (!isEmptyPatternSupported && pattern.isEmpty()) return
         progressIndicator.checkCanceled()
         FindModel.initStringToFind(myFilter.findModel, pattern)
@@ -165,7 +166,7 @@ private class MyFilter(myProject: Project) {
 
     // httpMethod过滤器
     val moduleFilter = PersistentSearchEverywhereContributorFilter(
-        myProject.service<SpringApiService>().myModules,
+        myProject.service<SpringApiService>().myModules.toList(),
         myProject.service<ModuleFilterConfiguration>(),
         Module::getName, Module::getIcon
     )

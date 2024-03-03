@@ -11,9 +11,11 @@ import com.github.optimisticgeek.spring.ext.isControllerClass
 import com.github.optimisticgeek.spring.model.ClassModel
 import com.github.optimisticgeek.spring.model.HttpMethodModel
 import com.intellij.icons.AllIcons
+import com.intellij.javaee.web.facet.WebFacet
 import com.intellij.openapi.Disposable
 import com.intellij.openapi.components.Service
 import com.intellij.openapi.components.service
+import com.intellij.openapi.diagnostic.thisLogger
 import com.intellij.openapi.module.Module
 import com.intellij.openapi.module.ModuleManager
 import com.intellij.openapi.project.DumbService
@@ -42,8 +44,19 @@ import javax.swing.Icon
 class SpringApiService(private val myProject: Project) : Disposable {
     private val javaPsiFacade: JavaPsiFacade = JavaPsiFacade.getInstance(myProject)
     private val projectScope = ProjectScope.getProjectScope(myProject)
-    var myModules = myProject.service<ModuleManager>().modules
-        .filter { ModuleRootManager.getInstance(it).sourceRoots.isNotEmpty() }
+    private val moduleManager = myProject.service<ModuleManager>()
+    private val dumbService = DumbService.getInstance(myProject)
+    val myModules: HashSet<Module> = hashSetOf()
+
+    private fun initModules(): List<Module> {
+        myModules.clear()
+        moduleManager.getModifiableModel().modules
+            .filter { ModuleRootManager.getInstance(it).sourceRoots.isNotEmpty() }
+            .filter { WebFacet.getInstances(it).isNotEmpty() }
+            .distinct()
+            .forEach(myModules::add)
+        return myModules.toList()
+    }
 
     fun getHttpMethodMap(psiClass: PsiClass): Map<PsiMethod, HttpMethodModel>? {
         if (!psiClass.isControllerClass()) return null
@@ -54,17 +67,24 @@ class SpringApiService(private val myProject: Project) : Disposable {
      * 获取所有方法
      */
     fun searchMethods(
-        modules: List<Module> = myModules,
-        limit: Int? = null,
+        modules: List<Module> = myModules.toList(),
+        limit: Int = 100,
         filter: Function<HttpMethodModel, Boolean>? = null
     ): List<HttpMethodModel> {
-        return DumbService.getInstance(myProject).runReadActionInSmartMode(Computable {
-            modules.asSequence()
+        return dumbService.runReadActionInSmartMode(Computable {
+            val t = System.currentTimeMillis()
+            modules.ifEmpty { initModules() }
+                .asSequence()
                 .flatMap { SpringMvcUtils.getUrlMappings(it) }
                 .mapNotNull { it.createMethodModel() }
                 .filter { filter?.apply(it) ?: true }
-                .take(limit ?: Int.MAX_VALUE)
+                .take(limit)
                 .toList()
+                .apply {
+                    if (System.currentTimeMillis() - t > 1000) {
+                        thisLogger().warn("SpringApiService searchMethods cost: ${System.currentTimeMillis() - t}ms")
+                    }
+                }
         })
     }
 
