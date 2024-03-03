@@ -13,7 +13,7 @@ import com.intellij.openapi.startup.StartupActivity
  * @author OptimisticGeek
  * @date 2024/2/23
  */
-class StartupActivityImpl : StartupActivity.Background {
+class StartupActivityImpl : StartupActivity.DumbAware {
     override fun runActivity(project: Project) {
         project.service<SpringApiService>().searchMethods()
     }
