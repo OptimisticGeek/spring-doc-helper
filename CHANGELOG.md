@@ -2,6 +2,11 @@
 
 # springDocHelper Changelog
 
+## [1.0.2]
+- fix - Idea索引构建完成后执行接口扫描
+- fix - 项目构建失败后，未重新获取modules
+- fix - Search EveryWhere结果上限为100条，更快加载
+
 ## [1.0.1]
 - fix - Object对象fields解析失败
 
@@ -49,3 +54,4 @@
 [0.1.4]: https://github.com/OptimisticGeek/spring-doc-helper/releases/tag/v0.1.4
 [1.0.0]: https://github.com/OptimisticGeek/spring-doc-helper/releases/tag/v1.0.0
 [1.0.1]: https://github.com/OptimisticGeek/spring-doc-helper/releases/tag/v1.0.1
+[1.0.2]: https://github.com/OptimisticGeek/spring-doc-helper/releases/tag/v1.0.2
