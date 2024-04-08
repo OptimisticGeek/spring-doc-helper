@@ -2,6 +2,9 @@
 
 # springDocHelper Changelog
 
+## [1.0.3]
+- 支持Idea 2024.1版本
+
 ## [1.0.2]
 - fix - Idea索引构建完成后执行接口扫描
 - fix - 项目构建失败后，未重新获取modules
@@ -55,3 +58,4 @@
 [1.0.0]: https://github.com/OptimisticGeek/spring-doc-helper/releases/tag/v1.0.0
 [1.0.1]: https://github.com/OptimisticGeek/spring-doc-helper/releases/tag/v1.0.1
 [1.0.2]: https://github.com/OptimisticGeek/spring-doc-helper/releases/tag/v1.0.2
+[1.0.3]: https://github.com/OptimisticGeek/spring-doc-helper/releases/tag/v1.0.3
