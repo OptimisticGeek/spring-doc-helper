@@ -17,6 +17,7 @@ import com.intellij.openapi.components.service
 import com.intellij.openapi.module.Module
 import com.intellij.openapi.observable.properties.AtomicBooleanProperty
 import com.intellij.openapi.progress.ProgressIndicator
+import com.intellij.openapi.progress.util.ProgressIndicatorUtils
 import com.intellij.openapi.project.DumbAware
 import com.intellij.openapi.project.Project
 import com.intellij.psi.codeStyle.MinusculeMatcher
@@ -102,8 +103,10 @@ class SpringApiSearchEverywhereClassifier(event: AnActionEvent) : WeightedSearch
         progressIndicator.checkCanceled()
         FindModel.initStringToFind(myFilter.findModel, pattern)
         val matcher = createMatcher(this.filterControlSymbols(pattern))
-        myProject.service<SpringApiService>()
-            .searchMethods(myFilter.myModules, progressIndicator) { myFilter.match(it, matcher, consumer) }
+        ProgressIndicatorUtils.runInReadActionWithWriteActionPriority({
+            myProject.service<SpringApiService>()
+                .searchMethods(myFilter.myModules, progressIndicator) { myFilter.match(it, matcher, consumer) }
+        }, progressIndicator)
     }
 
     /**

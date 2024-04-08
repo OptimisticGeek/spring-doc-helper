@@ -2,6 +2,7 @@ package com.github.optimisticgeek.editor.listener
 
 import com.github.optimisticgeek.spring.service.SpringApiService
 import com.intellij.openapi.components.service
+import com.intellij.openapi.progress.util.ProgressIndicatorUtils
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.startup.StartupActivity
 
@@ -15,6 +16,9 @@ import com.intellij.openapi.startup.StartupActivity
  */
 class StartupActivityImpl : StartupActivity.DumbAware {
     override fun runActivity(project: Project) {
-       project.service<SpringApiService>().searchMethods()
+        ProgressIndicatorUtils.runInReadActionWithWriteActionPriority {
+            project.service<SpringApiService>().searchMethods()
+        }
+
     }
 }

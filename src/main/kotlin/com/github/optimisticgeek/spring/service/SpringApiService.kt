@@ -20,7 +20,6 @@ import com.intellij.openapi.diagnostic.thisLogger
 import com.intellij.openapi.module.Module
 import com.intellij.openapi.module.ModuleManager
 import com.intellij.openapi.progress.ProgressIndicator
-import com.intellij.openapi.progress.util.ProgressIndicatorUtils
 import com.intellij.openapi.project.DumbService
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.roots.ModuleRootManager
@@ -77,19 +76,17 @@ class SpringApiService(private val myProject: Project) : Disposable {
         filter: Function<HttpMethodModel, Boolean>? = null
     ): List<HttpMethodModel> {
         var list: List<HttpMethodModel>? = null
-        ProgressIndicatorUtils.runInReadActionWithWriteActionPriority({
-            dumbService.runReadActionInSmartMode(Computable {
-                val t = System.currentTimeMillis()
-                list = modules.ifEmpty { initModules() }
-                    .asSequence()
-                    .flatMap { SpringMvcUtils.getUrlMappings(it) }
-                    .mapNotNull { progressIndicator?.checkCanceled(); it.createMethodModel() }
-                    .filter { filter?.apply(it) ?: true }
-                    .take(limit)
-                    .toList()
-                    .applyIf(System.currentTimeMillis() - t > 1000) { thisLogger().warn("SpringApiService searchMethods cost: ${System.currentTimeMillis() - t}ms") }
-            })
-        }, progressIndicator)
+        dumbService.runReadActionInSmartMode(Computable {
+            val t = System.currentTimeMillis()
+            list = modules.ifEmpty { initModules() }
+                .asSequence()
+                .flatMap { SpringMvcUtils.getUrlMappings(it) }
+                .mapNotNull { progressIndicator?.checkCanceled(); it.createMethodModel() }
+                .filter { filter?.apply(it) ?: true }
+                .take(limit)
+                .toList()
+                .applyIf(System.currentTimeMillis() - t > 1000) { thisLogger().warn("SpringApiService searchMethods cost: ${System.currentTimeMillis() - t}ms") }
+        })
         return list ?: return emptyList()
     }
 
