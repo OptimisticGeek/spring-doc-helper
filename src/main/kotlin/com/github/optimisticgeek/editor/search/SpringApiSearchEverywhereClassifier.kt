@@ -17,7 +17,6 @@ import com.intellij.openapi.components.service
 import com.intellij.openapi.module.Module
 import com.intellij.openapi.observable.properties.AtomicBooleanProperty
 import com.intellij.openapi.progress.ProgressIndicator
-import com.intellij.openapi.progress.util.ProgressIndicatorUtils
 import com.intellij.openapi.project.DumbAware
 import com.intellij.openapi.project.Project
 import com.intellij.psi.codeStyle.MinusculeMatcher
@@ -95,20 +94,16 @@ class SpringApiSearchEverywhereClassifier(event: AnActionEvent) : WeightedSearch
      */
     override fun fetchWeightedElements(
         pattern: String,
-        progressIndicator: ProgressIndicator, consumer: Processor<in FoundItemDescriptor<SpringApiItem>>
+        progressIndicator: ProgressIndicator,
+        consumer: Processor<in FoundItemDescriptor<SpringApiItem>>
     ) {
         if (myFilter.moduleFilter.selectedElements.isEmpty()) return
         if (!isEmptyPatternSupported && pattern.isEmpty()) return
         progressIndicator.checkCanceled()
         FindModel.initStringToFind(myFilter.findModel, pattern)
         val matcher = createMatcher(this.filterControlSymbols(pattern))
-        ProgressIndicatorUtils.yieldToPendingWriteActions()
-        ProgressIndicatorUtils.runInReadActionWithWriteActionPriority({
-            myProject.service<SpringApiService>().searchMethods(myFilter.moduleFilter.selectedElements) {
-                progressIndicator.checkCanceled()
-                myFilter.match(it, matcher, consumer)
-            }
-        }, progressIndicator)
+        myProject.service<SpringApiService>()
+            .searchMethods(myFilter.myModules, progressIndicator) { myFilter.match(it, matcher, consumer) }
     }
 
     /**
@@ -155,6 +150,7 @@ class SpringApiSearchEverywhereClassifier(event: AnActionEvent) : WeightedSearch
 private class MyFilter(myProject: Project) {
     val findManager: FindManager = FindManager.getInstance(myProject)
     val findModel = findManager.findInProjectModel
+    val myModules get() = moduleFilter.selectedElements.toList()
 
     // httpMethod过滤器
     val methodFilter = PersistentSearchEverywhereContributorFilter(
@@ -168,13 +164,12 @@ private class MyFilter(myProject: Project) {
     val moduleFilter = PersistentSearchEverywhereContributorFilter(
         myProject.service<SpringApiService>().myModules.toList(),
         myProject.service<ModuleFilterConfiguration>(),
-        Module::getName, Module::getIcon
+        Module::getName,
+        Module::getIcon
     )
 
     fun match(
-        model: HttpMethodModel,
-        matcher: MinusculeMatcher,
-        consumer: Processor<in FoundItemDescriptor<SpringApiItem>>
+        model: HttpMethodModel, matcher: MinusculeMatcher, consumer: Processor<in FoundItemDescriptor<SpringApiItem>>
     ): Boolean {
         FindModel.initStringToFind(findModel, matcher.pattern)
         if (!methodFilter.isSelected(HttpMethodType.ALL) && !methodFilter.isSelected(model.httpMethod)) return false

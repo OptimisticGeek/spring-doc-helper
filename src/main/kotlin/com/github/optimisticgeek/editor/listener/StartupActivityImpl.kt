@@ -15,6 +15,6 @@ import com.intellij.openapi.startup.StartupActivity
  */
 class StartupActivityImpl : StartupActivity.DumbAware {
     override fun runActivity(project: Project) {
-        project.service<SpringApiService>().searchMethods()
+       project.service<SpringApiService>().searchMethods()
     }
 }

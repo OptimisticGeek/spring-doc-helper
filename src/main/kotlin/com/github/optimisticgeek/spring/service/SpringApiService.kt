@@ -2,6 +2,7 @@
 
 package com.github.optimisticgeek.spring.service
 
+import ai.grazie.utils.applyIf
 import com.github.optimisticgeek.spring.constant.FieldType
 import com.github.optimisticgeek.spring.constant.getFieldType
 import com.github.optimisticgeek.spring.ext.fields
@@ -18,6 +19,8 @@ import com.intellij.openapi.components.service
 import com.intellij.openapi.diagnostic.thisLogger
 import com.intellij.openapi.module.Module
 import com.intellij.openapi.module.ModuleManager
+import com.intellij.openapi.progress.ProgressIndicator
+import com.intellij.openapi.progress.util.ProgressIndicatorUtils
 import com.intellij.openapi.project.DumbService
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.roots.ModuleRootManager
@@ -45,7 +48,7 @@ class SpringApiService(private val myProject: Project) : Disposable {
     private val javaPsiFacade: JavaPsiFacade = JavaPsiFacade.getInstance(myProject)
     private val projectScope = ProjectScope.getProjectScope(myProject)
     private val moduleManager = myProject.service<ModuleManager>()
-    private val dumbService = DumbService.getInstance(myProject)
+    private val dumbService = myProject.service<DumbService>()
     val myModules: HashSet<Module> = hashSetOf()
 
     private fun initModules(): List<Module> {
@@ -55,6 +58,7 @@ class SpringApiService(private val myProject: Project) : Disposable {
             .filter { WebFacet.getInstances(it).isNotEmpty() }
             .distinct()
             .forEach(myModules::add)
+        thisLogger().warn("modules:${myModules.size},${myModules.joinToString(",") { it.name }}")
         return myModules.toList()
     }
 
@@ -68,24 +72,25 @@ class SpringApiService(private val myProject: Project) : Disposable {
      */
     fun searchMethods(
         modules: List<Module> = myModules.toList(),
+        progressIndicator: ProgressIndicator? = null,
         limit: Int = 100,
         filter: Function<HttpMethodModel, Boolean>? = null
     ): List<HttpMethodModel> {
-        return dumbService.runReadActionInSmartMode(Computable {
-            val t = System.currentTimeMillis()
-            modules.ifEmpty { initModules() }
-                .asSequence()
-                .flatMap { SpringMvcUtils.getUrlMappings(it) }
-                .mapNotNull { it.createMethodModel() }
-                .filter { filter?.apply(it) ?: true }
-                .take(limit)
-                .toList()
-                .apply {
-                    if (System.currentTimeMillis() - t > 1000) {
-                        thisLogger().warn("SpringApiService searchMethods cost: ${System.currentTimeMillis() - t}ms")
-                    }
-                }
-        })
+        var list: List<HttpMethodModel>? = null
+        ProgressIndicatorUtils.runInReadActionWithWriteActionPriority({
+            dumbService.runReadActionInSmartMode(Computable {
+                val t = System.currentTimeMillis()
+                list = modules.ifEmpty { initModules() }
+                    .asSequence()
+                    .flatMap { SpringMvcUtils.getUrlMappings(it) }
+                    .mapNotNull { progressIndicator?.checkCanceled(); it.createMethodModel() }
+                    .filter { filter?.apply(it) ?: true }
+                    .take(limit)
+                    .toList()
+                    .applyIf(System.currentTimeMillis() - t > 1000) { thisLogger().warn("SpringApiService searchMethods cost: ${System.currentTimeMillis() - t}ms") }
+            })
+        }, progressIndicator)
+        return list ?: return emptyList()
     }
 
     fun toClassModel(
