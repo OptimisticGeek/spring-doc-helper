@@ -7,6 +7,7 @@ import com.github.optimisticgeek.spring.model.HttpMethodModel
 import com.github.optimisticgeek.spring.service.ScannerBundle
 import com.github.optimisticgeek.spring.service.SpringApiService
 import com.github.optimisticgeek.spring.service.getIcon
+import com.github.optimisticgeek.spring.service.springApiService
 import com.intellij.find.FindManager
 import com.intellij.find.FindModel
 import com.intellij.ide.actions.searcheverywhere.*
@@ -18,7 +19,7 @@ import com.intellij.openapi.module.Module
 import com.intellij.openapi.observable.properties.AtomicBooleanProperty
 import com.intellij.openapi.progress.ProgressIndicator
 import com.intellij.openapi.progress.util.ProgressIndicatorUtils
-import com.intellij.openapi.project.DumbAware
+import com.intellij.openapi.project.DumbService
 import com.intellij.openapi.project.Project
 import com.intellij.psi.codeStyle.MinusculeMatcher
 import com.intellij.psi.codeStyle.NameUtil
@@ -31,10 +32,10 @@ import javax.swing.ListCellRenderer
 
  * @author OptimisticGeek
  * @date 2024/2/13
- * todo 升级idea版本后需要增加PossibleSlowContributor
  */
 class SpringApiSearchEverywhereClassifier(event: AnActionEvent) : WeightedSearchEverywhereContributor<SpringApiItem>,
-    DumbAware, Disposable {
+    //PossibleSlowContributor,
+    Disposable {
     private val myProject = event.project!!
 
     private val myListRenderer = SpringApiListCellRenderer()
@@ -83,13 +84,6 @@ class SpringApiSearchEverywhereClassifier(event: AnActionEvent) : WeightedSearch
      */
     override fun getElementsRenderer(): ListCellRenderer<in SpringApiItem> = myListRenderer
 
-
-    /**
-     * 输入框右侧文案
-     */
-    override fun getAdvertisement(): String? =
-        if (myFilter.isBuiltInMatching()) null else ScannerBundle.message("search.advertisement")
-
     /**
      * 填充搜索结果
      */
@@ -98,6 +92,7 @@ class SpringApiSearchEverywhereClassifier(event: AnActionEvent) : WeightedSearch
         progressIndicator: ProgressIndicator,
         consumer: Processor<in FoundItemDescriptor<SpringApiItem>>
     ) {
+        if (DumbService.isDumb(myProject)) return
         if (myFilter.moduleFilter.selectedElements.isEmpty()) return
         if (!isEmptyPatternSupported && pattern.isEmpty()) return
         progressIndicator.checkCanceled()
@@ -154,6 +149,7 @@ private class MyFilter(myProject: Project) {
     val findManager: FindManager = FindManager.getInstance(myProject)
     val findModel = findManager.findInProjectModel
     val myModules get() = moduleFilter.selectedElements.toList()
+    val allModules = myProject.springApiService().let { it.myModules.ifEmpty { it.initModules(); it.myModules } }
 
     // httpMethod过滤器
     val methodFilter = PersistentSearchEverywhereContributorFilter(
@@ -165,7 +161,7 @@ private class MyFilter(myProject: Project) {
 
     // httpMethod过滤器
     val moduleFilter = PersistentSearchEverywhereContributorFilter(
-        myProject.service<SpringApiService>().myModules.toList(),
+        allModules.toList(),
         myProject.service<ModuleFilterConfiguration>(),
         Module::getName,
         Module::getIcon
