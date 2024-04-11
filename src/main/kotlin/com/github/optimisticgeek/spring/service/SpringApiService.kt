@@ -2,7 +2,6 @@
 
 package com.github.optimisticgeek.spring.service
 
-import ai.grazie.utils.applyIf
 import com.github.optimisticgeek.spring.constant.FieldType
 import com.github.optimisticgeek.spring.constant.getFieldType
 import com.github.optimisticgeek.spring.ext.fields
@@ -50,7 +49,7 @@ class SpringApiService(private val myProject: Project) : Disposable {
     private val dumbService = myProject.service<DumbService>()
     val myModules: HashSet<Module> = hashSetOf()
 
-    private fun initModules(): List<Module> {
+    fun initModules(): List<Module> {
         myModules.clear()
         moduleManager.getModifiableModel().modules
             .filter { ModuleRootManager.getInstance(it).sourceRoots.isNotEmpty() }
@@ -85,7 +84,8 @@ class SpringApiService(private val myProject: Project) : Disposable {
                 .filter { filter?.apply(it) ?: true }
                 .take(limit)
                 .toList()
-                .applyIf(System.currentTimeMillis() - t > 1000) { thisLogger().warn("SpringApiService searchMethods cost: ${System.currentTimeMillis() - t}ms") }
+            if (System.currentTimeMillis() - t > 1000)
+                thisLogger().warn("SpringApiService searchMethods cost: ${System.currentTimeMillis() - t}ms")
         })
         return list ?: return emptyList()
     }
