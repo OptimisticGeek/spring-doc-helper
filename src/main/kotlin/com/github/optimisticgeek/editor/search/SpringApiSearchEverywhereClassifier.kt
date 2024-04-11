@@ -34,7 +34,7 @@ import javax.swing.ListCellRenderer
  * @date 2024/2/13
  */
 class SpringApiSearchEverywhereClassifier(event: AnActionEvent) : WeightedSearchEverywhereContributor<SpringApiItem>,
-    //PossibleSlowContributor,
+    PossibleSlowContributor,
     Disposable {
     private val myProject = event.project!!
 
