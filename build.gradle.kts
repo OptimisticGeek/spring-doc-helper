@@ -31,6 +31,10 @@ dependencies {
     implementation("org.jetbrains.kotlinx:kotlinx-html:0.8.0")
 }
 
+java {
+    sourceCompatibility = JavaVersion.VERSION_17
+}
+
 // Set the JVM language level used to build the project. Use Java 11 for 2020.3+, and Java 17 for 2022.2+.
 kotlin {
     @Suppress("UnstableApiUsage")
@@ -84,6 +88,14 @@ tasks {
 
     wrapper {
         gradleVersion = properties("gradleVersion").get()
+    }
+
+    compileKotlin {
+        kotlinOptions.jvmTarget = "17"
+    }
+
+    compileTestKotlin {
+        kotlinOptions.jvmTarget = "17"
     }
 
     patchPluginXml {
