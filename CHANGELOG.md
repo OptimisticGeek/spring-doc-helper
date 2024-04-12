@@ -2,6 +2,9 @@
 
 # springDocHelper Changelog
 
+## [1.0.4]
+- Idea支持范围为 223.7571.182 ~ 241.*
+
 ## [1.0.3]
 - 支持Idea 2024.1版本
 
@@ -43,13 +46,6 @@
 - GET|POST|PUT|DELETE左侧小图标，支持复制操作
 - controller缓存逻辑
 
-## [Unreleased]
-- [ ] 生成接口请求用例
-- [ ] 针对指定类的自定义fields
-- [ ] 导入到Yapi
-- [ ] 导入到Postman
-
-[Unreleased]: https://github.com/OptimisticGeek/spring-doc-helper/compare/v0.1.2...HEAD
 [0.1.0]: https://github.com/OptimisticGeek/spring-doc-helper/releases/tag/v0.1.0
 [0.1.1]: https://github.com/OptimisticGeek/spring-doc-helper/releases/tag/v0.1.1
 [0.1.2]: https://github.com/OptimisticGeek/spring-doc-helper/releases/tag/v0.1.2
@@ -59,3 +55,4 @@
 [1.0.1]: https://github.com/OptimisticGeek/spring-doc-helper/releases/tag/v1.0.1
 [1.0.2]: https://github.com/OptimisticGeek/spring-doc-helper/releases/tag/v1.0.2
 [1.0.3]: https://github.com/OptimisticGeek/spring-doc-helper/releases/tag/v1.0.3
+[1.0.4]: https://github.com/OptimisticGeek/spring-doc-helper/releases/tag/v1.0.4

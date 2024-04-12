@@ -18,8 +18,8 @@
 <ul><li>鼠标悬浮文档提示（class、field、response、params、method）</li><li>Object与泛型返回值真实类型推断</li><li><img src="https://raw.githubusercontent.com/OptimisticGeek/spring-doc-helper/main/src/main/resources/icon/method/GET.png" alt="GET" />GET|<img src="https://raw.githubusercontent.com/OptimisticGeek/spring-doc-helper/main/src/main/resources/icon/method/POST.png" alt="POST" />POST|<img src="https://raw.githubusercontent.com/OptimisticGeek/spring-doc-helper/main/src/main/resources/icon/method/PUT.png" alt="PUT" />PUT|<img src="https://raw.githubusercontent.com/OptimisticGeek/spring-doc-helper/main/src/main/resources/icon/method/DELETE.png" alt="DELETE" />DELETE左侧小图标，支持复制操作、生成测试用例</li><li>双击shift搜索接口（search everywhere），支持*通配和单词、正则、区分大小写和http请求方法搜索</li><li>支持swagger文档解析</li><li>优化缓存逻辑，减少内存占用</li></ul>
 
 <h2>Todo</h2>
-<ul><li class="task-list-item"><input type="checkbox" class="task-list-item-checkbox" disabled />閽堝鎸囧畾绫荤殑鑷畾涔塮ields</li><li class="task-list-item"><input type="checkbox" class="task-list-item-checkbox" disabled />瀵煎叆鍒癥api</li><li class="task-list-item"><input type="checkbox" class="task-list-item-checkbox" disabled />瀵煎叆鍒癙ostman</li><li class="task-list-item"><input type="checkbox" class="task-list-item-checkbox" disabled />鏂规硶璐ｄ换閾撅紙浠ユ椂闂磋酱鍊掑簭灞曠ず鎺ュ彛淇敼璁板綍锛�</li></ul>]]></description>
-  <change-notes><![CDATA[<ul><li>支持Idea 2024.1版本</li></ul>]]></change-notes>
+<ul><li class="task-list-item"><input type="checkbox" class="task-list-item-checkbox" disabled />针对指定类的自定义fields</li><li class="task-list-item"><input type="checkbox" class="task-list-item-checkbox" disabled />导入到Yapi</li><li class="task-list-item"><input type="checkbox" class="task-list-item-checkbox" disabled />导入到Postman</li><li class="task-list-item"><input type="checkbox" class="task-list-item-checkbox" disabled />方法责任链（以时间轴倒序展示接口修改记录）</li></ul>]]></description>
+  <change-notes><![CDATA[<ul><li>Idea支持范围为 223.7571.182 ~ 241.*</li></ul>]]></change-notes>
   <resource-bundle>messages.Scanner</resource-bundle>
   <extensionPoints />
   <extensions defaultExtensionNs="com.intellij">
