@@ -23,6 +23,7 @@ import com.intellij.openapi.actionSystem.DefaultActionGroup
 import com.intellij.openapi.editor.markup.GutterIconRenderer
 import com.intellij.openapi.fileEditor.FileEditorManager
 import com.intellij.openapi.ide.CopyPasteManager
+import com.intellij.openapi.project.DumbService
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.ui.popup.JBPopupFactory
 import com.intellij.openapi.util.TextRange
@@ -49,7 +50,7 @@ class ControllerLineMarkerProvider : JavaLineMarkerProvider() {
         elements: MutableList<out PsiElement>,
         result: MutableCollection<in LineMarkerInfo<*>>
     ) {
-        elements.filterIsInstance<PsiClass>().forEach {
+        elements.filterIsInstance<PsiClass>().filter { !DumbService.isDumb(it.project) }.forEach {
             it.getHttpMethodMap()?.values?.asSequence()?.map {
                 it.analyze().createLineMarkerInfo(it.psiMethod.nameIdentifier, it.textRange(), it.title(), it.icon())
             }?.forEach(result::add)

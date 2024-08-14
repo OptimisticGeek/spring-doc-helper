@@ -3,7 +3,9 @@
 # springDocHelper Changelog
 
 ## [1.0.4]
-- Idea支持范围为 223.7571.182 ~ 241.*
+- Idea支持范围为 233 ~ 242.*
+- kotlin升级为2.0.10
+- intelliJPlatform版本为2.0
 
 ## [1.0.3]
 - 支持Idea 2024.1版本
