@@ -5,6 +5,7 @@ package com.github.optimisticgeek.editor.search
 
 import com.intellij.find.FindBundle
 import com.intellij.icons.AllIcons
+import com.intellij.openapi.actionSystem.ActionUpdateThread
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.actionSystem.ToggleAction
 import com.intellij.openapi.actionSystem.ex.TooltipDescriptionProvider
@@ -14,7 +15,7 @@ import javax.swing.Icon
 import javax.swing.JComponent
 
 /**
- * @see TextSearchRightActionAction 来自JetBrains
+ * @see com.intellij.find.impl.TextSearchRightActionAction 来自JetBrains
 
  * @author OptimisticGeek
  * @date 2024/2/17
@@ -27,6 +28,9 @@ open class TextSearchRightAnAction(
     val property: AtomicBooleanProperty,
     val callback: Runnable
 ) : ToggleAction(message, null, icon), TooltipLinkProvider, TooltipDescriptionProvider {
+    override fun getActionUpdateThread(): ActionUpdateThread {
+        return ActionUpdateThread.EDT
+    }
 
     init {
         templatePresentation.hoveredIcon = hoverIcon
@@ -53,7 +57,12 @@ class CaseSensitiveAction(property: AtomicBooleanProperty, onChanged: Runnable) 
     AllIcons.Actions.MatchCase, AllIcons.Actions.MatchCaseHovered, AllIcons.Actions.MatchCaseSelected,
     property,
     onChanged
-)
+
+) {
+    override fun getActionUpdateThread(): ActionUpdateThread {
+        return ActionUpdateThread.EDT
+    }
+}
 
 
 class WordAction(property: AtomicBooleanProperty, onChanged: Runnable) : TextSearchRightAnAction(
@@ -61,7 +70,11 @@ class WordAction(property: AtomicBooleanProperty, onChanged: Runnable) : TextSea
     AllIcons.Actions.Words, AllIcons.Actions.WordsHovered, AllIcons.Actions.WordsSelected,
     property,
     onChanged
-)
+) {
+    override fun getActionUpdateThread(): ActionUpdateThread {
+        return ActionUpdateThread.EDT
+    }
+}
 
 
 class RegexpAction(property: AtomicBooleanProperty, onChanged: Runnable) : TextSearchRightAnAction(
@@ -71,4 +84,8 @@ class RegexpAction(property: AtomicBooleanProperty, onChanged: Runnable) : TextS
     AllIcons.Actions.RegexSelected,
     property,
     onChanged
-)
+) {
+    override fun getActionUpdateThread(): ActionUpdateThread {
+        return ActionUpdateThread.EDT
+    }
+}
