@@ -34,7 +34,7 @@ fun PsiTypeElement.findClassModels(): LinkedList<ClassModel>? {
     psiClass.toClassModel()?.let { list.add(it) } ?: return null
     // 数组作为list，特殊处理 && 数组类型不存在泛型
     if (this.text.endsWith(ARRAY_TAG)) {
-        list.addFirst(FieldType.LIST.model)
+        list.addFirst(FieldType.LIST.model!!)
         return list
     }
     // 泛型处理
