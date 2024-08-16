@@ -29,7 +29,7 @@ open class TextSearchRightAnAction(
     val callback: Runnable
 ) : ToggleAction(message, null, icon), TooltipLinkProvider, TooltipDescriptionProvider {
     override fun getActionUpdateThread(): ActionUpdateThread {
-        return ActionUpdateThread.EDT
+        return ActionUpdateThread.BGT
     }
 
     init {
@@ -60,7 +60,7 @@ class CaseSensitiveAction(property: AtomicBooleanProperty, onChanged: Runnable) 
 
 ) {
     override fun getActionUpdateThread(): ActionUpdateThread {
-        return ActionUpdateThread.EDT
+        return ActionUpdateThread.BGT
     }
 }
 
@@ -72,7 +72,7 @@ class WordAction(property: AtomicBooleanProperty, onChanged: Runnable) : TextSea
     onChanged
 ) {
     override fun getActionUpdateThread(): ActionUpdateThread {
-        return ActionUpdateThread.EDT
+        return ActionUpdateThread.BGT
     }
 }
 
@@ -86,6 +86,6 @@ class RegexpAction(property: AtomicBooleanProperty, onChanged: Runnable) : TextS
     onChanged
 ) {
     override fun getActionUpdateThread(): ActionUpdateThread {
-        return ActionUpdateThread.EDT
+        return ActionUpdateThread.BGT
     }
 }
