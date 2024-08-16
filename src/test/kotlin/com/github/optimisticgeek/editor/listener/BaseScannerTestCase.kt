@@ -13,7 +13,7 @@ import com.intellij.openapi.diagnostic.thisLogger
 import com.intellij.psi.*
 import com.intellij.psi.util.PsiTreeUtil
 import com.intellij.testFramework.TestDataPath
-import com.intellij.testFramework.fixtures.LightPlatformCodeInsightFixture4TestCase
+import com.intellij.testFramework.fixtures.LightJavaCodeInsightFixtureTestCase
 import junit.framework.TestCase
 import java.io.File
 
@@ -25,7 +25,7 @@ import java.io.File
  */
 @Suppress("MemberVisibilityCanBePrivate")
 @TestDataPath("\$CONTENT_ROOT/src/test/testData")
-abstract class BaseScannerTestCase : LightPlatformCodeInsightFixture4TestCase() {
+abstract class BaseScannerTestCase : LightJavaCodeInsightFixtureTestCase() {
     val psiFileFactory: PsiFileFactory by lazy { PsiFileFactory.getInstance(project) }
     val cache: HashMap<String, PsiClass> = HashMap()
     val qNameResultData = "com.github.optimisticgeek.entity.ResultData"

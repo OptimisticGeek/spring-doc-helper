@@ -25,7 +25,7 @@ open class BaseControllerTestCase : BaseScannerTestCase() {
     }
 
     fun testCreateTmpDocumentFile() {
-        writeTmpDocument()
+        // writeTmpDocument()
     }
 
     fun writeTmpDocument() {

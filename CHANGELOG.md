@@ -2,6 +2,13 @@
 
 # springDocHelper Changelog
 
+## [1.0.5] - 2024-8-17
+### Changed
+- 升级intelliJPlatform 2.0.0 -> 2.0.1
+
+### Fixed
+- fix - 支持Java测试框架
+
 ## [1.0.4] - 2024-8-15
 
 ### Added
@@ -62,3 +69,4 @@
 [1.0.2]: https://github.com/OptimisticGeek/spring-doc-helper/releases/tag/v1.0.2
 [1.0.3]: https://github.com/OptimisticGeek/spring-doc-helper/releases/tag/v1.0.3
 [1.0.4]: https://github.com/OptimisticGeek/spring-doc-helper/releases/tag/v1.0.4
+[1.0.5]: https://github.com/OptimisticGeek/spring-doc-helper/releases/tag/v1.0.5
