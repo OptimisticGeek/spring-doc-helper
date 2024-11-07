@@ -91,7 +91,7 @@ private fun AnalyzeHttpMethod.popupActionGroup(group: DefaultActionGroup, e: Mou
         JBPopupFactory.getInstance().createActionGroupPopup(
             null, group, it, JBPopupFactory.ActionSelectionAid.SPEEDSEARCH, true
         )
-    }.apply { setShowSubmenuOnHover(true) }.apply { setMinimumSize(Dimension(10, 0)) }.show(RelativePoint(e))
+    }.apply { isShowSubmenuOnHover = true }.apply { setMinimumSize(Dimension(10, 0)) }.show(RelativePoint(e))
 }
 
 /*
