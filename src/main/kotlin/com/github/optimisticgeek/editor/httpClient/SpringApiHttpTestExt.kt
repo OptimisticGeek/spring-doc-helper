@@ -9,39 +9,39 @@ import com.intellij.openapi.fileEditor.FileDocumentManager
 import com.intellij.openapi.fileEditor.OpenFileDescriptor
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.vfs.LocalFileSystem
+import com.intellij.openapi.vfs.findDocument
 import java.io.File
 
 @JvmName("createHttpTestFile")
 fun AnalyzeHttpMethod.createHttpTestFile(isShow: Boolean = true, flushed: Boolean = false) {
     val keyword = "### $position"
 
-    project.getHttpTestFile(position!!)
-        .let { LocalFileSystem.getInstance().refreshAndFindFileByIoFile(it) }
-        ?.run {
-            FileDocumentManager.getInstance().getDocument(this)?.apply {
-                runWriteAction {
-                    // 创建多环境变量文件
-                    LocalFileSystem.getInstance().refreshAndFindFileByIoFile(project.createHttpTestEvnFile())
+    // 创建多环境变量文件
+    LocalFileSystem.getInstance().refreshAndFindFileByIoFile(project.createHttpTestEvnFile())
 
-                    if (text.indexOf(keyword) == -1) {
-                        setText(text + createHttpTestStr())
-                    } else if (flushed) {
-                        setText(text.replace(Regex("(### $position[\\s\\S]*?$END_FIX)"), createHttpTestStr()))
-                    } else return@runWriteAction
-                    FileDocumentManager.getInstance().saveDocument(this)
-                }
-            }?.text?.indexOf(keyword).let {
-                OpenFileDescriptor(project, this, it ?: -1).navigate(isShow)
+    val virtualFile =
+        project.getHttpTestFile(position!!).let { LocalFileSystem.getInstance().refreshAndFindFileByIoFile(it) }
+            ?: return
+    val document = virtualFile.findDocument() ?: return
+    FileDocumentManager.getInstance().saveDocument(document)
+    document.run {
+        runWriteAction {
+            if (text.indexOf(keyword) == -1) {
+                setText(text + createHttpTestStr())
+            } else if (flushed) {
+                setText(text.replace(Regex("(### $position[\\s\\S]*?$END_FIX)"), createHttpTestStr()))
             }
         }
+    }
+    FileDocumentManager.getInstance().saveDocument(document)
 
+    document.text.indexOf(keyword).let { OpenFileDescriptor(project, virtualFile, it).navigate(isShow) }
 }
 
 @JvmName("hasHttpTestFile")
 fun AnalyzeHttpMethod.hasHttpTestMethod(): Boolean {
-    return project.getHttpTestFile(position!!, false)
-        .also { if (!it.exists()) return false }
-        .readText().contains("### $position")
+    return project.getHttpTestFile(position!!, false).also { if (!it.exists()) return false }.readText()
+        .contains("### $position")
 }
 
 private const val END_FIX = "### END\n\n\n\n"
@@ -73,20 +73,16 @@ private fun Project.getHttpTestFile(qName: String, isCreate: Boolean = true): Fi
         append(".http")
     }.let { File(it) }.apply {
         if (!exists() && isCreate) {
-            parentFile.mkdirs()
-            createNewFile()
+            parentFile.mkdirs(); createNewFile()
         }
     }
 }
 
 @JvmName("createHttpTestEvnFile")
 private fun Project.createHttpTestEvnFile(): File {
-    return File("$basePath${File.separator}.http${File.separator}http-client.env.json")
-        .apply { if (exists()) return@apply }
-        .apply { parentFile.mkdirs();createNewFile() }
-        .apply { appendText(http_client_evn) }
+    return File("$basePath${File.separator}.http${File.separator}http-client.env.json").apply { if (exists()) return this }
+        .apply { parentFile.mkdirs();createNewFile() }.apply { appendText(http_client_evn) }
 }
-
 
 private const val http_client_evn = """
 {

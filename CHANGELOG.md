@@ -4,17 +4,18 @@
 
 ## [Unreleased]
 
-## [1.0.5] - 2024-8-17
+## [1.0.6] - 2024-11-10
+
+### Added
+
+- 接口左侧小图标，支持复制JsonSchema
+
+## [1.0.5] - 2024-11-8
 
 ### Changed
 
-- 升级intelliJPlatform 2.0.0 -> 2.0.1
-- 支持Idea 243.*版本
-- 优化接口文档展现时机，仅接口方法与字段名时显示
-
-### Fixed
-
-- fix - 支持Java测试框架
+- 支持版本 232 ~ 242.*
+- 优化快速文档展现方式，仅显示接口与接口内变量名相关的文档
 
 ## [1.0.4] - 2024-8-15
 
@@ -77,7 +78,8 @@
 - GET|POST|PUT|DELETE左侧小图标，支持复制操作
 - controller缓存逻辑
 
-[Unreleased]: https://github.com/OptimisticGeek/spring-doc-helper/compare/v1.0.5...HEAD
+[Unreleased]: https://github.com/OptimisticGeek/spring-doc-helper/compare/v1.0.6...HEAD
+[1.0.6]: https://github.com/OptimisticGeek/spring-doc-helper/compare/v1.0.5...v1.0.6
 [1.0.5]: https://github.com/OptimisticGeek/spring-doc-helper/compare/v1.0.4...v1.0.5
 [1.0.4]: https://github.com/OptimisticGeek/spring-doc-helper/compare/v1.0.3...v1.0.4
 [1.0.3]: https://github.com/OptimisticGeek/spring-doc-helper/compare/v1.0.2...v1.0.3
