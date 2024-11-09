@@ -2,11 +2,18 @@
 package com.github.optimisticgeek.editor.listener
 
 import com.github.optimisticgeek.analyze.model.AnalyzeModel
+import com.github.optimisticgeek.editor.model.getJsonSchema
 import com.github.optimisticgeek.spring.constant.FieldType
+import com.google.gson.Gson
 
 @JvmName("toJson")
 fun AnalyzeModel.toJson(showRemark: Boolean = true): String {
     return this.appendField(showRemark = showRemark).toString()
+}
+
+@JvmName("toJsonSchema")
+fun AnalyzeModel.toJsonSchema(showRemark: Boolean = true): String {
+    return Gson().toJson(this.getJsonSchema())
 }
 
 @JvmName("appendField")

@@ -69,12 +69,21 @@ enum class FieldType(
     },
 
     /**
+     * 数组
+     */
+    ARRAY("Array", isRef = true),
+
+    /**
+     * 数组
+     */
+    NUMBER("Number", defaultValue = 1.0),
+
+    /**
      * Map当做obj来处理，因为模拟了key字段
      */
     MAP(
         JAVA_UTIL_MAP, isObj = true, qNames = setOf(
-            JAVA_UTIL_HASH_MAP, JAVA_UTIL_LINKED_HASH_MAP,
-            JAVA_UTIL_CONCURRENT_HASH_MAP, JAVA_UTIL_MAP
+            JAVA_UTIL_HASH_MAP, JAVA_UTIL_LINKED_HASH_MAP, JAVA_UTIL_CONCURRENT_HASH_MAP, JAVA_UTIL_MAP
         )
     ),
 
@@ -134,8 +143,8 @@ fun getFieldType(psiClass: PsiClass? = null, qualifiedName: String? = null): Fie
 
     val supers = "$qName," + psiClass?.let {
         psiClass.interfaces.mapNotNull { it.qualifiedName }
-            .joinToString(",") + "," + psiClass.supers.mapNotNull { it.qualifiedName }
-            .filter { it != JAVA_LANG_OBJECT }.joinToString(",")
+            .joinToString(",") + "," + psiClass.supers.mapNotNull { it.qualifiedName }.filter { it != JAVA_LANG_OBJECT }
+            .joinToString(",")
     }
     return FieldType.values().firstOrNull { it.isFieldType(qName) || it.isThisOrSupers(supers) } ?: FieldType.OBJECT
 }

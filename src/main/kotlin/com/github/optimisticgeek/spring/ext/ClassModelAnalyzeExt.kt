@@ -17,12 +17,16 @@ fun FieldModel.analyze(): AnalyzeModel {
     return this.classType.analyze().also {
         it.name = this.realName
         it.remark = this.realRemark
+        it.required = this.isRequired
     }
 }
 
 @JvmName("analyze")
-fun RefClassModel.analyze(ref: RefClassModel? = null, parent: AnalyzeModel? = null, isRefField: Boolean = false):
-        AnalyzeModel {
+fun RefClassModel.analyze(
+    ref: RefClassModel? = null,
+    parent: AnalyzeModel? = null,
+    isRefField: Boolean = false
+): AnalyzeModel {
 
     val model = AnalyzeModel(this, parent)
 
