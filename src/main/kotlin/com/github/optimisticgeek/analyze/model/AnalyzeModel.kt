@@ -9,7 +9,8 @@ class AnalyzeModel(
     val type: FieldType,
     var children: List<AnalyzeModel>? = null,
     model: BaseModel? = null,
-    val parent: AnalyzeModel? = null
+    val parent: AnalyzeModel? = null,
+    var required: Boolean = false
 ) : BaseAnalyzeModel(model) {
     constructor(ref: RefClassModel, parent: AnalyzeModel?) : this(ref.sourceType, null, ref.source, parent) {
         this.remark = ref.remark ?: ref.realRemark

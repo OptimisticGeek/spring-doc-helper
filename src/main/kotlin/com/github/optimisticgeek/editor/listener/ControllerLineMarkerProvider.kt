@@ -47,8 +47,7 @@ import javax.swing.Icon
 class ControllerLineMarkerProvider : JavaLineMarkerProvider() {
 
     override fun collectSlowLineMarkers(
-        elements: MutableList<out PsiElement>,
-        result: MutableCollection<in LineMarkerInfo<*>>
+        elements: MutableList<out PsiElement>, result: MutableCollection<in LineMarkerInfo<*>>
     ) {
         elements.filterIsInstance<PsiClass>().filter { !DumbService.isDumb(it.project) }.forEach {
             it.getHttpMethodMap()?.values?.asSequence()?.map {
@@ -65,18 +64,31 @@ fun HttpMethodModel.analyze(): AnalyzeHttpMethod = AnalyzeHttpMethod(this)
 private fun AnalyzeHttpMethod.createLineMarkerInfo(
     identifier: PsiIdentifier?, range: TextRange, title: String, icon: Icon
 ): LineMarkerInfo<PsiIdentifier> {
-    return LineMarkerInfo<PsiIdentifier>(/* element = */ identifier!!, /* range = */ range, /* icon = */ icon,
-        /* tooltipProvider = */ { title },
-        /* navHandler = */
+    return LineMarkerInfo<PsiIdentifier>(/* element = */ identifier!!, /* range = */
+        range, /* icon = */
+        icon,/* tooltipProvider = */
+        { title },/* navHandler = */
         { e, _ ->
-            SmartPopupActionGroup.createPopupGroup { title }
-                .apply {
+            SmartPopupActionGroup.createPopupGroup { title }.apply {
                     if (hasHttpTestMethod()) {
                         add(ScannerBundle.message("action.api.show")) { createHttpTestFile() }
                         add(ScannerBundle.message("action.api.flushed")) { createHttpTestFile(flushed = true) }
-                    } else add(ScannerBundle.message("action.api.create")) { createHttpTestFile() }
-                }
-                .apply { add(createCopyActionGroup()) }
+                    } else {
+                        add(ScannerBundle.message("action.api.create")) { createHttpTestFile() }
+                    }
+                    add(
+                        ScannerBundle.message(
+                            "action.copy",
+                            ScannerBundle.message("document.curl")
+                        )
+                    ) { toCurlStr().let { project.copyString(it) } }
+                    add(ScannerBundle.message("action.copy", ScannerBundle.message("document.url"))) {
+                        getUrl(
+                            false,
+                            hasRootUrl = true
+                        ).let { project.copyString(it) }
+                    }
+                }.apply { add(createCopyActionGroup()) }.apply { add(createCopyJsonSchemaActionGroup()) }
                 .also { popupActionGroup(it, e) }
         },/* alignment = */
         GutterIconRenderer.Alignment.LEFT, /* accessibleNameProvider = */
@@ -91,7 +103,7 @@ private fun AnalyzeHttpMethod.popupActionGroup(group: DefaultActionGroup, e: Mou
         JBPopupFactory.getInstance().createActionGroupPopup(
             null, group, it, JBPopupFactory.ActionSelectionAid.SPEEDSEARCH, true
         )
-    }.apply { setShowSubmenuOnHover(true) }.apply { setMinimumSize(Dimension(10, 0)) }.show(RelativePoint(e))
+    }.apply { isShowSubmenuOnHover = true }.apply { setMinimumSize(Dimension(10, 0)) }.show(RelativePoint(e))
 }
 
 /*
@@ -110,10 +122,7 @@ private fun AnalyzeMethod.createHttpClientActionGroup(isCreated: Boolean): Defau
 
 @JvmName("createCopyActionGroup")
 private fun AnalyzeHttpMethod.createCopyActionGroup(): DefaultActionGroup {
-    return SmartPopupActionGroup.createPopupGroup { ScannerBundle.message("action.copy") }.apply {
-        add(ScannerBundle.message("document.curl")) { toCurlStr().let { project.copyString(it) } }
-        add(ScannerBundle.message("document.url")) { getUrl(false, hasRootUrl = true).let { project.copyString(it) } }
-    }.apply {
+    return SmartPopupActionGroup.createPopupGroup { ScannerBundle.message("action.copy", "JSON") }.apply {
         pathParams?.let {
             add(ScannerBundle.message("document.pathParams")) { it.toJson().let { project.copyString(it) } }
         }
@@ -128,6 +137,27 @@ private fun AnalyzeHttpMethod.createCopyActionGroup(): DefaultActionGroup {
 
         response?.let {
             add(ScannerBundle.message("document.response")) { it.toJson().let { project.copyString(it) } }
+        }
+    }
+}
+
+@JvmName("createCopyJsonSchemaActionGroup")
+private fun AnalyzeHttpMethod.createCopyJsonSchemaActionGroup(): DefaultActionGroup {
+    return SmartPopupActionGroup.createPopupGroup { ScannerBundle.message("action.copy", "JsonSchema") }.apply {
+        pathParams?.let {
+            add(ScannerBundle.message("document.pathParams")) { it.toJsonSchema().let { project.copyString(it) } }
+        }
+
+        queryParams?.let {
+            add(ScannerBundle.message("document.queryParams")) { it.toJsonSchema().let { project.copyString(it) } }
+        }
+
+        requestBody?.let {
+            add(ScannerBundle.message("document.requestBody")) { it.toJsonSchema().let { project.copyString(it) } }
+        }
+
+        response?.let {
+            add(ScannerBundle.message("document.response")) { it.toJsonSchema().let { project.copyString(it) } }
         }
     }
 }
