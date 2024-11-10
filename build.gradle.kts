@@ -1,3 +1,4 @@
+
 import org.jetbrains.changelog.Changelog
 import org.jetbrains.changelog.markdownToHTML
 import org.jetbrains.intellij.platform.gradle.IntelliJPlatformType
@@ -167,10 +168,16 @@ tasks {
         sinceBuild = providers.gradleProperty("pluginSinceBuild")
         untilBuild = providers.gradleProperty("pluginUntilBuild")
         doLast {
-            val latestEap = productsReleases.get().max()
-            println(latestEap)
+            // 打开输出文件并写入内容
+            val outputFile = file("build/listProductsReleases.txt")
+            outputFile.printWriter().use { writer -> writer.println(productsReleases.get().max()) }
+            printProductsReleases()
         }
     }
+}
+
+tasks.register("listProductsReleases"){
+    dependsOn("printProductsReleases")
 }
 
 intellijPlatformTesting {
