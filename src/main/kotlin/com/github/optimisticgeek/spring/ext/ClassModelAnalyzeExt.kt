@@ -23,9 +23,7 @@ fun FieldModel.analyze(): AnalyzeModel {
 
 @JvmName("analyze")
 fun RefClassModel.analyze(
-    ref: RefClassModel? = null,
-    parent: AnalyzeModel? = null,
-    isRefField: Boolean = false
+    ref: RefClassModel? = null, parent: AnalyzeModel? = null, isRefField: Boolean = false
 ): AnalyzeModel {
 
     val model = AnalyzeModel(this, parent)
@@ -34,13 +32,10 @@ fun RefClassModel.analyze(
 
     val realRefModel = if (ref.isNull()) this.ref else ref
 
-    if (sourceType == FieldType.LIST) {
+    if (sourceType == FieldType.LIST)
         return model.also { realRefModel?.analyze(null, model)?.let { model.children = listOf(it) } }
-    }
 
-    if (realRefModel != null && (source.isRef() || isRefField)) {
-        return realRefModel.analyze(null, model)
-    }
+    if (realRefModel != null && (source.isRef() || isRefField)) return realRefModel.analyze(null, model)
 
     // 通过parent避免循环调用，result -> result || result -> List<Result>
     if (model.isLoopCall()) return model

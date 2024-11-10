@@ -64,11 +64,6 @@ fun String.className(): String {
 }
 
 @JvmName("toRefClassModel")
-fun ClassModel.toRefClassModel(): RefClassModel {
-    return RefClassModel(this)
-}
-
-@JvmName("toRefClassModel")
-fun ClassModel.toRefClassModel(ref: RefClassModel?): RefClassModel {
+fun ClassModel.toRefClassModel(ref: RefClassModel? = null): RefClassModel {
     return RefClassModel(this, ref)
 }

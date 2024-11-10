@@ -51,7 +51,7 @@ fun RefClassModel.updateRef(newRef: RefClassModel?): RefClassModel {
     newRef ?: return this
     if (ref == null || newRef.getScore() > ref.getScore()) ref = newRef
     // 例如：构造方法为Result(List<T> list)，rows字段为List<T>，如果不做下方处理会造成rows为 List<List<T>>
-    if(refField?.classType?.sourceType == LIST && ref?.sourceType == LIST) ref = ref?.ref
+    if (refField?.classType?.sourceType == LIST && ref?.sourceType == LIST) ref = ref?.ref
     return this
 }
 

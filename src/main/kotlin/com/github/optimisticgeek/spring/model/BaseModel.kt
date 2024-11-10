@@ -10,10 +10,9 @@ package com.github.optimisticgeek.spring.model
  */
 
 open class BaseModel(
-    internal var name: String? = null,
-    var author: String? = null,
-    var remark: String? = null,
-    internal var position: String? = null
+    var name: String? = null, var author: String? = null, var remark: String? = null, var position: String? = null
 ) {
-    constructor(model: BaseModel? = null) : this(model?.name, model?.author, model?.remark ?: model?.name, model?.position)
+    constructor(model: BaseModel? = null) : this(
+        model?.name, model?.author, model?.remark ?: model?.name, model?.position
+    )
 }

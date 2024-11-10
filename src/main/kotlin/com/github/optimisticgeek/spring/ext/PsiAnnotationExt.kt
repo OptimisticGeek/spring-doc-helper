@@ -31,20 +31,14 @@ fun PsiAnnotation.getAnnotationValue(valueName: String): String {
 fun PsiAnnotation.getAnnotationValues(valueName: String): List<String> {
     val attributeValue = this.findAttributeValue(valueName) ?: return Collections.emptyList()
     val values = PsiTreeUtil.findChildrenOfType(attributeValue, PsiLiteralExpression::class.java)
-    if (values.isEmpty()) {
-        return listOf(attributeValue.text.replace("\"", "").replace("{}", ""))
-    }
+    if (values.isEmpty()) return listOf(attributeValue.text.replace("\"", "").replace("{}", ""))
     return values.stream().map { it.text.replace("\"", "").replace("{}", "") }.collect(Collectors.toList())
 }
 
 @JvmName("getHttpMethodType")
 fun PsiAnnotation.getHttpMethodType(): HttpMethodType? {
-    if (BooleanUtils.isNotTrue(this.qualifiedName?.endsWith("Mapping"))) {
-        return null
-    }
-    if (BooleanUtils.isNotTrue(this.qualifiedName?.startsWith("org.springframework.web.bind.annotation."))) {
-        return null
-    }
+    if (BooleanUtils.isNotTrue(this.qualifiedName?.endsWith("Mapping"))) return null
+    if (BooleanUtils.isNotTrue(this.qualifiedName?.startsWith("org.springframework.web.bind.annotation."))) return null
     return when (this.qualifiedName) {
         GET_MAPPING -> HttpMethodType.GET
         POST_MAPPING -> HttpMethodType.POST

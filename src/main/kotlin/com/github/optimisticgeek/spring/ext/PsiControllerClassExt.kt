@@ -15,7 +15,8 @@ import com.intellij.util.Consumer
 import org.apache.commons.lang3.BooleanUtils
 
 @JvmName("buildParameters")
-fun PsiMethod.buildParameters(pathParams: ArrayList<FieldModel>, queryParams: ArrayList<FieldModel>, requestBody: Consumer<FieldModel>
+fun PsiMethod.buildParameters(
+    pathParams: ArrayList<FieldModel>, queryParams: ArrayList<FieldModel>, requestBody: Consumer<FieldModel>
 ) {
     if (!this.hasParameters()) return
     this.parameterList.parameters.forEach {
@@ -79,7 +80,7 @@ private fun PsiVariable.buildRefClassModel(root: RefClassModel): RefClassModel? 
                 // PsiAssignmentExpression:result.data = new ArrayList<Integer>() || result.data = 1
                 is PsiAssignmentExpressionImpl -> PsiTreeUtil.getChildOfAnyType(
                     parent, PsiLiteralExpression::class.java, PsiNewExpressionImpl::class.java
-                )?.let { it.type.analyzeRefClassModel(project) }
+                )?.type?.analyzeRefClassModel(project)
 
                 else -> null
             }.let { root.updateRef(it) }
@@ -133,8 +134,7 @@ private fun PsiReferenceExpressionImpl.analyzeResponseBody(root: RefClassModel, 
 @JvmName("analyzeResponseBody")
 fun PsiMethodCallExpression.analyzeResponseBody(): RefClassModel? {
     return this.resolveMethod()?.let { method ->
-        method.returnTypeElement?.toRefClassModel()
-            ?.also { it.remark = method.getDocumentTag(RETURN) }
+        method.returnTypeElement?.toRefClassModel()?.also { it.remark = method.getDocumentTag(RETURN) }
             ?.also { root -> this.analyzeResponseBody(root, root.refField?.name)?.let { root.updateRef(it) } }
     }
 }
