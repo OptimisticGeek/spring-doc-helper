@@ -3,8 +3,8 @@
   -->
 <!-- Plugin Configuration File. Read more: https://plugins.jetbrains.com/docs/intellij/plugin-configuration-file.html -->
 <idea-plugin>
-  <version>1.0.5</version>
-  <idea-version since-build="232" until-build="242.*" />
+  <version>1.0.7</version>
+  <idea-version since-build="232" until-build="243.*" />
   <id>com.github.optimisticGeek.spring-doc-helper</id>
   <name>SpringDocHelper</name>
   <vendor email="optimisticgeekone@gmail.com">optimisticGeek</vendor>
@@ -14,13 +14,38 @@
   <resource-bundle>messages.Scanner</resource-bundle>
   <extensionPoints />
   <extensions defaultExtensionNs="com.intellij">
-    <codeInsight.lineMarkerProvider implementationClass="com.github.optimisticgeek.editor.listener.ControllerLineMarkerProvider" language="JAVA" />
+    <codeInsight.lineMarkerProvider implementationClass="com.github.optimistic.editor.listener.ControllerLineMarkerProvider" language="JAVA" />
     <!--文档提示-->
-    <lang.documentationProvider language="JAVA" implementationClass="com.github.optimisticgeek.editor.listener.SpringApiDocumentProvider" order="first" />
-    <searchEverywhereContributor implementation="com.github.optimisticgeek.editor.search.SpringApiSearchEverywhereClassifier$Factory" />
-    <backgroundPostStartupActivity implementation="com.github.optimisticgeek.editor.listener.StartupActivityImpl" />
+    <lang.documentationProvider language="JAVA" implementationClass="com.github.optimistic.editor.listener.SpringApiDocumentProvider" order="first" />
+    <searchEverywhereContributor implementation="com.github.optimistic.editor.search.SpringApiSearchEverywhereClassifier$Factory" />
+    <backgroundPostStartupActivity implementation="com.github.optimistic.editor.listener.StartupActivityImpl" />
   </extensions>
   <projectListeners>
-    <listener class="com.github.optimisticgeek.editor.listener.BulkFileListenerImpl" topic="com.intellij.openapi.vfs.newvfs.BulkFileListener" />
+    <listener class="com.github.optimistic.editor.listener.BulkFileListenerImpl" topic="com.intellij.openapi.vfs.newvfs.BulkFileListener" />
   </projectListeners>
+  <actions>
+    <group id="SpringDocHelper.Copy" text="SpringDocHelper" class="com.github.optimistic.editor.action.ControllerActionGroup" popup="true">
+      <add-to-group group-id="EditorPopupMenu" anchor="before" relative-to-action="Copy.Paste.Special"/>
+      <separator/>
+      <!-- 复制Curl -->
+      <action id="SpringDocHelper.CopyCurl" text="Curl" class="com.github.optimistic.editor.action.CopyCurlAction"/>
+      <!-- 复制Url -->
+      <action id="SpringDocHelper.CopyUrl" text="Url" class="com.github.optimistic.editor.action.CopyUrlAction"/>
+      <separator/>
+      <!-- 复制JSON -->
+      <group id="SpringDocHelper.CopyJson" text="CopyAsJSON" class="com.github.optimistic.editor.action.CopyJsonActionGroup" popup="true">
+        <action id="CopyPathParamsJson" text="PathParams" class="com.github.optimistic.editor.action.CopyPathParamsJsonAction"/>
+        <action id="CopyQueryParamsJson" text="QueryParams" class="com.github.optimistic.editor.action.CopyQueryParamsJsonAction"/>
+        <action id="CopyRequestJson" text="Request" class="com.github.optimistic.editor.action.CopyRequestJsonAction"/>
+        <action id="CopyResponseJson" text="Response" class="com.github.optimistic.editor.action.CopyResponseJsonAction"/>
+      </group>
+      <!-- 复制JSONSchema -->
+      <group id="SpringDocHelper.CopyJsonSchema" text="CopyAsJsonSchema" class="com.github.optimistic.editor.action.CopyJsonSchemaActionGroup" popup="true">
+        <action id="CopyPathParamsJsonSchema" text="PathParams" class="com.github.optimistic.editor.action.CopyPathParamsJsonSchemaAction"/>
+        <action id="CopyQueryParamsJsonSchema" text="QueryParams" class="com.github.optimistic.editor.action.CopyQueryParamsJsonSchemaAction"/>
+        <action id="CopyRequestJsonSchema" text="Request" class="com.github.optimistic.editor.action.CopyRequestJsonSchemaAction"/>
+        <action id="CopyResponseJsonSchema" text="Response" class="com.github.optimistic.editor.action.CopyResponseJsonSchemaAction"/>
+      </group>
+    </group>
+  </actions>
 </idea-plugin>

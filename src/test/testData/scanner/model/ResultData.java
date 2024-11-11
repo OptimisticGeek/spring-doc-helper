@@ -1,4 +1,4 @@
-package com.github.optimisticgeek.entity;
+package com.github.optimistic.entity;
 
 import lombok.Getter;
 import lombok.Setter;

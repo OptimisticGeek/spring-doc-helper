@@ -4,6 +4,16 @@
 
 ## [Unreleased]
 
+## [1.0.7] - 2024-11-11
+
+### Added
+
+- 接口右键新增菜单`SpringDocHelper`，支持复制Curl、Json、JsonSchema到剪切板
+
+### Changed
+
+- 支持版本范围 232 ~ 243.*
+
 ## [1.0.6] - 2024-11-10
 
 ### Added
@@ -79,6 +89,7 @@
 - controller缓存逻辑
 
 [Unreleased]: https://github.com/OptimisticGeek/spring-doc-helper/compare/v1.0.6...HEAD
+[1.0.7]: https://github.com/OptimisticGeek/spring-doc-helper/compare/v1.0.6...v1.0.7
 [1.0.6]: https://github.com/OptimisticGeek/spring-doc-helper/compare/v1.0.5...v1.0.6
 [1.0.5]: https://github.com/OptimisticGeek/spring-doc-helper/compare/v1.0.4...v1.0.5
 [1.0.4]: https://github.com/OptimisticGeek/spring-doc-helper/compare/v1.0.3...v1.0.4

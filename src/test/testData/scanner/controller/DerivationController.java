@@ -1,8 +1,8 @@
-package com.github.optimisticgeek.controller;
+package com.github.optimistic.controller;
 
-import com.github.optimisticgeek.entity.Pager;
-import com.github.optimisticgeek.entity.AjaxResult;
-import com.github.optimisticgeek.entity.ResultData;
+import com.github.optimistic.entity.Pager;
+import com.github.optimistic.entity.AjaxResult;
+import com.github.optimistic.entity.ResultData;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
