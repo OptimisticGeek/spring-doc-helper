@@ -4,7 +4,7 @@
 
 ## [Unreleased]
 
-## [1.0.6] - 2024-11-10
+## [1.0.7] - 2024-11-11
 
 ### Added
 
@@ -89,6 +89,7 @@
 - controller缓存逻辑
 
 [Unreleased]: https://github.com/OptimisticGeek/spring-doc-helper/compare/v1.0.6...HEAD
+[1.0.7]: https://github.com/OptimisticGeek/spring-doc-helper/compare/v1.0.6...v1.0.7
 [1.0.6]: https://github.com/OptimisticGeek/spring-doc-helper/compare/v1.0.5...v1.0.6
 [1.0.5]: https://github.com/OptimisticGeek/spring-doc-helper/compare/v1.0.4...v1.0.5
 [1.0.4]: https://github.com/OptimisticGeek/spring-doc-helper/compare/v1.0.3...v1.0.4
