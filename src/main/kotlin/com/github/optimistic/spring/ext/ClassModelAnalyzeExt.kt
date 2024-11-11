@@ -44,6 +44,7 @@ fun RefClassModel.analyze(
         field.classType.analyze(realRefModel, model, this.refField == field).apply {
             this.name = field.realName
             this.remark = field.realRemark
+            this.required = field.isRequired
         }
     }?.toList()
     return model

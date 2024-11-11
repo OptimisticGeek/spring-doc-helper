@@ -12,8 +12,8 @@ import org.apache.commons.lang3.StringUtils
 class FieldModel(
     val fieldName: String, remark: String? = null, var classType: RefClassModel
 ) : BaseModel(name = fieldName, remark = remark) {
+    var isRequired: Boolean = true
 
-    var isRequired: Boolean = false
     var aliasName: String? = null
         get() = if (StringUtils.isBlank(field)) fieldName else field
     val realName: String
@@ -25,3 +25,4 @@ class FieldModel(
         return "FieldModel(classType=$classType, realName='$realName', realRemark='$realRemark')"
     }
 }
+

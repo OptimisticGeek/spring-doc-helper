@@ -23,12 +23,14 @@ fun PsiMethod.buildParameters(
         val fieldModel = it.buildField(this.getDocumentTagParam(it.name)) ?: return@forEach
         // requestBody
         if (it.hasAnnotation(REQUEST_BODY)) {
+            fieldModel.isRequired = true
             requestBody.consume(fieldModel.also { it.name = null }.also { it.aliasName = null })
             return@forEach
         }
         // pathVariables
         if (it.hasAnnotation(PATH_VARIABLE)) {
             fieldModel.aliasName = it.getAnnotationValue(PATH_VARIABLE, DEFAULT)
+            fieldModel.isRequired = true
             pathParams.add(fieldModel)
             return@forEach
         }

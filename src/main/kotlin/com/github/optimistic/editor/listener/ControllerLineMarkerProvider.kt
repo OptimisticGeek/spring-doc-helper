@@ -51,7 +51,7 @@ class ControllerLineMarkerProvider : JavaLineMarkerProvider() {
     ) {
         elements.filterIsInstance<PsiClass>().filter { !DumbService.isDumb(it.project) }.forEach {
             it.getHttpMethodMap()?.values?.asSequence()?.map {
-                it.analyze().createLineMarkerInfo(it.psiMethod.nameIdentifier, it.textRange(), it.title(), it.icon())
+                it.createLineMarkerInfo(it.psiMethod.nameIdentifier, it.textRange(), it.title(), it.icon())
             }?.forEach(result::add)
         }
     }
@@ -61,7 +61,7 @@ class ControllerLineMarkerProvider : JavaLineMarkerProvider() {
 fun HttpMethodModel.analyze(): AnalyzeHttpMethod = AnalyzeHttpMethod(this)
 
 @JvmName("createLineMarkerInfo")
-private fun AnalyzeHttpMethod.createLineMarkerInfo(
+private fun HttpMethodModel.createLineMarkerInfo(
     identifier: PsiIdentifier?, range: TextRange, title: String, icon: Icon
 ): LineMarkerInfo<PsiIdentifier> {
     return LineMarkerInfo<PsiIdentifier>(/* element = */ identifier!!, /* range = */
@@ -69,20 +69,22 @@ private fun AnalyzeHttpMethod.createLineMarkerInfo(
         icon,/* tooltipProvider = */
         { title },/* navHandler = */
         { e, _ ->
-            SmartPopupActionGroup.createPopupGroup { title }.apply {
-                if (hasHttpTestMethod()) {
-                    add(ScannerBundle.message("action.api.show")) { createHttpTestFile() }
-                    add(ScannerBundle.message("action.api.flushed")) { createHttpTestFile(flushed = true) }
-                } else {
-                    add(ScannerBundle.message("action.api.create")) { createHttpTestFile() }
-                }
-                add(ScannerBundle.message("action.copy.curl")) { toCurlStr().let { project.copyString(it) } }
-                add(ScannerBundle.message("action.copy.url")) {
-                    getUrl(false, hasRootUrl = true).let { project.copyString(it) }
-                }
-                add(createJsonCopyActionGroup())
-                add(createCopyJsonSchemaActionGroup())
-            }.also { popupActionGroup(it, e) }
+            analyze().run {
+                SmartPopupActionGroup.createPopupGroup { title }.apply {
+                    if (hasHttpTestMethod()) {
+                        add(ScannerBundle.message("action.api.show")) { createHttpTestFile() }
+                        add(ScannerBundle.message("action.api.flushed")) { createHttpTestFile(flushed = true) }
+                    } else {
+                        add(ScannerBundle.message("action.api.create")) { createHttpTestFile() }
+                    }
+                    add(ScannerBundle.message("action.copy.curl")) { toCurlStr().let { project.copyString(it) } }
+                    add(ScannerBundle.message("action.copy.url")) {
+                        getUrl(false, hasRootUrl = true).let { project.copyString(it) }
+                    }
+                    add(createJsonCopyActionGroup())
+                    add(createCopyJsonSchemaActionGroup())
+                }.also { popupActionGroup(it, e) }
+            }
         },/* alignment = */
         GutterIconRenderer.Alignment.LEFT, /* accessibleNameProvider = */
         { title })

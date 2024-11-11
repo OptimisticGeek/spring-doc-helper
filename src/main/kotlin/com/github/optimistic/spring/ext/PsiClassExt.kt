@@ -1,9 +1,7 @@
 // Copyright 2023-2024 OptimisticGeek. Use of this source code is governed by the Apache 2.0 license that can be found in the LICENSE file.
 package com.github.optimistic.spring.ext
 
-import com.github.optimistic.spring.constant.ARRAY_TAG
-import com.github.optimistic.spring.constant.FieldType
-import com.github.optimistic.spring.constant.VOID
+import com.github.optimistic.spring.constant.*
 import com.github.optimistic.spring.model.ClassModel
 import com.github.optimistic.spring.model.FieldModel
 import com.github.optimistic.spring.model.RefClassModel
@@ -19,10 +17,42 @@ import java.util.*
 fun PsiClass.fields(): List<FieldModel> {
     return this.allFields.filter { !(it.hasModifierProperty(PsiModifier.FINAL) || it.hasModifierProperty(PsiModifier.STATIC)) }
         .distinctBy { it.name }
-        .mapNotNull {
-            val refClassModel = it.typeElement?.toRefClassModel() ?: return@mapNotNull null
-            FieldModel(it.name, it.getRemark(), refClassModel).also { "${this.qualifiedName}#${it.name}" }
+        .mapNotNull { psiField ->
+            psiField.typeElement?.toRefClassModel()?.let { refClassModel ->
+                FieldModel(psiField.name, psiField.getRemark(), refClassModel)
+                    .also { it.isRequired = psiField.checkRequired() ?: return@mapNotNull null }
+                    .also { "${this.qualifiedName}#${it.name}" }
+            }
         }.toList()
+}
+
+/**
+ * 检测是否是必填字段
+ * @return null:不进行解析，true:是必填字段，false:不是必填字段，默认为必填
+ */
+@JvmName("checkPsiFieldRequired")
+fun PsiModifierListOwner.checkRequired(): Boolean? {
+    // 表示不序列化的注解列表
+    if (this.checkAnnotations(nonSerializedAnnotations, false)) return null
+    // 表示字段可选的注解列表
+    if (this.checkAnnotations(optionalAnnotations, false)) return false
+    // 表示字段必填的注解列表  默认为true，则必定为true
+    // if (this.checkAnnotations(requiredAnnotations, true)) return true
+    // 默认值
+    return true
+}
+
+/**
+ * 检测是否包含指定的注解
+ */
+@JvmName("checkAnnotations")
+private fun PsiModifierListOwner.checkAnnotations(qNames: Set<String>, default: Boolean = true): Boolean {
+    // qName:param:value
+    qNames.map { it.split(":") }
+        .forEach { split ->
+            getAnnotation(split[0])?.let { return split.size < 3 || split[2].lowercase() == it.getAnnotationValue(split[1]).lowercase() }
+        }
+    return default
 }
 
 @JvmName("findClassModels")
