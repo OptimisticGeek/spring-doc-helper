@@ -1,9 +1,7 @@
 
 import org.jetbrains.changelog.Changelog
 import org.jetbrains.changelog.markdownToHTML
-import org.jetbrains.intellij.platform.gradle.IntelliJPlatformType
 import org.jetbrains.intellij.platform.gradle.TestFrameworkType
-import org.jetbrains.intellij.platform.gradle.models.ProductRelease
 
 plugins {
     id("java") // Java support
@@ -161,23 +159,6 @@ tasks {
     buildSearchableOptions {
         enabled = false
     }
-
-    printProductsReleases {
-        channels = listOf(ProductRelease.Channel.EAP)
-        types = listOf(IntelliJPlatformType.IntellijIdeaUltimate)
-        sinceBuild = providers.gradleProperty("pluginSinceBuild")
-        untilBuild = providers.gradleProperty("pluginUntilBuild")
-        doLast {
-            // 打开输出文件并写入内容
-            val outputFile = file("build/listProductsReleases.txt")
-            outputFile.printWriter().use { writer -> writer.println(productsReleases.get().max()) }
-            printProductsReleases()
-        }
-    }
-}
-
-tasks.register("listProductsReleases"){
-    dependsOn("printProductsReleases")
 }
 
 intellijPlatformTesting {
