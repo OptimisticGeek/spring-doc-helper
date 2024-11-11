@@ -4,7 +4,7 @@
 <!-- Plugin Configuration File. Read more: https://plugins.jetbrains.com/docs/intellij/plugin-configuration-file.html -->
 <idea-plugin>
   <version>1.0.7</version>
-  <idea-version since-build="232" until-build="242.*" />
+  <idea-version since-build="232" until-build="243.*" />
   <id>com.github.optimisticGeek.spring-doc-helper</id>
   <name>SpringDocHelper</name>
   <vendor email="optimisticgeekone@gmail.com">optimisticGeek</vendor>

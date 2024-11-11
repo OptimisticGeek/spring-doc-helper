@@ -8,6 +8,16 @@
 
 ### Added
 
+- 接口右键新增菜单`SpringDocHelper`，支持复制Curl、Json、JsonSchema到剪切板
+
+### Changed
+
+- 支持版本范围 232 ~ 243.*
+
+## [1.0.6] - 2024-11-10
+
+### Added
+
 - 接口左侧小图标，支持复制JsonSchema
 
 ## [1.0.5] - 2024-11-8
