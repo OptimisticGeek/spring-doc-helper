@@ -28,9 +28,9 @@ import java.io.File
 abstract class BaseScannerTestCase : LightJavaCodeInsightFixtureTestCase() {
     val psiFileFactory: PsiFileFactory by lazy { PsiFileFactory.getInstance(project) }
     val cache: HashMap<String, PsiClass> = HashMap()
-    val qNameResultData = "com.github.optimisticgeek.entity.ResultData"
-    val qNamePager = "com.github.optimisticgeek.entity.Pager"
-    val qNameProjectQuery = "com.github.optimisticgeek.query.ProjectQuery"
+    val qNameResultData = "com.github.optimistic.entity.ResultData"
+    val qNamePager = "com.github.optimistic.entity.Pager"
+    val qNameProjectQuery = "com.github.optimistic.query.ProjectQuery"
     val service by lazy { project.service<SpringApiService>() }
 
     override fun setUp() {
