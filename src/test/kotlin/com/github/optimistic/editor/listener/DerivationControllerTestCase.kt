@@ -13,8 +13,8 @@ import com.github.optimistic.spring.model.fullClassName
  * @date 2024/1/11
  */
 class DerivationControllerTestCase : BaseControllerTestCase() {
-    override val qNameController = "com.github.optimisticgeek.controller.DerivationController"
-    private val qNameAjaxResult = "com.github.optimisticgeek.entity.AjaxResult"
+    override val qNameController = "com.github.optimistic.controller.DerivationController"
+    private val qNameAjaxResult = "com.github.optimistic.entity.AjaxResult"
 
     fun test1() {
         val psiMethod = getCurrentMethod()

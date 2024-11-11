@@ -13,7 +13,7 @@ import java.io.File
  * @date 2024/1/11
  */
 open class BaseControllerTestCase : BaseScannerTestCase() {
-    open val qNameController = "com.github.optimisticgeek.controller.BaseController"
+    open val qNameController = "com.github.optimistic.controller.BaseController"
     open val methods: Map<String, PsiMethod>
         get() = controllerPsiClass.methods.withIndex().associate { it.value.name to it.value }
 
