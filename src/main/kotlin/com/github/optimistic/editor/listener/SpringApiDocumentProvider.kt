@@ -4,13 +4,14 @@ package com.github.optimistic.editor.listener
 import com.github.optimistic.analyze.model.AnalyzeHttpMethod
 import com.github.optimistic.analyze.model.AnalyzeModel
 import com.github.optimistic.analyze.model.BaseAnalyzeModel
-import com.github.optimistic.spring.ext.*
+import com.github.optimistic.spring.ext.analyze
+import com.github.optimistic.spring.ext.buildResponseBody
+import com.github.optimistic.spring.ext.toRefClassModel
+import com.github.optimistic.spring.model.toRefClassModel
 import com.github.optimistic.spring.service.getHttpMethod
+import com.github.optimistic.spring.service.toClassModel
 import com.intellij.lang.java.JavaDocumentationProvider
-import com.intellij.psi.PsiElement
-import com.intellij.psi.PsiMethod
-import com.intellij.psi.PsiMethodCallExpression
-import com.intellij.psi.PsiVariable
+import com.intellij.psi.*
 import com.intellij.psi.util.parentOfType
 
 /**
@@ -20,48 +21,66 @@ import com.intellij.psi.util.parentOfType
  * @date 2024/1/1
  */
 class SpringApiDocumentProvider : JavaDocumentationProvider() {
+
     /**
      * 鼠标悬浮在@[Get|Post|Put|Delete|request]Mapping注解时，显示完整的api文档
      */
     override fun generateDoc(element: PsiElement?, originalElement: PsiElement?): String? {
-        buildModel(element, originalElement).also {
-            return when (it) {
-                is AnalyzeModel -> if (it.children.isNullOrEmpty())
-                    super.generateDoc(element, originalElement) else it.toHtmlDocument()
-
+        return originalElement?.let { buildModel(it) }.let {
+            when (it) {
+                is AnalyzeModel -> it.toHtmlDocument()
                 is AnalyzeHttpMethod -> it.toHtmlDocument()
-                else -> super.generateDoc(element, originalElement)
+                else -> null
             }
-        }
+        } ?: super.generateDoc(element, originalElement)
     }
 
-    private fun buildModel(element: PsiElement?, originalElement: PsiElement?): BaseAnalyzeModel? {
-        // 普通方法的返回值 通过分析获取
-        val psiMethod = originalElement?.parentOfType<PsiMethod>()
-        psiMethod?.takeIf { it.returnTypeElement?.textOffset == originalElement.textOffset }
-            ?.let {
-                return originalElement.parentOfType<PsiMethodCallExpression>()?.analyzeResponseBody()?.analyze()
-                    ?: it.buildResponseBody()?.analyze()
-            }
-
-        psiMethod?.getHttpRequestAnnotation()?.getHttpMethodType() ?: return null
-        return when (element) {
-            // Api接口 或者 普通方法的返回值
-            is PsiMethod -> {
-                element.getHttpMethod()?.analyze()
-                    ?: originalElement.parentOfType<PsiMethodCallExpression>()?.analyzeResponseBody()?.analyze()
-                    ?: element.buildResponseBody()?.analyze()
-            }
-
-//            is PsiClass -> {
-//                if (element.isControllerClass()) null else element.toClassModel()?.toRefClassModel()
-//                    ?.analyze()
-//            }
-
-            is PsiVariable -> element.toRefClassModel()?.analyze()
-            else -> null
-        }
+    private fun buildModel(originalElement: PsiElement): BaseAnalyzeModel? {
+        return originalElement.parentOfType<PsiMethod>()?.takeIf { it.nameIdentifier == originalElement }
+            ?.let { it.getHttpMethod()?.analyze() }
+            ?: originalElement.getAnalyzeModel()
     }
 }
 
+/**
+ * @this PsiIdentifier有效
+ */
+@JvmName("getAnalyzeModel")
+fun PsiElement.getAnalyzeModel(): AnalyzeModel? {
+    val psiMethod = parentOfType<PsiMethod>()
+
+    when (val current = this.parent) {
+        is PsiNewExpression -> current.resolveConstructor()?.analyzeReturnModel()
+        is PsiVariable -> current.typeElement?.toRefClassModel()?.analyze()
+        is PsiClass -> current.toClassModel()?.toRefClassModel()?.analyze()
+        is PsiJavaCodeReferenceElement -> when (val resole = current.resolve()) {
+            is PsiVariable -> resole.typeElement?.toRefClassModel()?.analyze()
+            is PsiMethod -> {
+                if (psiMethod?.returnTypeElement?.text == resole.returnTypeElement?.text)
+                    psiMethod.analyzeReturnModel()
+                else
+                    resole.returnTypeElement?.toRefClassModel()?.analyze()
+            }
+
+            else -> current.parentOfType<PsiTypeElement>()?.let {
+                if (psiMethod?.returnTypeElement == it)
+                    return psiMethod.analyzeReturnModel()
+                else
+                    it.toRefClassModel()?.analyze()
+            }
+        }
+
+        else -> null
+    }?.takeIf { !it.children.isNullOrEmpty() }?.let { return it }
+
+    psiMethod ?: return null
+    when (parent) {
+        psiMethod -> psiMethod
+        psiMethod.returnTypeElement -> psiMethod
+        else -> if (this.text == psiMethod.returnTypeElement?.text) return psiMethod.analyzeReturnModel() else null
+    }.analyzeReturnModel()?.takeIf { !it.children.isNullOrEmpty() }.let { return it }
+}
+
+@JvmName("analyzeReturnModel")
+private fun PsiMethod?.analyzeReturnModel(): AnalyzeModel? = this?.buildResponseBody()?.analyze()
 

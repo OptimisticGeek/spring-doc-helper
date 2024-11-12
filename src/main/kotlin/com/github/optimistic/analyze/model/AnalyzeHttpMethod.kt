@@ -32,7 +32,7 @@ data class AnalyzeHttpMethod(val httpMethodModel: HttpMethodModel) : BaseAnalyze
     val myModule = httpMethodModel.myModule
 
     fun getUrl(hasParams: Boolean = true, hasRootUrl: Boolean = false): String = urls.firstOrNull()
-        ?.let { if (hasRootUrl) myModule.getRootUrl() + it else it }
+        ?.let { if (hasRootUrl && myModule.getRootUrl().isNotEmpty()) myModule.getRootUrl() + it else it }
         ?.let { if (hasParams) it.replaceUrlPathParams(pathParams).joinQueryParams(queryParams) else it }
         ?: StringUtils.EMPTY
 }

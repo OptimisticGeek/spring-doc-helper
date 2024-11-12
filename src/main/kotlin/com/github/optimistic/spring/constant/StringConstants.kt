@@ -21,3 +21,5 @@ const val responseKey = "document.response"
 const val linkKey = "link"
 const val modelKey = "document.model"
 const val copyActionGroup = "SpringDocHelper.Copy"
+// 类解析深度
+const val MAX_ANALYZE_DEPTH = 5

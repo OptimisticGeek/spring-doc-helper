@@ -58,11 +58,6 @@ fun PsiMethod.buildResponseBody(): RefClassModel? {
     return responseBody
 }
 
-@JvmName("toRefClassModel")
-fun PsiVariable.toRefClassModel(): RefClassModel? {
-    return this.typeElement?.toRefClassModel()?.apply { this.ref = buildRefClassModel(this) }
-}
-
 @JvmName("buildRefClassModel")
 private fun PsiVariable.buildRefClassModel(root: RefClassModel): RefClassModel? {
     root.takeIf { !it.isBase() } ?: return null

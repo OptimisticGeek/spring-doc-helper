@@ -34,6 +34,7 @@
       <separator/>
       <!-- 复制JSON -->
       <group id="SpringDocHelper.CopyJson" text="CopyAsJSON" class="com.github.optimistic.editor.action.CopyJsonActionGroup" popup="true">
+        <action id="CopyModelJsonAction" text="PathParams" class="com.github.optimistic.editor.action.CopyModelJsonAction"/>
         <action id="CopyPathParamsJson" text="PathParams" class="com.github.optimistic.editor.action.CopyPathParamsJsonAction"/>
         <action id="CopyQueryParamsJson" text="QueryParams" class="com.github.optimistic.editor.action.CopyQueryParamsJsonAction"/>
         <action id="CopyRequestJson" text="Request" class="com.github.optimistic.editor.action.CopyRequestJsonAction"/>
@@ -41,6 +42,7 @@
       </group>
       <!-- 复制JSONSchema -->
       <group id="SpringDocHelper.CopyJsonSchema" text="CopyAsJsonSchema" class="com.github.optimistic.editor.action.CopyJsonSchemaActionGroup" popup="true">
+        <action id="CopyModelJsonSchema" text="PathParams" class="com.github.optimistic.editor.action.CopyModelJsonSchemaAction"/>
         <action id="CopyPathParamsJsonSchema" text="PathParams" class="com.github.optimistic.editor.action.CopyPathParamsJsonSchemaAction"/>
         <action id="CopyQueryParamsJsonSchema" text="QueryParams" class="com.github.optimistic.editor.action.CopyQueryParamsJsonSchemaAction"/>
         <action id="CopyRequestJsonSchema" text="Request" class="com.github.optimistic.editor.action.CopyRequestJsonSchemaAction"/>
