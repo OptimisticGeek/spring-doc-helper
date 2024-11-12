@@ -43,13 +43,9 @@ abstract class AbsCopyAction(key: String?) : AnAction() {
 /**
  * 鼠标所在Model
  */
-abstract class AbsCurrentCopyAction(private val key: String) : AbsCopyAction(key) {
+abstract class AbsCurrentCopyAction(key: String) : AbsCopyAction(key) {
     protected var currentModel: AnalyzeModel? = null
     override fun getModel(): AnalyzeModel? = currentModel
-
-    override fun getTemplateText(): String {
-        return ScannerBundle.message(key)
-    }
 
     override fun update(e: AnActionEvent) {
         currentModel = psi?.getAnalyzeModel()
