@@ -8,9 +8,11 @@ import com.github.optimistic.spring.model.RefClassModel
 import com.github.optimistic.spring.model.className
 import com.github.optimistic.spring.service.ScannerBundle
 import com.intellij.codeInsight.documentation.DocumentationManagerProtocol.PSI_ELEMENT_PROTOCOL
-import com.intellij.json.highlighting.JsonSyntaxHighlighterFactory
-import com.intellij.openapi.editor.colors.TextAttributesKey
+import com.intellij.ide.highlighter.JavaFileHighlighter
+import com.intellij.psi.JavaTokenType
+import com.intellij.psi.tree.IElementType
 import com.intellij.ui.ColorUtil
+import com.intellij.ui.JBColor
 import kotlinx.html.*
 import kotlinx.html.dom.createHTMLDocument
 import kotlinx.html.dom.serialize
@@ -27,12 +29,15 @@ fun AnalyzeHttpMethod.toHtmlDocument(): String {
         }
         body {
             p {
-                span { +(if(remark.isNullOrBlank()) name else remark)!! }
+                span { +(if (remark.isNullOrBlank()) name else remark)!! }
                 if (author != null) {
                     span { +" - by: ${author!!}" }
                 }
             }
             div("url") {
+                img(alt = httpMethod.name, src = httpMethod.getIconBase64())
+                span(" ")
+                span(" ")
                 a("$position###$linkKey###") { +(getUrl(hasParams = false, hasRootUrl = true)) }
             }
 
@@ -77,12 +82,6 @@ fun AnalyzeModel.toHtmlDocument(): String {
 
 private fun message(key: String): String {
     return ScannerBundle.message(key) + ":"
-}
-
-@JvmName("getHtmlColor")
-private fun TextAttributesKey.getHtmlColor(): String {
-    defaultAttributes.foregroundColor ?: return ""
-    return ColorUtil.toHtmlColor(defaultAttributes.foregroundColor)
 }
 
 @JvmName("isShowHtmlDocument")
@@ -159,7 +158,7 @@ private fun getHtmlStyle(): String {
                 
                 div.model {
                     overflow: hidden; 
-                    border-top: 1px solid ${JsonSyntaxHighlighterFactory.JSON_COLON.getHtmlColor()};
+                    border-top: 1px solid ${JavaTokenType.COLON.getHtmlColor()};
                     padding: 10px 0
                 }
                 div.level_root>div:first-child{
@@ -169,51 +168,63 @@ private fun getHtmlStyle(): String {
                 }
                 div.level{
                     padding-left: 20px;
-                    border-left: 1px dashed ${JsonSyntaxHighlighterFactory.JSON_LINE_COMMENT.getHtmlColor()};
+                    border-left: 1px dashed ${JavaTokenType.C_STYLE_COMMENT.getHtmlColor()};
                 }
                 
                 .string {
-                  color: ${JsonSyntaxHighlighterFactory.JSON_STRING.getHtmlColor()};
+                  color: ${JavaTokenType.STRING_LITERAL.getHtmlColor()};
                 }
                 .number {
-                  color: ${JsonSyntaxHighlighterFactory.JSON_NUMBER.getHtmlColor()};
+                  color: ${JavaTokenType.DOUBLE_LITERAL.getHtmlColor()};
                 }
 
                 .boolean {
-                  color: ${JsonSyntaxHighlighterFactory.JSON_PROPERTY_KEY.getHtmlColor()};
+                  color: ${JavaTokenType.BOOLEAN_KEYWORD.getHtmlColor()};
                 }
 
                 .null {
-                  color: ${JsonSyntaxHighlighterFactory.JSON_PROPERTY_KEY.getHtmlColor()};
+                  color: ${JavaTokenType.C_STYLE_COMMENT.getHtmlColor()};
                 }
 
                 .remark {
-                  color: ${JsonSyntaxHighlighterFactory.JSON_LINE_COMMENT.getHtmlColor()};
+                  color: ${JavaTokenType.C_STYLE_COMMENT.getHtmlColor()};
                   margin-left: 10px
                 }
 
                 .field {
-                  color: ${JsonSyntaxHighlighterFactory.JSON_KEYWORD.getHtmlColor()};
+                  color: ${JavaTokenType.RETURN_KEYWORD.getHtmlColor()};
                 }
 
                 .del {
-                  color: ${JsonSyntaxHighlighterFactory.JSON_LINE_COMMENT.getHtmlColor()};
+                  color: ${JavaTokenType.C_STYLE_COMMENT.getHtmlColor()};
                   text-decoration: line-through;
                 }
 
                 .colon {
-                  color: ${JsonSyntaxHighlighterFactory.JSON_COLON.getHtmlColor()};
+                  color: ${JavaTokenType.COLON.getHtmlColor()};
                 }
 
                 .comma {
-                  color: ${JsonSyntaxHighlighterFactory.JSON_COLON.getHtmlColor()};
+                  color: ${JavaTokenType.COMMA.getHtmlColor()};
                 }
                 
                 .brackets {
-                  color: ${JsonSyntaxHighlighterFactory.JSON_PROPERTY_KEY.getHtmlColor()};
+                  color: ${JavaTokenType.LBRACKET.getHtmlColor()};
                 }
             """
 }
+
+
+val highlighter = JavaFileHighlighter()
+
+@JvmName("getHtmlColor")
+private fun IElementType.getHtmlColor(): String {
+    val foregroundColor =
+        highlighter.getTokenHighlights(this).firstOrNull()?.defaultAttributes?.foregroundColor
+            ?: JBColor.ORANGE
+    return ColorUtil.toHtmlColor(foregroundColor)
+}
+
 
 @JvmName("getStyleName")
 private fun AnalyzeModel.getStyleName(): String {
