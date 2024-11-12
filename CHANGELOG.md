@@ -13,6 +13,7 @@
 ### Fixed
 
 - 接口左侧小图标 - 数据未及时更新
+- 缺少@RequestMapping的类未识别为接口类
 
 ## [1.0.7] - 2024-11-11
 
@@ -99,6 +100,7 @@
 - controller缓存逻辑
 
 [Unreleased]: https://github.com/OptimisticGeek/spring-doc-helper/compare/v1.0.6...HEAD
+[1.1.0]: https://github.com/OptimisticGeek/spring-doc-helper/compare/v1.0.7...v1.1.0
 [1.0.7]: https://github.com/OptimisticGeek/spring-doc-helper/compare/v1.0.6...v1.0.7
 [1.0.6]: https://github.com/OptimisticGeek/spring-doc-helper/compare/v1.0.5...v1.0.6
 [1.0.5]: https://github.com/OptimisticGeek/spring-doc-helper/compare/v1.0.4...v1.0.5

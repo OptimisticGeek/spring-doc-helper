@@ -187,5 +187,5 @@ fun PsiClass.isControllerClass(): Boolean {
     if (this.methods.isEmpty()) {
         return false
     }
-    return this.isValid && this.isWritable && this.hasAnnotation(REQUEST_MAPPING)
+    return this.isValid && this.isWritable && (this.hasAnnotation(REST_CONTROLLER) || this.hasAnnotation(CONTROLLER))
 }
