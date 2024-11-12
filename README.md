@@ -1,5 +1,6 @@
 # springDocHelper
 [![Build](https://github.com/OptimisticGeek/spring-doc-helper/actions/workflows/build.yml/badge.svg)](https://github.com/OptimisticGeek/spring-doc-helper/actions/workflows/build.yml)
+[![Dependabot Updates](https://github.com/OptimisticGeek/spring-doc-helper/actions/workflows/dependabot/dependabot-updates/badge.svg?branch=main)](https://github.com/OptimisticGeek/spring-doc-helper/actions/workflows/dependabot/dependabot-updates)
 [![Release](https://badgen.net/github/release/OptimisticGeek/spring-doc-helper)](https://github.com/OptimisticGeek/spring-doc-helper/releases)
 [![Stars](https://badgen.net/github/stars/OptimisticGeek/spring-doc-helper)](https://github.com/OptimisticGeek/spring-doc-helper/releases)
 [![Version](https://img.shields.io/jetbrains/plugin/v/23730-springdochelper)](https://plugins.jetbrains.com/plugin/23730-springdochelper)

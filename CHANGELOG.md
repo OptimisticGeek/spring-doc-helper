@@ -4,6 +4,20 @@
 
 ## [Unreleased]
 
+## [1.1.0] - 2024-11-12
+
+### Added
+
+- 通过注解判断Field是否为必填项
+- 完善悬浮文档以及右键菜单中的复制功能
+- 增加复杂类解析的层级限制
+
+### Fixed
+
+- 接口左侧小图标 - 数据未及时更新
+- 缺少@RequestMapping的类未识别为接口类
+- 泛型个别情况解析失败
+
 ## [1.0.7] - 2024-11-11
 
 ### Added
@@ -89,6 +103,7 @@
 - controller缓存逻辑
 
 [Unreleased]: https://github.com/OptimisticGeek/spring-doc-helper/compare/v1.0.6...HEAD
+[1.1.0]: https://github.com/OptimisticGeek/spring-doc-helper/compare/v1.0.7...v1.1.0
 [1.0.7]: https://github.com/OptimisticGeek/spring-doc-helper/compare/v1.0.6...v1.0.7
 [1.0.6]: https://github.com/OptimisticGeek/spring-doc-helper/compare/v1.0.5...v1.0.6
 [1.0.5]: https://github.com/OptimisticGeek/spring-doc-helper/compare/v1.0.4...v1.0.5

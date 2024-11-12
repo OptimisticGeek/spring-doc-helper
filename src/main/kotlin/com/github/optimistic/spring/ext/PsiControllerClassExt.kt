@@ -23,12 +23,14 @@ fun PsiMethod.buildParameters(
         val fieldModel = it.buildField(this.getDocumentTagParam(it.name)) ?: return@forEach
         // requestBody
         if (it.hasAnnotation(REQUEST_BODY)) {
+            fieldModel.isRequired = true
             requestBody.consume(fieldModel.also { it.name = null }.also { it.aliasName = null })
             return@forEach
         }
         // pathVariables
         if (it.hasAnnotation(PATH_VARIABLE)) {
             fieldModel.aliasName = it.getAnnotationValue(PATH_VARIABLE, DEFAULT)
+            fieldModel.isRequired = true
             pathParams.add(fieldModel)
             return@forEach
         }
@@ -54,11 +56,6 @@ fun PsiMethod.buildResponseBody(): RefClassModel? {
     responseBody.fullClassName().let { if (it.contains("<") && !it.contains("<>")) return responseBody }
     this.analyzeResponseBody(responseBody)
     return responseBody
-}
-
-@JvmName("toRefClassModel")
-fun PsiVariable.toRefClassModel(): RefClassModel? {
-    return this.typeElement?.toRefClassModel()?.apply { this.ref = buildRefClassModel(this) }
 }
 
 @JvmName("buildRefClassModel")
@@ -185,5 +182,5 @@ fun PsiClass.isControllerClass(): Boolean {
     if (this.methods.isEmpty()) {
         return false
     }
-    return this.isValid && this.isWritable && this.hasAnnotation(REQUEST_MAPPING)
+    return this.isValid && this.isWritable && (this.hasAnnotation(REST_CONTROLLER) || this.hasAnnotation(CONTROLLER))
 }
