@@ -3,7 +3,7 @@
 package com.github.optimistic.spring.model
 
 import com.github.optimistic.spring.constant.FieldType
-import com.github.optimistic.spring.constant.HttpMethodType
+import com.github.optimistic.spring.constant.RESPONSE_BODY
 import com.github.optimistic.spring.constant.REST_CONTROLLER
 import com.github.optimistic.spring.ext.buildParameters
 import com.github.optimistic.spring.ext.buildResponseBody
@@ -11,8 +11,7 @@ import com.github.optimistic.spring.ext.getAuthor
 import com.github.optimistic.spring.ext.getRemark
 import com.intellij.openapi.module.ModuleUtilCore
 import com.intellij.psi.PsiMethod
-import com.intellij.spring.mvc.SpringMvcConstants.RESPONSE_BODY
-import com.intellij.spring.mvc.mapping.UrlMappingElement
+import com.intellij.psi.SmartPointerManager
 import org.apache.commons.lang3.BooleanUtils
 
 // Copyright 2023-2024 OptimisticGeek. Use of this source code is governed by the Apache 2.0 license that can be found in the LICENSE file.. Use of this source code is governed by the Apache 2.0 license that can be found in the LICENSE file.
@@ -23,18 +22,23 @@ import org.apache.commons.lang3.BooleanUtils
  * @author OptimisticGeek
  * @date 2024/2/19
  */
-class HttpMethodModel(val element: UrlMappingElement) {
+class HttpMethodModel(val element: PsiMethod, val parent: ControllerModel) {
+    /**
+     * 来源
+     */
+    val sourcePsi = SmartPointerManager.createPointer<PsiMethod>(element)
+    val urlPath: UrlPath = UrlPath(element, parent.urlPath)
     val psiClass get() = psiMethod.containingClass!!
-    val psiMethod get() = element.navigationTarget as PsiMethod
+    val psiMethod get() = sourcePsi.element!!
     val myModule get() = psiClass.let { ModuleUtilCore.findModuleForPsiElement(it)!! }
-    val httpMethod get() = HttpMethodType.valueOf(element.method.first().name)
-    val url by lazy { "/${element.presentation}" }
+    val httpMethod get() = urlPath.httpMethod
+    val url  = urlPath.url
     val position by lazy { psiMethod.getPosition() }
     val name by lazy { position.className() }
-    val author by lazy { psiMethod.getAuthor().let { it.ifBlank { psiClass.getAuthor() } } }
+    val author by lazy { psiMethod.getAuthor().let { it.ifBlank { parent.author ?: "" } } }
     val remark by lazy {
-        psiClass.getRemark().let { if (it.isBlank() || it == psiClass.name) "" else "$it-" } + psiMethod
-            .getRemark().let { it.ifBlank { psiMethod.name } }
+        parent.remark!!.let { if (it.isBlank() || it == psiClass.name) "" else "$it-" } +
+                psiMethod.getRemark().let { it.ifBlank { psiMethod.name } }
     }
 
     private val params: MethodParams by lazy { MethodParams(psiMethod) }

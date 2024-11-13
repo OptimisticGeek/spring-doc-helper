@@ -7,15 +7,11 @@ import com.github.optimistic.spring.constant.HttpMethodType
 import com.github.optimistic.spring.ext.analyze
 import com.github.optimistic.spring.model.FieldModel
 import com.github.optimistic.spring.model.HttpMethodModel
-import com.github.optimistic.spring.service.getRootUrl
 import com.intellij.openapi.project.Project
-import org.apache.commons.lang3.StringUtils
 import java.util.*
 
 data class AnalyzeHttpMethod(val httpMethodModel: HttpMethodModel) : BaseAnalyzeModel(httpMethodModel) {
     val httpMethod: HttpMethodType = httpMethodModel.httpMethod
-
-    val urls: List<String> = listOf(httpMethodModel.url)
 
     val createTime: Date = Date()
 
@@ -29,12 +25,10 @@ data class AnalyzeHttpMethod(val httpMethodModel: HttpMethodModel) : BaseAnalyze
 
     val project: Project = httpMethodModel.psiMethod.project
 
-    val myModule = httpMethodModel.myModule
+    val url get() = httpMethodModel.url
 
-    fun getUrl(hasParams: Boolean = true, hasRootUrl: Boolean = false): String = urls.firstOrNull()
-        ?.let { if (hasRootUrl && myModule.getRootUrl().length > 1) myModule.getRootUrl() + it else it }
-        ?.let { if (hasParams) it.replaceUrlPathParams(pathParams).joinQueryParams(queryParams) else it }
-        ?: StringUtils.EMPTY
+    fun getUrl(hasParams: Boolean = true): String =
+        url.let { if (hasParams) it.replaceUrlPathParams(pathParams).joinQueryParams(queryParams) else it }
 }
 
 @JvmName("replaceUrlPathParams")
@@ -64,6 +58,6 @@ fun AnalyzeHttpMethod.toCurlStr(): String {
     requestBody?.let { sb.append(" -H \"Content-Type: application/json\" ") }
         ?.let { sb.append(" -d '${requestBody.toJson(false).replace(Regex("\\s+"), "")}'") }
     response?.let { sb.append(" -H \"Accept: application/json\" ") }
-    sb.append(" ${getUrl()}")
+    sb.append(" $url")
     return sb.toString()
 }

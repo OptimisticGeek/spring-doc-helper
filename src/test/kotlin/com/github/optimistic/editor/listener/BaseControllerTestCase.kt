@@ -1,7 +1,7 @@
 // Copyright 2023-2024 OptimisticGeek. Use of this source code is governed by the Apache 2.0 license that can be found in the LICENSE file.
 package com.github.optimistic.editor.listener
 
-import com.github.optimistic.spring.service.getHttpMethodMap
+import com.github.optimistic.spring.index.getHttpMethodMap
 import com.intellij.openapi.diagnostic.thisLogger
 import com.intellij.psi.PsiMethod
 import java.io.File

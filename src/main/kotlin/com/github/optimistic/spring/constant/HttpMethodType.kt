@@ -3,7 +3,6 @@
 package com.github.optimistic.spring.constant
 
 import com.intellij.openapi.util.IconLoader
-import com.intellij.spring.mvc.jam.RequestMethod
 import com.intellij.ui.scale.JBUIScale
 import com.intellij.util.IconUtil
 import java.awt.image.BufferedImage
@@ -64,8 +63,4 @@ private fun getIconByPath(name: String): Icon? {
     } catch (e: Exception) {
         null
     }
-}
-
-fun RequestMethod.getIcon(): Icon {
-    return HttpMethodType.valueOf(this.name).icon
 }

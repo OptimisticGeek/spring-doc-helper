@@ -17,9 +17,10 @@ import kotlinx.html.*
 import kotlinx.html.dom.createHTMLDocument
 import kotlinx.html.dom.serialize
 import kotlinx.html.stream.createHTML
+import org.apache.commons.lang3.StringUtils.EMPTY
 
 @JvmName("toHtmlDocument")
-fun AnalyzeHttpMethod.toHtmlDocument(): String {
+fun AnalyzeHttpMethod.toHtmlDocument(source: String = EMPTY): String {
     val html = createHTMLDocument().html {
         head {
             title(message("document.title"))
@@ -28,6 +29,8 @@ fun AnalyzeHttpMethod.toHtmlDocument(): String {
             }
         }
         body {
+            +"{source}"
+            hr()
             p {
                 span { +(if (remark.isNullOrBlank()) name else remark)!! }
                 if (author != null) {
@@ -35,10 +38,11 @@ fun AnalyzeHttpMethod.toHtmlDocument(): String {
                 }
             }
             div("url") {
-                img(alt = httpMethod.name, src = httpMethod.getIconBase64())
-                span(" ")
-                span(" ")
-                a("$position###$linkKey###") { +(getUrl(hasParams = false, hasRootUrl = true)) }
+                a("$position###$linkKey###") {
+                    img(alt = httpMethod.name, src = httpMethod.getIconBase64())
+                    span(" ")
+                    +url
+                }
             }
 
             unsafe {
@@ -61,7 +65,7 @@ fun AnalyzeHttpMethod.toHtmlDocument(): String {
 }
 
 @JvmName("toHtmlDocument")
-fun AnalyzeModel.toHtmlDocument(): String {
+fun AnalyzeModel.toHtmlDocument(source: String = EMPTY): String {
     val toHtml = this.toHtml(modelKey)
 
     val html = createHTMLDocument().html {
@@ -72,6 +76,8 @@ fun AnalyzeModel.toHtmlDocument(): String {
             }
         }
         body {
+            +"{source}"
+            hr()
             unsafe {
                 +toHtml
             }

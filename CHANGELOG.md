@@ -4,6 +4,14 @@
 
 ## [Unreleased]
 
+### Changed
+
+- 删除SpringMvc插件，使用自定义方式解析 
+- 支持Idea社区版
+- 重构接口搜索逻辑，加载速度更快
+- 重构文档展现逻辑
+- 重构左侧小图标点击事件
+
 ## [1.1.0] - 2024-11-12
 
 ### Added
@@ -78,7 +86,8 @@
 
 ## [0.1.4]
 
-- 接口左侧小图标，支持创建接口测试操作，需要Idea支持[HttpClient](https://www.jetbrains.com/help/idea/2023.3/http-client-in-product-code-editor.html)
+-
+接口左侧小图标，支持创建接口测试操作，需要Idea支持[HttpClient](https://www.jetbrains.com/help/idea/2023.3/http-client-in-product-code-editor.html)
 - 支持swagger文档解析
 
 ## [0.1.3]
@@ -107,17 +116,31 @@
 - controller缓存逻辑
 
 [Unreleased]: https://github.com/OptimisticGeek/spring-doc-helper/compare/v1.0.6...HEAD
+
 [1.1.0]: https://github.com/OptimisticGeek/spring-doc-helper/compare/v1.0.7...v1.1.0
+
 [1.0.7]: https://github.com/OptimisticGeek/spring-doc-helper/compare/v1.0.6...v1.0.7
+
 [1.0.6]: https://github.com/OptimisticGeek/spring-doc-helper/compare/v1.0.5...v1.0.6
+
 [1.0.5]: https://github.com/OptimisticGeek/spring-doc-helper/compare/v1.0.4...v1.0.5
+
 [1.0.4]: https://github.com/OptimisticGeek/spring-doc-helper/compare/v1.0.3...v1.0.4
+
 [1.0.3]: https://github.com/OptimisticGeek/spring-doc-helper/compare/v1.0.2...v1.0.3
+
 [1.0.2]: https://github.com/OptimisticGeek/spring-doc-helper/compare/v1.0.1...v1.0.2
+
 [1.0.1]: https://github.com/OptimisticGeek/spring-doc-helper/compare/v1.0.0...v1.0.1
+
 [1.0.0]: https://github.com/OptimisticGeek/spring-doc-helper/compare/v0.1.4...v1.0.0
+
 [0.1.4]: https://github.com/OptimisticGeek/spring-doc-helper/compare/v0.1.3...v0.1.4
+
 [0.1.3]: https://github.com/OptimisticGeek/spring-doc-helper/compare/v0.1.2...v0.1.3
+
 [0.1.2]: https://github.com/OptimisticGeek/spring-doc-helper/compare/v0.1.1...v0.1.2
+
 [0.1.1]: https://github.com/OptimisticGeek/spring-doc-helper/compare/v0.1.0...v0.1.1
+
 [0.1.0]: https://github.com/OptimisticGeek/spring-doc-helper/commits/v0.1.0

@@ -6,19 +6,17 @@ import com.github.optimistic.analyze.model.toCurlStr
 import com.github.optimistic.editor.listener.analyze
 import com.github.optimistic.editor.listener.copyString
 import com.github.optimistic.editor.listener.getAnalyzeModel
+import com.github.optimistic.spring.index.getHttpMethodModel
 import com.github.optimistic.spring.service.ScannerBundle
-import com.github.optimistic.spring.service.getHttpMethod
 import com.intellij.openapi.actionSystem.*
 import com.intellij.openapi.editor.Editor
-import com.intellij.psi.PsiElement
-import com.intellij.psi.PsiFile
-import com.intellij.psi.PsiMethod
+import com.intellij.psi.*
 import com.intellij.psi.util.parentOfType
 import org.apache.commons.lang3.StringUtils
 
 abstract class AbsCopyAction(key: String?) : AnAction() {
-    protected var psi: PsiElement? = null
-    protected val method: AnalyzeHttpMethod? by lazy { psi?.getHttpMethod() }
+    protected var psi: SmartPsiElementPointer<PsiElement>? = null
+    protected val method: AnalyzeHttpMethod? by lazy { psi?.element?.analyzeHttpMethod() }
 
     init {
         key?.let { templatePresentation.setText { ScannerBundle.message(it) } }
@@ -29,7 +27,7 @@ abstract class AbsCopyAction(key: String?) : AnAction() {
     open fun isVisible(): Boolean = getModel() != null
 
     override fun update(e: AnActionEvent) {
-        psi = e.getPsiElement()
+        psi = e.getPsiElement()?.let { SmartPointerManager.createPointer<PsiElement>(it) }
         e.presentation.isEnabledAndVisible = isVisible()
     }
 
@@ -48,7 +46,7 @@ abstract class AbsCurrentCopyAction(key: String) : AbsCopyAction(key) {
     override fun getModel(): AnalyzeModel? = currentModel
 
     override fun update(e: AnActionEvent) {
-        currentModel = psi?.getAnalyzeModel()
+        currentModel = psi?.element?.getAnalyzeModel()
         super.update(e)
     }
 }
@@ -66,10 +64,8 @@ class CopyJsonActionGroup : AbsCopyActionGroup("action.copyJson.title")
 class CopyJsonSchemaActionGroup : AbsCopyActionGroup("action.copyJsonSchema.title")
 
 @JvmName("anActionEventGetMethod")
-private fun PsiElement?.getHttpMethod(): AnalyzeHttpMethod? =
-    this?.parentOfType<PsiMethod>()?.getHttpMethod()?.analyze()
+private fun PsiElement.analyzeHttpMethod(): AnalyzeHttpMethod? = this.parentOfType<PsiMethod>()?.getHttpMethodModel()?.analyze()
 
-// todo 需要兼容左侧小图标的事件
 @JvmName("anActionEventGetMethod")
 fun AnActionEvent.getPsiElement(): PsiElement? {
     // 获取当前编辑器
@@ -98,7 +94,7 @@ class CopyCurlAction : AbsCopyAction("action.copy.curl") {
  * 复制url
  */
 class CopyUrlAction : AbsCopyAction("action.copy.url") {
-    override fun actionPerformed(e: AnActionEvent) = e.copyString(method?.getUrl())
+    override fun actionPerformed(e: AnActionEvent) = e.copyString(method?.url)
 
-    override fun isVisible(): Boolean = StringUtils.isNotBlank(method?.getUrl())
+    override fun isVisible(): Boolean = StringUtils.isNotBlank(method?.url)
 }

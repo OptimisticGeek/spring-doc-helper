@@ -50,7 +50,7 @@ private const val END_FIX = "### END\n\n\n\n"
 private fun AnalyzeHttpMethod.createHttpTestStr(): String {
     val sb = StringBuilder("### $position\n")
     sb.appendLine("# @name ${if (remark.isNullOrBlank()) name else remark} $author").appendLine()
-    sb.appendLine("$httpMethod {{host}}${getUrl(true, hasRootUrl = true)}")
+    sb.appendLine("$httpMethod {{host}}$url")
     requestBody?.let { sb.appendLine("Content-Type: application/json") }
     response?.let { sb.appendLine("Accept: application/json") }
     sb.appendLine("Authorization: {{token}}").appendLine("Cookie: {{cookie}}")

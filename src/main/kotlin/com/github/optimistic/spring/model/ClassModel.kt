@@ -33,6 +33,7 @@ open class ClassModel(
         this.position = if (this.position.isNullOrBlank() || !type.isObj) type.qName else this.position!!
         this.name = this.qName.className()
         isInit = type != FieldType.OBJECT
+        fields = null
     }
 }
 

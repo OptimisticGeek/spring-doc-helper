@@ -8,11 +8,13 @@ import com.github.optimistic.spring.ext.fields
 import com.github.optimistic.spring.ext.getAuthor
 import com.github.optimistic.spring.ext.getRemark
 import com.github.optimistic.spring.ext.isControllerClass
+import com.github.optimistic.spring.index.isControllerModule
+import com.github.optimistic.spring.index.listControllerClass
 import com.github.optimistic.spring.model.ClassModel
 import com.github.optimistic.spring.model.HttpMethodModel
 import com.intellij.icons.AllIcons
-import com.intellij.javaee.web.facet.WebFacet
 import com.intellij.openapi.Disposable
+import com.intellij.openapi.application.runReadAction
 import com.intellij.openapi.components.Service
 import com.intellij.openapi.components.service
 import com.intellij.openapi.diagnostic.thisLogger
@@ -21,7 +23,6 @@ import com.intellij.openapi.module.ModuleManager
 import com.intellij.openapi.progress.ProgressIndicator
 import com.intellij.openapi.project.DumbService
 import com.intellij.openapi.project.Project
-import com.intellij.openapi.roots.ModuleRootManager
 import com.intellij.openapi.util.Computable
 import com.intellij.openapi.util.Key
 import com.intellij.openapi.util.UserDataHolder
@@ -29,9 +30,7 @@ import com.intellij.psi.JavaPsiFacade
 import com.intellij.psi.PsiClass
 import com.intellij.psi.PsiMethod
 import com.intellij.psi.search.ProjectScope
-import com.intellij.spring.mvc.mapping.UrlMappingElement
-import com.intellij.spring.mvc.services.SpringMvcUtils
-import com.intellij.spring.mvc.utils.getApplicationPaths
+import kotlinx.coroutines.runBlocking
 import java.util.function.Function
 import java.util.function.Supplier
 import javax.swing.Icon
@@ -50,26 +49,22 @@ class SpringApiService(private val myProject: Project) : Disposable {
     val myModules: HashSet<Module> = hashSetOf()
 
     fun initModules(): List<Module> {
-        myModules.clear()
-        moduleManager.getModifiableModel().modules
-            .filter { ModuleRootManager.getInstance(it).sourceRoots.isNotEmpty() }
-            .filter { WebFacet.getInstances(it).isNotEmpty() }
-            .distinct()
-            .forEach(myModules::add)
-        thisLogger().warn("modules:${myModules.size},${myModules.joinToString(",") { it.name }}")
-        return myModules.toList()
-    }
-
-    fun getHttpMethodMap(psiClass: PsiClass): Map<PsiMethod, HttpMethodModel>? {
-        if (!psiClass.isControllerClass()) return null
-        return psiClass.getUserData(httpMethodModelMapKey) { searchMethods { it.psiClass == psiClass }.associateBy { it.psiMethod } }
+        return runReadAction {
+            myModules.clear()
+            moduleManager.getModifiableModel().modules
+                .filter { it.isControllerModule() }
+                .distinct()
+                .forEach(myModules::add)
+            thisLogger().warn("modules:${myModules.size},${myModules.joinToString(",") { it.name }}")
+            myModules.toList()
+        }
     }
 
     /**
      * 获取所有方法
      */
     fun searchMethods(
-        modules: List<Module> = myModules.toList(),
+        modules: Collection<Module> = if (myModules.isEmpty()) initModules() else myModules,
         progressIndicator: ProgressIndicator? = null,
         limit: Int = 100,
         filter: Function<HttpMethodModel, Boolean>? = null
@@ -77,14 +72,13 @@ class SpringApiService(private val myProject: Project) : Disposable {
         var list: List<HttpMethodModel>? = null
         dumbService.runReadActionInSmartMode(Computable {
             val t = System.currentTimeMillis()
-            list = modules.ifEmpty { initModules() }
-                .asSequence()
-                .flatMap { SpringMvcUtils.getUrlMappings(it) }
-                .mapNotNull { progressIndicator?.checkCanceled(); it.createMethodModel() }
-                .filter { filter?.apply(it) ?: true }
+
+            list = myProject.listControllerClass(modules.ifEmpty { initModules() })
+                .flatMap { it.cache.values }
+                .filter { progressIndicator?.checkCanceled(); filter?.apply(it) != false }
                 .take(limit)
-                .toList()
-            if (System.currentTimeMillis() - t > 1000)
+
+            if (System.currentTimeMillis() - t > 100)
                 thisLogger().warn("SpringApiService searchMethods cost: ${System.currentTimeMillis() - t}ms")
         })
         return list ?: return emptyList()
@@ -116,21 +110,14 @@ class SpringApiService(private val myProject: Project) : Disposable {
         }?.apply {
             if (!useCache) setDefaultStatus()
             if (isInit) return@apply
-            synchronized(psiClass) {
-                if (isInit) return@apply
-                this.isInit = true
-                this.fields = psiClass.fields()
-                this.author = psiClass.getAuthor()
-                this.remark = psiClass.getRemark()
+            runBlocking{
+                if (isInit) return@runBlocking
+                isInit = true
+                fields = psiClass.fields()
+                author = psiClass.getAuthor()
+                remark = psiClass.getRemark()
             }
         }
-    }
-
-
-    @JvmName("createMethodModel")
-    private fun UrlMappingElement.createMethodModel(): HttpMethodModel? {
-        if (method.isNullOrEmpty() || navigationTarget == null || navigationTarget !is PsiMethod) return null
-        return navigationTarget?.let { return@let it.getUserData(httpMethodModelKey) { HttpMethodModel(this) } }
     }
 
     override fun dispose() {
@@ -171,17 +158,6 @@ fun PsiClass.toClassModel(useCache: Boolean = true): ClassModel? =
 
 @JvmName("getIcon")
 fun Module.getIcon(): Icon = AllIcons.Actions.ModuleDirectory
-
-// todo 存在多配置文件，根路径不一样的问题
-@JvmName("getRootUrl")
-fun Module.getRootUrl(): String = getApplicationPaths(this).firstOrNull() ?: ""
-
-@JvmName("getHttpMethod")
-fun PsiMethod.getHttpMethod(): HttpMethodModel? = this.containingClass?.getHttpMethodMap()?.get(this)
-
-@JvmName("getHttpMethodMap")
-fun PsiClass.getHttpMethodMap(): Map<PsiMethod, HttpMethodModel>? =
-    project.service<SpringApiService>().getHttpMethodMap(this)
 
 @JvmName("scannerService")
 fun Project.springApiService(): SpringApiService = this.service()

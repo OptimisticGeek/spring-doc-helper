@@ -7,12 +7,13 @@ import com.github.optimistic.analyze.model.BaseAnalyzeModel
 import com.github.optimistic.spring.ext.analyze
 import com.github.optimistic.spring.ext.buildResponseBody
 import com.github.optimistic.spring.ext.toRefClassModel
+import com.github.optimistic.spring.index.getHttpMethodModel
 import com.github.optimistic.spring.model.toRefClassModel
-import com.github.optimistic.spring.service.getHttpMethod
 import com.github.optimistic.spring.service.toClassModel
 import com.intellij.lang.java.JavaDocumentationProvider
 import com.intellij.psi.*
 import com.intellij.psi.util.parentOfType
+import org.apache.commons.lang3.StringUtils
 
 /**
  * SpringApiDocumentProvider
@@ -26,18 +27,22 @@ class SpringApiDocumentProvider : JavaDocumentationProvider() {
      * 鼠标悬浮在@[Get|Post|Put|Delete|request]Mapping注解时，显示完整的api文档
      */
     override fun generateDoc(element: PsiElement?, originalElement: PsiElement?): String? {
+        var sourceGenerate = super.generateDoc(element, originalElement)
+
         return originalElement?.let { buildModel(it) }.let {
+            sourceGenerate = sourceGenerate?.substringAfter("<body>") ?: StringUtils.EMPTY
+
             when (it) {
-                is AnalyzeModel -> it.toHtmlDocument()
-                is AnalyzeHttpMethod -> it.toHtmlDocument()
+                is AnalyzeModel -> it.toHtmlDocument(sourceGenerate)
+                is AnalyzeHttpMethod -> it.toHtmlDocument(sourceGenerate)
                 else -> null
-            }
-        } ?: super.generateDoc(element, originalElement)
+            }?.replace("{source}", sourceGenerate)
+        } ?: return sourceGenerate
     }
 
     private fun buildModel(originalElement: PsiElement): BaseAnalyzeModel? {
         return originalElement.parentOfType<PsiMethod>()?.takeIf { it.nameIdentifier == originalElement }
-            ?.let { it.getHttpMethod()?.analyze() }
+            ?.let { it.getHttpMethodModel()?.analyze() }
             ?: originalElement.getAnalyzeModel()
     }
 }

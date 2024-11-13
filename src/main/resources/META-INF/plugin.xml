@@ -3,14 +3,13 @@
   -->
 <!-- Plugin Configuration File. Read more: https://plugins.jetbrains.com/docs/intellij/plugin-configuration-file.html -->
 <idea-plugin>
-  <version>1.1.0</version>
-  <idea-version since-build="232" until-build="243.*" />
+  <version>2.0</version>
+  <idea-version since-build="232"/>
   <id>com.github.optimisticGeek.spring-doc-helper</id>
   <name>SpringDocHelper</name>
   <vendor email="optimisticgeekone@gmail.com">optimisticGeek</vendor>
   <depends>com.intellij.modules.platform</depends>
   <depends>com.intellij.java</depends>
-  <depends>com.intellij.spring.mvc</depends>
   <resource-bundle>messages.Scanner</resource-bundle>
   <extensionPoints />
   <extensions defaultExtensionNs="com.intellij">

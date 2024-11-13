@@ -36,7 +36,7 @@ fun PsiAnnotation.getAnnotationValues(valueName: String): List<String> {
 }
 
 @JvmName("getHttpMethodType")
-fun PsiAnnotation.getHttpMethodType(): HttpMethodType? {
+fun PsiAnnotation.getHttpMethodType(default: HttpMethodType? = null): HttpMethodType? {
     if (BooleanUtils.isNotTrue(this.qualifiedName?.endsWith("Mapping"))) return null
     if (BooleanUtils.isNotTrue(this.qualifiedName?.startsWith("org.springframework.web.bind.annotation."))) return null
     return when (this.qualifiedName) {
@@ -53,5 +53,5 @@ fun PsiAnnotation.getHttpMethodType(): HttpMethodType? {
                 HttpMethodType.ALL
             }
         }
-    }
+    } ?: default
 }

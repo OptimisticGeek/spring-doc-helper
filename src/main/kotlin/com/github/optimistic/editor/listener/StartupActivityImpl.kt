@@ -1,7 +1,5 @@
 package com.github.optimistic.editor.listener
 
-import com.github.optimistic.spring.service.SpringApiService
-import com.intellij.openapi.components.service
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.startup.ProjectActivity
 
@@ -16,6 +14,6 @@ import com.intellij.openapi.startup.ProjectActivity
 class StartupActivityImpl : ProjectActivity {
 
     override suspend fun execute(project: Project) {
-        project.service<SpringApiService>().searchMethods()
+        // project.service<SpringApiService>().searchMethods()
     }
 }
