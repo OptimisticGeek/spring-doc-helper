@@ -41,12 +41,17 @@ import javax.swing.Icon
  */
 class ControllerLineMarkerProvider : JavaLineMarkerProvider() {
 
-    override fun getLineMarkerInfo(element: PsiElement): LineMarkerInfo<*>? {
-        element as? PsiMethod ?: return null
-        element.getHttpRequestAnnotation()?.let {
-            element.createLineMarkerInfo(it.textRange, "", it.getHttpMethodType(HttpMethodType.ALL)!!.icon)
-        }?.let { return it }
-        return super.getLineMarkerInfo(element)
+    override fun collectSlowLineMarkers(
+        elements: List<PsiElement?>,
+        result: MutableCollection<in LineMarkerInfo<*>>
+    ) {
+        elements.filterIsInstance<PsiMethod>()
+            .forEach { element ->
+                element.getHttpRequestAnnotation()
+                    ?.let {
+                        element.createLineMarkerInfo(it.textRange, "", it.getHttpMethodType(HttpMethodType.ALL)!!.icon)
+                    }?.let { result.add(it) }
+            }
     }
 
     private fun PsiMethod.createLineMarkerInfo(
