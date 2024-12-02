@@ -11,7 +11,7 @@
 - fix - RequestMapping未指定httpMethod时报错
 
 
-## [2.0-beta] - 2024-11-18
+## [2.0] - 2024-11-18
 
 ### Changed
 
@@ -126,9 +126,9 @@
 
 [Unreleased]: https://github.com/OptimisticGeek/spring-doc-helper/compare/v1.0.6...HEAD
 
-[2.0.1]: https://github.com/OptimisticGeek/spring-doc-helper/compare/v2.0-beta...v2.0.1
+[2.0.1]: https://github.com/OptimisticGeek/spring-doc-helper/compare/v2.0...v2.0.1
 
-[2.0-beta]: https://github.com/OptimisticGeek/spring-doc-helper/compare/v1.1.0...v2.0-beta
+[2.0]: https://github.com/OptimisticGeek/spring-doc-helper/compare/v1.1.0...v2.0
 
 [1.1.0]: https://github.com/OptimisticGeek/spring-doc-helper/compare/v1.0.7...v1.1.0
 
