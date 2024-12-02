@@ -47,7 +47,7 @@ fun PsiAnnotation.getHttpMethodType(default: HttpMethodType? = null): HttpMethod
         else -> {
             val value = this.getAnnotationValue(METHOD)
             if (StringUtils.isBlank(value)) {
-                return null
+                return HttpMethodType.ALL
             }
             return HttpMethodType.values().stream().filter { value.endsWith(it.name) }.findAny().orElseGet {
                 HttpMethodType.ALL
