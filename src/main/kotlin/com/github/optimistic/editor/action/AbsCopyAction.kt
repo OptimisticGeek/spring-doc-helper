@@ -16,7 +16,7 @@ import org.apache.commons.lang3.StringUtils
 
 abstract class AbsCopyAction(key: String?) : AnAction() {
     protected var psi: SmartPsiElementPointer<PsiElement>? = null
-    protected val method: AnalyzeHttpMethod? by lazy { psi?.element?.analyzeHttpMethod() }
+    protected var method: AnalyzeHttpMethod? = null
 
     init {
         key?.let { templatePresentation.setText { ScannerBundle.message(it) } }
@@ -27,7 +27,8 @@ abstract class AbsCopyAction(key: String?) : AnAction() {
     open fun isVisible(): Boolean = getModel() != null
 
     override fun update(e: AnActionEvent) {
-        psi = e.getPsiElement()?.let { SmartPointerManager.createPointer<PsiElement>(it) }
+        this.psi = e.getPsiElement()?.let { SmartPointerManager.createPointer<PsiElement>(it) }
+        this.method = psi?.element?.analyzeHttpMethod()
         e.presentation.isEnabledAndVisible = isVisible()
     }
 
