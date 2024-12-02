@@ -4,6 +4,15 @@
 
 ## [Unreleased]
 
+## [2.0.1] - 2024-12-03
+
+### Fixed
+- fix - copy事件中，未刷新method
+- fix - RequestMapping未指定httpMethod时报错
+
+
+## [2.0-beta] - 2024-11-18
+
 ### Changed
 
 - 删除SpringMvc插件，使用自定义方式解析 
@@ -116,6 +125,10 @@
 - controller缓存逻辑
 
 [Unreleased]: https://github.com/OptimisticGeek/spring-doc-helper/compare/v1.0.6...HEAD
+
+[2.0.1]: https://github.com/OptimisticGeek/spring-doc-helper/compare/v2.0-beta...v2.0.1
+
+[2.0-beta]: https://github.com/OptimisticGeek/spring-doc-helper/compare/v1.1.0...v2.0-beta
 
 [1.1.0]: https://github.com/OptimisticGeek/spring-doc-helper/compare/v1.0.7...v1.1.0
 
