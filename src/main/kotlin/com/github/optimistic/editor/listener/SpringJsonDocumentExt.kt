@@ -26,10 +26,8 @@ private fun AnalyzeModel.appendField(
     if (!name.isNullOrBlank()) sb.append("\"$name\": ")
 
     if (type.isBase) sb.append(type.defaultValue).append(if (!last) "," else "").also { return sb }
-
     sb.append(if (type == FieldType.LIST) "[" else "{")
-    if (children != null) sb.appendLine()
-    children?.forEachIndexed { index, field ->
+    children?.also { sb.appendLine() }?.forEachIndexed { index, field ->
         field.appendField(sb, showRemark, level + 1, index == children!!.size - 1).appendLine()
     }
     sb.appendSpace(level).append(if (type == FieldType.LIST) "]" else "}").takeIf { !last }?.append(",")

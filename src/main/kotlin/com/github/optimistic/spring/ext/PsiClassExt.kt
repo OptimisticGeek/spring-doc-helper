@@ -1,30 +1,16 @@
 // Copyright 2023-2024 OptimisticGeek. Use of this source code is governed by the Apache 2.0 license that can be found in the LICENSE file.
 package com.github.optimistic.spring.ext
 
-import com.github.optimistic.spring.constant.*
-import com.github.optimistic.spring.model.ClassModel
-import com.github.optimistic.spring.model.FieldModel
-import com.github.optimistic.spring.model.RefClassModel
-import com.github.optimistic.spring.model.toRefClassModel
-import com.github.optimistic.spring.service.springApiService
-import com.github.optimistic.spring.service.toClassModel
+import com.github.optimistic.spring.constant.nonSerializedAnnotations
+import com.github.optimistic.spring.constant.optionalAnnotations
+import com.github.optimistic.spring.model.type.BaseClass
+import com.github.optimistic.spring.model.type.ObjClass
+import com.github.optimistic.spring.parse.parseService
 import com.intellij.openapi.project.Project
-import com.intellij.psi.*
-import com.intellij.psi.util.PsiTreeUtil
-import java.util.*
-
-@JvmName("fields")
-fun PsiClass.fields(): List<FieldModel> {
-    return this.allFields.filter { !(it.hasModifierProperty(PsiModifier.FINAL) || it.hasModifierProperty(PsiModifier.STATIC)) }
-        .distinctBy { it.name }
-        .mapNotNull { psiField ->
-            psiField.typeElement?.toRefClassModel()?.let { refClassModel ->
-                FieldModel(psiField.name, psiField.getRemark(), refClassModel)
-                    .also { it.isRequired = psiField.checkRequired() ?: return@mapNotNull null }
-                    .also { "${this.qualifiedName}#${it.name}" }
-            }
-        }.toList()
-}
+import com.intellij.psi.PsiClass
+import com.intellij.psi.PsiModifierListOwner
+import com.intellij.psi.PsiType
+import com.intellij.psi.PsiTypeElement
 
 /**
  * 检测是否是必填字段
@@ -48,81 +34,57 @@ fun PsiModifierListOwner.checkRequired(): Boolean? {
 @JvmName("checkAnnotations")
 private fun PsiModifierListOwner.checkAnnotations(qNames: Set<String>, default: Boolean = true): Boolean {
     // qName:param:value
-    qNames.map { it.split(":") }
-        .forEach { split ->
-            getAnnotation(split[0])?.let { return split.size < 3 || split[2].lowercase() == it.getAnnotationValue(split[1]).lowercase() }
+    qNames.map { it.split(":") }.forEach { split ->
+        getAnnotation(split[0])?.let {
+            return split.size < 3 || split[2].lowercase() == it.getAnnotationValue(split[1]).lowercase()
         }
+    }
     return default
 }
 
-@JvmName("findClassModels")
-fun PsiTypeElement.findClassModels(): LinkedList<ClassModel>? {
-    if (this.text.equals(VOID)) return null
-    val list = LinkedList<ClassModel>()
-    // 添加当前
-    val psiClass = this.resolvePsiClass() ?: return null
-    psiClass.toClassModel()?.let { list.add(it) } ?: return null
-    // 数组作为list，特殊处理 && 数组类型不存在泛型
-    if (this.text.endsWith(ARRAY_TAG)) {
-        list.addFirst(FieldType.LIST.model!!)
-        return list
-    }
-    // 泛型处理
-    PsiTreeUtil.findChildrenOfType(this, PsiTypeElement::class.java)
-        // 忽略Map的key部分，只取value
-        .filter { !(it?.nextSibling?.text?.contains(",") ?: false) }.map { it.resolvePsiClass()?.toClassModel() }
-        .forEach { it?.let { list.add(it) } }
-    return if (list.size > 0) list else null
-}
+@JvmName("getBaseClass1")
+fun PsiTypeElement?.getBaseClass(): BaseClass? = this?.parseService()?.getBaseClass(this.type)
 
-@JvmName("toRefClassModel")
-fun PsiTypeElement.toRefClassModel(): RefClassModel? {
-    // ResultData<List<String>>
-    // 1.String -> source, ref = tmp(String)
-    // 2.List -> source, ref = tmp(List<String>)
-    // 3.ResultData -> source, ref = tmp(ResultData<List<String>>)
-    var root: RefClassModel? = null
-    val list = this.findClassModels() ?: return null
-    do RefClassModel(list.pollLast(), root).apply { root = this } while (list.size > 0)
-    return root
-}
+@JvmName("getBaseClass")
+fun PsiType?.getBaseClass(): BaseClass? = this?.parseService()?.getBaseClass(this)
 
-@JvmName("buildField")
-fun PsiParameter.buildField(remark: String): FieldModel? {
-    return this.typeElement?.toRefClassModel()?.let { FieldModel(name, remark, it) }
-}
+@JvmField
+val qNameRegex = Regex("([\\w.]+(\\[])*),?")
 
 /**
- * 通过完整限定名来获取class，支持泛型。但是所有的获取都依赖于cache
- *
- * <ul>
- *     <li>java.util.List<java.util.Map<java.lang.String, java.lang.Integer>></li>
- *     <li>int</li>
- *     <li>java.lang.String</li>
- * </ul>
+ * 通过qName获取类，支持java.util.Map<java.lang.String,java.utils.List<java.lang.Object>>
  */
-@JvmName("analyzeRefClassModel")
-fun PsiType?.analyzeRefClassModel(project: Project): RefClassModel? {
-    var fullClassName = this?.internalCanonicalText?.replace(Regex("[\\w.]+,|\\s+"), "") ?: return null
-    if (fullClassName.endsWith(ARRAY_TAG)) {
-        // int[] -> java.util.List<int>
-        // java.lang.Long[] -> java.util.List<java.lang.Long>
-        fullClassName = "${FieldType.LIST.qName}<${fullClassName.removeSuffix(ARRAY_TAG)}>"
-    }
-    var root: RefClassModel? = null
-    var parent: RefClassModel? = null
-    // 过滤Map的key限定名 -> java.util.List<java.util.Map<java.lang.Integer>>
-    val service = project.springApiService()
-    Regex("([\\w.]+)").findAll(fullClassName).map { it.groupValues[1] }.map { service.toClassModel(it) }
-        .forEachIndexed { index, classModel ->
-            classModel?.toRefClassModel()?.also { if (index == 0) root = it else parent?.ref = it }
-                ?.also { parent = it } ?: return root
-        }
-    return root
+fun Project.getBaseClass(qName: String?): BaseClass? = this.parseService().getBaseClass(qName = qName)
+
+fun String.packageName(): String {
+    if (!this.contains(".")) return this
+    return this.substring(0, this.lastIndexOf("."))
+}
+
+@JvmName("className")
+fun String.className(): String {
+    if (!this.contains(".")) return this
+    return this.substring(this.lastIndexOf(".") + 1).replace("<", "").replace(">", ".")
 }
 
 @JvmName("resolvePsiClass")
-fun PsiTypeElement.resolvePsiClass(): PsiClass? {
-    val resolve = this.innermostComponentReferenceElement?.resolve() ?: return null
-    return if (resolve is PsiClass) resolve else null
+fun PsiTypeElement.resolvePsiClass(): PsiClass? = this.innermostComponentReferenceElement?.resolve() as? PsiClass
+
+@JvmName("trimQname")
+fun String.firstQualifiedName(): String {
+    if (this == "java.lang.Class<?>") return "?"
+    return this.replaceFirst(Regex("<.*?$"), "")
+}
+
+/**
+ * 刷新类的字段
+ *
+ * @param isForce 是否强制刷新，强制刷新会把fields清空重新加载
+ */
+@JvmName("refreshObjClass")
+fun <T : ObjClass> T.refreshFields(psi: PsiClass?, isForce: Boolean = false): T {
+    psi ?: return this
+    if (isForce) this.isInit = false
+    psi.project.parseService().refreshFields(psi, this, isForce)
+    return this
 }

@@ -3,9 +3,12 @@ package com.github.optimistic.controller;
 import com.github.optimistic.entity.Pager;
 import com.github.optimistic.entity.AjaxResult;
 import com.github.optimistic.entity.ResultData;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.lang.Integer;
+import java.lang.String;
 
 
 /**
@@ -122,14 +125,53 @@ public class DerivationController {
     @GetMapping("/page")
     public ResultData<T> test9() {
         ResultData<T> result = new ResultData();
-        result.setData(new ArrayList<ResultData<Integer>>());
+        result.setData(new ArrayList<Integer>());
         return result;
     }
+
     /**
      * 变量
      */
     @GetMapping("/page")
     public ResultData<T> test10() {
         return new ResultData(new ArrayList<ResultData<Integer>>());
+    }
+
+
+    /**
+     * 泛型
+     */
+    @GetMapping("/page")
+    public ResultData<List<Integer>> test11() {
+        return new ResultData();
+    }
+
+    /**
+     * 泛型
+     */
+    @GetMapping("/page")
+    public ResultData<Map<String, List<Integer>>> test12() {
+        return new ResultData();
+    }
+
+    /**
+     * 泛型
+     */
+    @GetMapping("/page")
+    public ResultData<Map<String, ResultData<List<Integer>>>> test13() {
+        return new ResultData();
+    }
+
+
+    /**
+     * 数组
+     */
+    @GetMapping("/page")
+    public ResultData test14() {
+        ResultData<T> result = new ResultData();
+        int[] value = new int[]{1, 2, 3, 4, 5};
+        result.setData(value);
+        return result;
+        return new ResultData();
     }
 }

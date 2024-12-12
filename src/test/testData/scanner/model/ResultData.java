@@ -20,4 +20,12 @@ public class ResultData<T> {
     private String msg;
 
     private T data;
+
+    public ResultData(T data) {
+        this.data = data;
+    }
+
+    public void setData(T data) {
+        this.data = data;
+    }
 }

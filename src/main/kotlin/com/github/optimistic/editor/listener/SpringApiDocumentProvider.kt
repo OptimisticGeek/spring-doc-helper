@@ -4,15 +4,20 @@ package com.github.optimistic.editor.listener
 import com.github.optimistic.analyze.model.AnalyzeHttpMethod
 import com.github.optimistic.analyze.model.AnalyzeModel
 import com.github.optimistic.analyze.model.BaseAnalyzeModel
-import com.github.optimistic.spring.ext.analyze
-import com.github.optimistic.spring.ext.buildResponseBody
-import com.github.optimistic.spring.ext.toRefClassModel
+import com.github.optimistic.analyze.model.analyze
+import com.github.optimistic.spring.ext.isControllerClass
 import com.github.optimistic.spring.index.getHttpMethodModel
-import com.github.optimistic.spring.model.toRefClassModel
-import com.github.optimistic.spring.service.toClassModel
+import com.github.optimistic.spring.model.ClassType
+import com.github.optimistic.spring.parse.PsiParseJavaService
+import com.github.optimistic.spring.parse.parseService
 import com.intellij.lang.java.JavaDocumentationProvider
-import com.intellij.psi.*
+import com.intellij.openapi.components.service
+import com.intellij.psi.PsiClass
+import com.intellij.psi.PsiElement
+import com.intellij.psi.PsiMethod
 import com.intellij.psi.util.parentOfType
+import com.intellij.refactoring.suggested.endOffset
+import com.intellij.refactoring.suggested.startOffset
 import org.apache.commons.lang3.StringUtils
 
 /**
@@ -28,22 +33,25 @@ class SpringApiDocumentProvider : JavaDocumentationProvider() {
      */
     override fun generateDoc(element: PsiElement?, originalElement: PsiElement?): String? {
         var sourceGenerate = super.generateDoc(element, originalElement)
-
-        return originalElement?.let { buildModel(it) }.let {
+        originalElement?.let { buildModel(it) }?.let {
             sourceGenerate = sourceGenerate?.substringAfter("<body>") ?: StringUtils.EMPTY
 
-            when (it) {
-                is AnalyzeModel -> it.toHtmlDocument(sourceGenerate)
-                is AnalyzeHttpMethod -> it.toHtmlDocument(sourceGenerate)
+            return when (it) {
+                is AnalyzeModel -> it.toHtmlDocument()
+                is AnalyzeHttpMethod -> it.toHtmlDocument()
                 else -> null
             }?.replace("{source}", sourceGenerate)
         } ?: return sourceGenerate
     }
 
-    private fun buildModel(originalElement: PsiElement): BaseAnalyzeModel? {
-        return originalElement.parentOfType<PsiMethod>()?.takeIf { it.nameIdentifier == originalElement }
-            ?.let { it.getHttpMethodModel()?.analyze() }
-            ?: originalElement.getAnalyzeModel()
+    private fun buildModel(psi: PsiElement): BaseAnalyzeModel? {
+        psi.parentOfType<PsiMethod>()?.apply {
+            if (nameIdentifier == psi) getHttpMethodModel()?.also { return it.analyze() }
+            returnTypeElement?.takeIf { it.startOffset <= psi.textRange.startOffset && it.endOffset >= psi.textRange.endOffset }
+                ?.also { getHttpMethodModel()?.responseBody?.also { return it.analyze() } }
+                ?.also { parseService().parseReturnBaseClass(this)?.also { return it.analyze() } }
+        }
+        return psi.getAnalyzeModel()
     }
 }
 
@@ -52,40 +60,7 @@ class SpringApiDocumentProvider : JavaDocumentationProvider() {
  */
 @JvmName("getAnalyzeModel")
 fun PsiElement.getAnalyzeModel(): AnalyzeModel? {
-    val psiMethod = parentOfType<PsiMethod>()
-
-    when (val current = this.parent) {
-        is PsiNewExpression -> current.resolveConstructor()?.analyzeReturnModel()
-        is PsiVariable -> current.typeElement?.toRefClassModel()?.analyze()
-        is PsiClass -> current.toClassModel()?.toRefClassModel()?.analyze()
-        is PsiJavaCodeReferenceElement -> when (val resole = current.resolve()) {
-            is PsiVariable -> resole.typeElement?.toRefClassModel()?.analyze()
-            is PsiMethod -> {
-                if (psiMethod?.returnTypeElement?.text == resole.returnTypeElement?.text)
-                    psiMethod.analyzeReturnModel()
-                else
-                    resole.returnTypeElement?.toRefClassModel()?.analyze()
-            }
-
-            else -> current.parentOfType<PsiTypeElement>()?.let {
-                if (psiMethod?.returnTypeElement == it)
-                    return psiMethod.analyzeReturnModel()
-                else
-                    it.toRefClassModel()?.analyze()
-            }
-        }
-
-        else -> null
-    }?.takeIf { !it.children.isNullOrEmpty() }?.let { return it }
-
-    psiMethod ?: return null
-    when (parent) {
-        psiMethod -> psiMethod
-        psiMethod.returnTypeElement -> psiMethod
-        else -> if (this.text == psiMethod.returnTypeElement?.text) return psiMethod.analyzeReturnModel() else null
-    }.analyzeReturnModel()?.takeIf { !it.children.isNullOrEmpty() }.let { return it }
+    if (this is PsiClass && this.isControllerClass()) return null
+    var parseBaseClass = project.service<PsiParseJavaService>().parseBaseClass(this.parent, this)
+    return parseBaseClass?.takeIf { it is ClassType }?.analyze()
 }
-
-@JvmName("analyzeReturnModel")
-private fun PsiMethod?.analyzeReturnModel(): AnalyzeModel? = this?.buildResponseBody()?.analyze()
-

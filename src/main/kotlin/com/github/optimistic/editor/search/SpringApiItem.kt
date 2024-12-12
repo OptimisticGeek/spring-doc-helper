@@ -2,8 +2,8 @@
 
 package com.github.optimistic.editor.search
 
+import com.github.optimistic.spring.ext.className
 import com.github.optimistic.spring.model.HttpMethodModel
-import com.github.optimistic.spring.model.className
 import com.intellij.find.FindResult
 import com.intellij.openapi.util.TextRange
 import com.intellij.psi.codeStyle.MinusculeMatcher

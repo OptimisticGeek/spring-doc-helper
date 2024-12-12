@@ -1,9 +1,13 @@
 // Copyright 2023-2024 OptimisticGeek. Use of this source code is governed by the Apache 2.0 license that can be found in the LICENSE file.
 package com.github.optimistic.spring.constant
 
-import com.github.optimistic.spring.model.ClassModel
+import com.github.optimistic.spring.ext.className
+import com.github.optimistic.spring.ext.firstQualifiedName
+import com.github.optimistic.spring.model.type.BaseClass
+import com.github.optimistic.spring.model.type.BasicClass
 import com.intellij.psi.CommonClassNames.*
 import com.intellij.psi.PsiClass
+import org.apache.commons.lang3.BooleanUtils
 
 /**
  * FieldType
@@ -17,6 +21,7 @@ enum class FieldType(
     val isObj: Boolean = false,
     val isRef: Boolean = false,
     qNames: Set<String>? = null,
+    var baseClass: BaseClass? = null
 ) {
     INTEGER(JAVA_LANG_INTEGER, 0, qNames = setOf("int", "short", JAVA_LANG_INTEGER, JAVA_LANG_SHORT)),
 
@@ -92,59 +97,47 @@ enum class FieldType(
      */
     OTHER("Other") {
         override fun isFieldType(qName: String): Boolean {
-            return qName == "void" || qName == "null" || qName.startsWith("javax.") || qName.startsWith(
-                "org.spring"
-            )
+            return qName == "void" || qName == "null" || qName.startsWith("javax.")
         }
     };
 
-    val model: ClassModel? by lazy {
-        if (this == OTHER || this == OBJECT || this == ENUM) return@lazy null
-        ClassModel(this).also {
-            if (this != MAP) return@also
-            it.fields = arrayListOf(
-                com.github.optimistic.spring.model.FieldModel(
-                    fieldName = "data",
-                    remark = com.github.optimistic.spring.service.ScannerBundle.message("scanner.map.key.remark"),
-                    classType = com.github.optimistic.spring.model.RefClassModel(SUBSTITUTE.model!!)
-                )
-            )
-        }
-    }
     private val className: String = qName.className()
     val isBase: Boolean = !(this.isObj || this.isRef)
-    private val regex = Regex("(${(qNames?.let { it.joinToString("|") + "|" + qName } ?: qName)})(,|$)")
+    private val regex =
+        Regex("(${(qNames?.let { it.joinToString("|") + "|" + qName.className() } ?: qName.className())})(,|$)")
+
     fun getDefaultValue(): String = defaultValue?.toString()?.replace("\"", "") ?: ""
 
-    override fun toString(): String {
-        return className
+    init {
+        if (qName != "Other" && (BooleanUtils.isNotTrue(isObj || isRef))) {
+            baseClass = BasicClass(this)
+        }
     }
 
-    open fun isFieldType(qName: String): Boolean {
-        return qName == this.qName
-    }
+    override fun toString(): String = className
 
-    open fun isThisOrSupers(superNames: String?): Boolean {
-        return superNames?.let { regex.containsMatchIn(it) } ?: return false
-    }
+    open fun isFieldType(qName: String): Boolean = qName == this.qName
 
-    private fun String.className(): String {
-        if (!this.contains(".")) return this
-        return this.substring(this.lastIndexOf(".") + 1)
-    }
+    open fun isThisOrSupers(superNames: String): Boolean = regex.containsMatchIn(superNames)
+
+    fun className(): String = qName.className()
 }
 
-@JvmName("getType")
-fun getFieldType(psiClass: PsiClass? = null, qualifiedName: String? = null): FieldType {
-    if (psiClass == null && qualifiedName.isNullOrBlank()) return FieldType.OTHER
-    val qName = qualifiedName ?: psiClass?.qualifiedName ?: psiClass?.name ?: return FieldType.OTHER
-    if (qName.length == 1) return FieldType.SUBSTITUTE
+@JvmName("getFieldType")
+fun getFieldType(psiClass: PsiClass? = null, qName: String? = psiClass?.qualifiedName): FieldType {
+    if (psiClass == null && qName.isNullOrBlank()) return FieldType.OTHER
+    val qName = qName?.firstQualifiedName() ?: psiClass?.qualifiedName ?: psiClass?.name ?: return FieldType.OTHER
+    if (qName == JAVA_LANG_OBJECT || qName == "?") return FieldType.SUBSTITUTE
+    if (qName == JAVA_LANG_CLASS) return FieldType.OTHER
+    if (qName.length == 1 && psiClass == null) return FieldType.SUBSTITUTE
     if (psiClass?.isEnum == true) return FieldType.ENUM
 
-    val supers = "$qName," + psiClass?.let {
-        psiClass.interfaces.mapNotNull { it.qualifiedName }
-            .joinToString(",") + "," + psiClass.supers.mapNotNull { it.qualifiedName }.filter { it != JAVA_LANG_OBJECT }
+    val supers = psiClass?.let {
+        (psiClass.interfaces + psiClass.supers).mapNotNull { it.qualifiedName }.filter { it != JAVA_LANG_OBJECT }
             .joinToString(",")
-    }
+    }?.let { "$qName,$it" } ?: qName
     return FieldType.values().firstOrNull { it.isFieldType(qName) || it.isThisOrSupers(supers) } ?: FieldType.OBJECT
 }
+
+@JvmName("getFieldTypeByValue")
+fun getFieldType(value: Any): FieldType = value.javaClass.let { "${it.packageName}.${it.simpleName}" }.let { getFieldType(qName = it) }

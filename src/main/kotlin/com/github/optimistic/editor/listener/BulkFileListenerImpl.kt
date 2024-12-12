@@ -3,7 +3,6 @@ package com.github.optimistic.editor.listener
 
 import com.github.optimistic.spring.service.clearUserData
 import com.intellij.ide.highlighter.JavaFileType
-import com.intellij.openapi.diagnostic.thisLogger
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.roots.FileIndexUtil
 import com.intellij.openapi.vfs.VirtualFile
@@ -25,8 +24,6 @@ class BulkFileListenerImpl(private val project: Project) : BulkFileListener {
     }
 
     override fun after(events: MutableList<out VFileEvent>) {
-        if (thisLogger().isDebugEnabled) return
-        // todo 未知原因导致，PsiClass的fields更改不生效，例如id字段修改为非id字段，再还原，取到的字段还是修改后的字段，而不是id
         events.filter { it.isFromSave }
             .mapNotNull { it.file }
             .filter { FileIndexUtil.isJavaSourceFile(project, it) && it.fileType is JavaFileType }
