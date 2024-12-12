@@ -4,6 +4,11 @@
 
 ## [Unreleased]
 
+## [2.0.2] - 2024-12-12
+
+### Fixed
+- fix - 字段别名，@JSONField & @JsonProperty
+
 ## [2.0.1] - 2024-12-03
 
 ### Fixed
@@ -125,6 +130,8 @@
 - controller缓存逻辑
 
 [Unreleased]: https://github.com/OptimisticGeek/spring-doc-helper/compare/v1.0.6...HEAD
+
+[2.0.2]: https://github.com/OptimisticGeek/spring-doc-helper/compare/v2.01...v2.0.2
 
 [2.0.1]: https://github.com/OptimisticGeek/spring-doc-helper/compare/v2.0-beta...v2.0.1
 

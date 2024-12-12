@@ -18,8 +18,12 @@ fun PsiClass.fields(): List<FieldModel> {
     return this.allFields.filter { !(it.hasModifierProperty(PsiModifier.FINAL) || it.hasModifierProperty(PsiModifier.STATIC)) }
         .distinctBy { it.name }
         .mapNotNull { psiField ->
+            val aliasName = psiField.getAnnotationValue(FASTJSON_JSON_FIELD, "name").takeIf { it.isNotEmpty() }
+                ?:  psiField.getAnnotationValue(FASTJSON2_JSON_FIELD, "name").takeIf { it.isNotEmpty() }
+                ?:  psiField.getAnnotationValue(JACKSON_JSON_FIELD)
+
             psiField.typeElement?.toRefClassModel()?.let { refClassModel ->
-                FieldModel(psiField.name, psiField.getRemark(), refClassModel)
+                FieldModel(psiField.name, psiField.getRemark(), refClassModel, aliasName)
                     .also { it.isRequired = psiField.checkRequired() ?: return@mapNotNull null }
                     .also { "${this.qualifiedName}#${it.name}" }
             }

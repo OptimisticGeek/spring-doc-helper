@@ -13,7 +13,7 @@ import java.util.*
 import java.util.stream.Collectors
 
 @JvmName("getAnnotationValue")
-fun PsiModifierListOwner.getAnnotationValue(qName: String, valueName: String): String {
+fun PsiModifierListOwner.getAnnotationValue(qName: String, valueName: String = DEFAULT): String {
     return this.getAnnotationValues(qName, valueName).firstOrNull() ?: StringUtils.EMPTY
 }
 

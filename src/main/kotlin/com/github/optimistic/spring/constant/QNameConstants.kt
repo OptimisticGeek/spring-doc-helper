@@ -16,6 +16,7 @@ const val RESPONSE_BODY = "org.springframework.web.bind.annotation.ResponseBody"
 const val RESOURCE = "javax.annotation.Resource"
 const val AUTOWIRED = "org.springframework.beans.factory.annotation.Autowired"
 const val FASTJSON_JSON_FIELD = "com.alibaba.fastjson.annotation.JSONField"
+const val FASTJSON2_JSON_FIELD = "com.alibaba.fastjson2.annotation.JSONField"
 const val JACKSON_JSON_FIELD = "com.fasterxml.jackson.annotation.JsonProperty"
 
 

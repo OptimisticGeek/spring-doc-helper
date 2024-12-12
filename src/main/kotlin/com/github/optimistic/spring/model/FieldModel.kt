@@ -10,14 +10,14 @@ import org.apache.commons.lang3.StringUtils
  * @date 2023/12/27
  */
 class FieldModel(
-    val fieldName: String, remark: String? = null, var classType: RefClassModel
+    val fieldName: String, remark: String? = null, var classType: RefClassModel, aliasName: String = fieldName
 ) : BaseModel(name = fieldName, remark = remark) {
     var isRequired: Boolean = true
 
-    var aliasName: String? = null
+    var aliasName: String = aliasName
         get() = if (StringUtils.isBlank(field)) fieldName else field
     val realName: String
-        get() = aliasName ?: fieldName
+        get() = aliasName
     val realRemark: String
         get() = remark ?: classType.remark ?: ""
 

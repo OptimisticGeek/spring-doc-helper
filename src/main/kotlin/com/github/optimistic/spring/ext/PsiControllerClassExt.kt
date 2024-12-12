@@ -24,7 +24,7 @@ fun PsiMethod.buildParameters(
         // requestBody
         if (it.hasAnnotation(REQUEST_BODY)) {
             fieldModel.isRequired = true
-            requestBody.consume(fieldModel.also { it.name = null }.also { it.aliasName = null })
+            requestBody.consume(fieldModel.also { it.name = null })
             return@forEach
         }
         // pathVariables
