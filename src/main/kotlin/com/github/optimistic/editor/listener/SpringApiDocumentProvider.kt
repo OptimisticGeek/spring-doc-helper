@@ -16,8 +16,6 @@ import com.intellij.psi.PsiClass
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiMethod
 import com.intellij.psi.util.parentOfType
-import com.intellij.refactoring.suggested.endOffset
-import com.intellij.refactoring.suggested.startOffset
 import org.apache.commons.lang3.StringUtils
 
 /**
@@ -40,14 +38,15 @@ class SpringApiDocumentProvider : JavaDocumentationProvider() {
                 is AnalyzeModel -> it.toHtmlDocument()
                 is AnalyzeHttpMethod -> it.toHtmlDocument()
                 else -> null
-            }?.replace("{source}", sourceGenerate)
+            }?.replace("{source}", sourceGenerate ?: StringUtils.EMPTY)
         } ?: return sourceGenerate
     }
 
     private fun buildModel(psi: PsiElement): BaseAnalyzeModel? {
         psi.parentOfType<PsiMethod>()?.apply {
             if (nameIdentifier == psi) getHttpMethodModel()?.also { return it.analyze() }
-            returnTypeElement?.takeIf { it.startOffset <= psi.textRange.startOffset && it.endOffset >= psi.textRange.endOffset }
+
+            returnTypeElement?.takeIf { it.textRange.startOffset <= psi.textRange.startOffset && it.textRange.endOffset >= psi.textRange.endOffset }
                 ?.also { getHttpMethodModel()?.responseBody?.also { return it.analyze() } }
                 ?.also { parseService().parseReturnBaseClass(this)?.also { return it.analyze() } }
         }
