@@ -3,7 +3,10 @@ package com.github.optimistic.spring.ext
 
 import com.github.optimistic.spring.constant.*
 import com.intellij.psi.PsiJavaDocumentedElement
+import com.intellij.psi.PsiMethod
 import com.intellij.psi.PsiModifierListOwner
+import com.intellij.psi.PsiVariable
+import com.intellij.psi.util.parentOfType
 import org.apache.commons.lang3.StringUtils
 
 @JvmName("getDocumentTitle")
@@ -12,14 +15,12 @@ private fun PsiJavaDocumentedElement.getDocumentTitle(): String {
 }
 
 @JvmName("getDocumentTag")
-fun PsiJavaDocumentedElement.getDocumentTag(tag: String): String {
-    return this.docComment?.findTagByName(tag)?.valueElement?.text.trimHtmlTag()
-}
+fun PsiJavaDocumentedElement.getDocumentTag(tag: String): String =
+    this.docComment?.findTagByName(tag)?.valueElement?.text.trimHtmlTag()
 
 @JvmName("getDocumentTagParam")
-fun PsiJavaDocumentedElement.getDocumentTagParam(param: String): String {
-    return this.getDocumentTagParam(PARAM, param)
-}
+fun PsiJavaDocumentedElement.getDocumentTagParam(param: String): String =
+    this.getDocumentTagParam(PARAM, param)
 
 @JvmName("getDocumentTagParam")
 fun PsiJavaDocumentedElement.getDocumentTagParam(tag: String, param: String): String {
@@ -30,16 +31,27 @@ fun PsiJavaDocumentedElement.getDocumentTagParam(tag: String, param: String): St
 }
 
 @JvmName("getAuthor")
-fun PsiJavaDocumentedElement.getAuthor(): String {
-    return this.getDocumentTag(AUTHOR)
-}
+fun PsiJavaDocumentedElement.getAuthor(): String = this.getDocumentTag(AUTHOR)
 
+@JvmName("PsiVariableGetDocumentTagParam")
+fun PsiVariable.getDocumentTagParam(): String =
+    this.name?.let { tag -> this.parentOfType<PsiMethod>()?.getDocumentTag(tag) } ?: StringUtils.EMPTY
+
+/**
+ *    todo
+ *     @ApiImplicitParams({
+ *         @ApiImplicitParam(name = "userId", value = "用户id", dataType = "Integer", dataTypeClass = Integer.class),
+ *         @ApiImplicitParam(name = "username", value = "用户名称", dataType = "String", dataTypeClass = String.class),
+ *         @ApiImplicitParam(name = "password", value = "用户密码", dataType = "String", dataTypeClass = String.class),
+ *         @ApiImplicitParam(name = "mobile", value = "用户手机", dataType = "String", dataTypeClass = String.class)
+ *     })
+ */
+/**
+ * 优先使用swagger的文档，其次使用java原生文档
+ */
 @JvmName("getRemark")
-fun PsiJavaDocumentedElement.getRemark(): String {
-    // 优先使用swagger的文档
-    if (this is PsiModifierListOwner) getSwaggerRemark()?.takeIf { it.isNotBlank() }?.let { return it }
-    return this.getDocumentTitle()
-}
+fun PsiJavaDocumentedElement.getRemark(): String =
+    (this as? PsiModifierListOwner)?.getSwaggerRemark()?.takeIf { it.isNotBlank() } ?: getDocumentTitle()
 
 @JvmName("getSwaggerRemark")
 fun PsiModifierListOwner.getSwaggerRemark(): String? {
@@ -53,7 +65,5 @@ fun PsiModifierListOwner.getSwaggerRemark(): String? {
 }
 
 @JvmName("trimHtmlTag")
-private fun String?.trimHtmlTag(): String {
-    this ?: return StringUtils.EMPTY
-    return this.replace("\\s*<\\s*\\w+\\s*[^>]*>\\s*", "").replace("*", " ").trim()
-}
+private fun String?.trimHtmlTag(): String =
+    this?.replace("\\s*<\\s*\\w+\\s*[^>]*>\\s*", "")?.replace("*", " ")?.trim() ?: StringUtils.EMPTY

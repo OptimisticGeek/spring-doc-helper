@@ -2,9 +2,9 @@ package com.github.optimistic.spring.index
 
 import com.github.optimistic.spring.constant.CONTROLLER
 import com.github.optimistic.spring.constant.REST_CONTROLLER
+import com.github.optimistic.spring.ext.className
 import com.github.optimistic.spring.model.ControllerModel
 import com.github.optimistic.spring.model.HttpMethodModel
-import com.github.optimistic.spring.model.className
 import com.github.optimistic.spring.service.getUserData
 import com.github.optimistic.spring.service.httpMethodModelKey
 import com.github.optimistic.spring.service.springApiService
@@ -67,5 +67,5 @@ fun PsiClass.getHttpMethodMap(): Map<PsiMethod, HttpMethodModel>? = toController
 
 @JvmName("getHttpMethod")
 fun PsiMethod.getHttpMethodModel(): HttpMethodModel? = this.getUserData(httpMethodModelKey){
-    return@getUserData this.parentOfType<PsiClass>()?.getHttpMethodMap()?.get(this)
+    this.parentOfType<PsiClass>()?.getHttpMethodMap()?.get(this)
 }

@@ -6,9 +6,11 @@ import com.github.optimistic.spring.constant.FieldType
 import com.github.optimistic.spring.constant.RESPONSE_BODY
 import com.github.optimistic.spring.constant.REST_CONTROLLER
 import com.github.optimistic.spring.ext.buildParameters
-import com.github.optimistic.spring.ext.buildResponseBody
+import com.github.optimistic.spring.ext.className
 import com.github.optimistic.spring.ext.getAuthor
 import com.github.optimistic.spring.ext.getRemark
+import com.github.optimistic.spring.model.type.BaseClass
+import com.github.optimistic.spring.parse.parseService
 import com.intellij.openapi.module.ModuleUtilCore
 import com.intellij.psi.PsiMethod
 import com.intellij.psi.SmartPointerManager
@@ -32,13 +34,13 @@ class HttpMethodModel(val element: PsiMethod, val parent: ControllerModel) {
     val psiMethod get() = sourcePsi.element!!
     val myModule get() = psiClass.let { ModuleUtilCore.findModuleForPsiElement(it)!! }
     val httpMethod get() = urlPath.httpMethod
-    val url  = urlPath.url
+    val url = urlPath.url
     val position by lazy { psiMethod.getPosition() }
     val name by lazy { position.className() }
     val author by lazy { psiMethod.getAuthor().let { it.ifBlank { parent.author ?: "" } } }
     val remark by lazy {
-        parent.remark!!.let { if (it.isBlank() || it == psiClass.name) "" else "$it-" } +
-                psiMethod.getRemark().let { it.ifBlank { psiMethod.name } }
+        parent.remark!!.let { if (it.isBlank() || it == psiClass.name) "" else "$it-" } + psiMethod.getRemark()
+            .let { it.ifBlank { psiMethod.name } }
     }
 
     private val params: MethodParams by lazy { MethodParams(psiMethod) }
@@ -49,12 +51,11 @@ class HttpMethodModel(val element: PsiMethod, val parent: ControllerModel) {
     val responseBody get() = params.responseBody
 
     val isViewer: Boolean by lazy {
-        requestBody?.classType?.sourceType == FieldType.STRING &&
-                !BooleanUtils.or(
-                    psiMethod.hasAnnotation(RESPONSE_BODY),
-                    psiClass.hasAnnotation(REST_CONTROLLER),
-                    psiClass.hasAnnotation(RESPONSE_BODY)
-                )
+        requestBody?.type == FieldType.STRING && !BooleanUtils.or(
+            psiMethod.hasAnnotation(RESPONSE_BODY),
+            psiClass.hasAnnotation(REST_CONTROLLER),
+            psiClass.hasAnnotation(RESPONSE_BODY)
+        )
     }
 
 
@@ -79,14 +80,14 @@ fun PsiMethod.getPosition(): String {
 }
 
 private class MethodParams(psiMethod: PsiMethod) {
-    val requestBody: FieldModel?
-    val pathVariables = ArrayList<FieldModel>()
-    val queryParams = ArrayList<FieldModel>()
-    val responseBody: RefClassModel? = psiMethod.buildResponseBody()
+    val requestBody: Field?
+    val pathVariables = ArrayList<Field>()
+    val queryParams = ArrayList<Field>()
+    val responseBody: BaseClass? by lazy { psiMethod.parseService().parseReturnBaseClass(psiMethod)}
 
     init {
         psiMethod.apply {
-            var body: FieldModel? = null
+            var body: Field? = null
             buildParameters(pathVariables, queryParams) { body = it }
             requestBody = body
         }

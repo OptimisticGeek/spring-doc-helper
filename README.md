@@ -23,6 +23,7 @@ This is a plugin for spring interface documentation. With this plugin, you can q
 - [ ] 导入到Yapi
 - [ ] 导入到Postman
 - [ ] 方法责任链（以时间轴倒序展示接口修改记录）
+- [ ] 根据json创建对象，考虑创建sql、controller、service、model、mapper、mapper.xml
 <!-- Plugin description end -->
 
 ## Installation

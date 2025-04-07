@@ -70,7 +70,7 @@ open class BaseControllerTestCase : BaseScannerTestCase() {
             // 检测依赖
             importListRegex.findAll(javaSource).map { it.groupValues[1] }.forEach {
                 try {
-                    findPsiClass(it)
+                    it.mockBaseClass()
                 } catch (e: Error) {
                     e.printStackTrace()
                 }

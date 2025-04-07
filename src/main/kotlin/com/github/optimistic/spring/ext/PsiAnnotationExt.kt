@@ -6,14 +6,13 @@ import com.intellij.psi.PsiAnnotation
 import com.intellij.psi.PsiLiteralExpression
 import com.intellij.psi.PsiModifierListOwner
 import com.intellij.psi.util.PsiTreeUtil
-import com.intellij.util.containers.stream
 import org.apache.commons.lang3.BooleanUtils
 import org.apache.commons.lang3.StringUtils
 import java.util.*
 import java.util.stream.Collectors
 
 @JvmName("getAnnotationValue")
-fun PsiModifierListOwner.getAnnotationValue(qName: String, valueName: String): String {
+fun PsiModifierListOwner.getAnnotationValue(qName: String, valueName: String = DEFAULT): String {
     return this.getAnnotationValues(qName, valueName).firstOrNull() ?: StringUtils.EMPTY
 }
 
@@ -46,12 +45,8 @@ fun PsiAnnotation.getHttpMethodType(default: HttpMethodType? = null): HttpMethod
         DELETE_MAPPING -> HttpMethodType.DELETE
         else -> {
             val value = this.getAnnotationValue(METHOD)
-            if (StringUtils.isBlank(value)) {
-                return HttpMethodType.ALL
-            }
-            return HttpMethodType.values().stream().filter { value.endsWith(it.name) }.findAny().orElseGet {
-                HttpMethodType.ALL
-            }
+            if (StringUtils.isBlank(value)) return HttpMethodType.ALL
+            return HttpMethodType.values().filter { value.endsWith(it.name) }.firstNotNullOf { HttpMethodType.ALL }
         }
     } ?: default
 }

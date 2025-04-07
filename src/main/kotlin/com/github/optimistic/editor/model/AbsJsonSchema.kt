@@ -3,19 +3,19 @@ package com.github.optimistic.editor.model
 import com.github.optimistic.analyze.model.AnalyzeModel
 import com.github.optimistic.spring.constant.FieldType
 import com.github.optimistic.spring.constant.FieldType.*
-import com.github.optimistic.spring.model.className
+import com.github.optimistic.spring.ext.className
 
 /**
  * @property type 类型名
  * @property description 描述
- * @property default 默认值
+ * @property defaultValue 默认值
  */
 @Suppress("MemberVisibilityCanBePrivate")
 abstract class AbsJsonSchema(
     val fieldType: FieldType,
     val description: String,
     val type: String = fieldType.qName.className().lowercase(),
-    var default: Any? = fieldType.defaultValue
+    var defaultValue: Any? = fieldType.defaultValue
 )
 
 @JvmName("getJsonSchema")

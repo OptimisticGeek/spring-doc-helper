@@ -5,6 +5,9 @@ import com.github.optimistic.spring.constant.FieldType
 import com.github.optimistic.spring.constant.FieldType.OBJECT
 import org.apache.commons.lang3.StringUtils.EMPTY
 
+/**
+ * todo 对象的Getter字段未解析
+ */
 class ObjJsonSchema(
     fieldType: FieldType = OBJECT, remark: String = EMPTY, val author: String = EMPTY, val qName: String = EMPTY
 ) : AbsJsonSchema(fieldType, remark) {

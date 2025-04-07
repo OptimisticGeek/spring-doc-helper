@@ -4,8 +4,7 @@ package com.github.optimistic.analyze.model
 import com.github.optimistic.editor.listener.toJson
 import com.github.optimistic.spring.constant.FieldType
 import com.github.optimistic.spring.constant.HttpMethodType
-import com.github.optimistic.spring.ext.analyze
-import com.github.optimistic.spring.model.FieldModel
+import com.github.optimistic.spring.model.Field
 import com.github.optimistic.spring.model.HttpMethodModel
 import com.intellij.openapi.project.Project
 import java.util.*
@@ -43,15 +42,6 @@ private fun String.replaceUrlPathParams(pathParams: AnalyzeModel?): String {
 private fun String.joinQueryParams(queryParams: AnalyzeModel?): String =
     queryParams?.children?.joinToString("&") { "${it.name}=${it.type.getDefaultValue()}" }?.let { "$this?$it" } ?: this
 
-/**
- * 仅适用于queryParams与pathParams
- */
-@JvmName("toParams")
-private fun List<FieldModel>.toParams(): AnalyzeModel? = this.map(FieldModel::analyze)
-    .flatMap { if (!it.type.isObj) listOf(it) else it.children ?: Collections.emptyList() }.toList()
-    .takeIf { it.isNotEmpty() }
-    .let { return if (!it.isNullOrEmpty()) AnalyzeModel(FieldType.OBJECT, it) else null }
-
 @JvmName("toCurlStr")
 fun AnalyzeHttpMethod.toCurlStr(): String {
     val sb = StringBuilder("curl -X $httpMethod ")
@@ -61,3 +51,12 @@ fun AnalyzeHttpMethod.toCurlStr(): String {
     sb.append(" $url")
     return sb.toString()
 }
+
+/**
+ * 仅适用于queryParams与pathParams
+ */
+@JvmName("toParams")
+private fun List<Field>.toParams(): AnalyzeModel? = this.mapNotNull(Field::analyze)
+    .flatMap { if (!it.type.isObj) listOf(it) else it.children ?: Collections.emptyList() }.toList()
+    .takeIf { it.isNotEmpty() }
+    .let { return if (!it.isNullOrEmpty()) AnalyzeModel(FieldType.OBJECT, it) else null }

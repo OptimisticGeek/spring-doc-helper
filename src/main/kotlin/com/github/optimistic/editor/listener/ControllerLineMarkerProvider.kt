@@ -49,7 +49,11 @@ class ControllerLineMarkerProvider : JavaLineMarkerProvider() {
             .forEach { element ->
                 element.getHttpRequestAnnotation()
                     ?.let {
-                        element.createLineMarkerInfo(it.textRange, "", it.getHttpMethodType(HttpMethodType.ALL)!!.icon)
+                        element.createLineMarkerInfo(
+                            it.textRange,
+                            "",
+                            it.getHttpMethodType(HttpMethodType.ALL)!!.icon
+                        )
                     }?.let { result.add(it) }
             }
     }

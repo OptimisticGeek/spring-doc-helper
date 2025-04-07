@@ -4,8 +4,7 @@ package com.github.optimistic.editor.listener
 import com.github.optimistic.analyze.model.AnalyzeHttpMethod
 import com.github.optimistic.analyze.model.AnalyzeModel
 import com.github.optimistic.spring.constant.*
-import com.github.optimistic.spring.model.RefClassModel
-import com.github.optimistic.spring.model.className
+import com.github.optimistic.spring.ext.className
 import com.github.optimistic.spring.service.ScannerBundle
 import com.intellij.codeInsight.documentation.DocumentationManagerProtocol.PSI_ELEMENT_PROTOCOL
 import com.intellij.ide.highlighter.JavaFileHighlighter
@@ -17,10 +16,9 @@ import kotlinx.html.*
 import kotlinx.html.dom.createHTMLDocument
 import kotlinx.html.dom.serialize
 import kotlinx.html.stream.createHTML
-import org.apache.commons.lang3.StringUtils.EMPTY
 
 @JvmName("toHtmlDocument")
-fun AnalyzeHttpMethod.toHtmlDocument(source: String = EMPTY): String {
+fun AnalyzeHttpMethod.toHtmlDocument(): String {
     val html = createHTMLDocument().html {
         head {
             title(message("document.title"))
@@ -65,7 +63,7 @@ fun AnalyzeHttpMethod.toHtmlDocument(source: String = EMPTY): String {
 }
 
 @JvmName("toHtmlDocument")
-fun AnalyzeModel.toHtmlDocument(source: String = EMPTY): String {
+fun AnalyzeModel.toHtmlDocument(): String {
     val toHtml = this.toHtml(modelKey)
 
     val html = createHTMLDocument().html {
@@ -90,15 +88,6 @@ private fun message(key: String): String {
     return ScannerBundle.message(key) + ":"
 }
 
-@JvmName("isShowHtmlDocument")
-fun RefClassModel?.isShowHtmlDocument(): Boolean {
-    this ?: return false
-    // 基本类型不显示
-    if (this.sourceType.isBase) return false
-    // 有字段的对象显示 || 泛型为对象
-    return !this.source.fields.isNullOrEmpty() || this.ref.isShowHtmlDocument()
-}
-
 @JvmName("toHtml")
 private fun AnalyzeModel.toHtml(title: String): String {
     return createHTML(false).div("model") {
@@ -120,7 +109,10 @@ private fun AnalyzeModel.toHtml(level: Int, isLastChild: Boolean): String {
                     // 屏蔽顶级类的超链接
                     ("// ${if (remark.isNullOrBlank() || remark == it) it else "$it[$remark]"}").let {
                         if (level > 0) {
-                            a("$PSI_ELEMENT_PROTOCOL$position", "_self", "remark") { +it }
+                            a("$PSI_ELEMENT_PROTOCOL$position", "_self") {
+                                rel = "remark"
+                                +it
+                            }
                         } else span("remark") { +it }
                     }
                 }
@@ -132,10 +124,11 @@ private fun AnalyzeModel.toHtml(level: Int, isLastChild: Boolean): String {
             b("colon") { +": " }
         }
         if (type.isBase) {
-            span(getStyleName()) { +" ${type.defaultValue.toString()}" }
+            span(getStyleName()) { +" ${defaultValue.toString()}" }
             span("comma") { +if (isLastChild) "" else "," }
             return@div
         }
+        if(children == null) span("null") { +" null" }.let { return@div }
         // Object || List
         span("brackets") { +if (type == FieldType.LIST) "[ " else "{ " }
 
