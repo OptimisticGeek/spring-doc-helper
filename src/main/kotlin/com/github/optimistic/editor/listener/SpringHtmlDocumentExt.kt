@@ -120,7 +120,10 @@ private fun AnalyzeModel.toHtml(level: Int, isLastChild: Boolean): String {
                     // 屏蔽顶级类的超链接
                     ("// ${if (remark.isNullOrBlank() || remark == it) it else "$it[$remark]"}").let {
                         if (level > 0) {
-                            a("$PSI_ELEMENT_PROTOCOL$position", "_self", "remark") { +it }
+                            a("$PSI_ELEMENT_PROTOCOL$position", "_self") {
+                                rel = "remark"
+                                +it
+                            }
                         } else span("remark") { +it }
                     }
                 }

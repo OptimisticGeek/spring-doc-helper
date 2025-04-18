@@ -58,6 +58,6 @@ fun AnalyzeHttpMethod.toCurlStr(): String {
     requestBody?.let { sb.append(" -H \"Content-Type: application/json\" ") }
         ?.let { sb.append(" -d '${requestBody.toJson(false).replace(Regex("\\s+"), "")}'") }
     response?.let { sb.append(" -H \"Accept: application/json\" ") }
-    sb.append(" $url")
+    sb.appendLine(" ${getUrl(true)}")
     return sb.toString()
 }

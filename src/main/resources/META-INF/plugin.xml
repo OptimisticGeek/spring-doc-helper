@@ -23,6 +23,11 @@
     <listener class="com.github.optimistic.editor.listener.BulkFileListenerImpl" topic="com.intellij.openapi.vfs.newvfs.BulkFileListener" />
   </projectListeners>
   <actions>
+    <!-- 向主菜单-工具添加事件 -->
+    <action id="SpringDocHelper.export" text="导出接口文档" class="com.github.optimistic.editor.action.ExportAllApiDocAction" popup="true">
+      <add-to-group group-id="ToolsMenu" anchor="first"/>
+    </action>
+    <!--  右键复制功能  -->
     <group id="SpringDocHelper.Copy" text="SpringDocHelper" class="com.github.optimistic.editor.action.ControllerActionGroup" popup="true">
       <add-to-group group-id="EditorPopupMenu" anchor="before" relative-to-action="Copy.Paste.Special"/>
       <separator/>
