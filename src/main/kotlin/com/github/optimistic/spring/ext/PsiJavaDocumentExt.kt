@@ -46,8 +46,14 @@ fun PsiModifierListOwner.getSwaggerRemark(): String? {
     val swaggerModel = getAnnotation(SWAGGER_API)
         ?: getAnnotation(SWAGGER_METHOD)
         ?: getAnnotation(SWAGGER_FIELD)
-        ?: getAnnotation(SWAGGER_MODEL) ?: return null
+        ?: getAnnotation(SWAGGER_MODEL)
+        ?: getAnnotation(SWAGGER_SCHEMA)
+        ?: getAnnotation(SWAGGER_TAG)
+        ?: getAnnotation(SWAGGER_OPERATION)
+        ?: return null
     swaggerModel.getAnnotationValue(DESCRIPTION).takeIf { it.isNotBlank() }?.let { return it }
+    swaggerModel.getAnnotationValue(NAME).takeIf { it.isNotBlank() }?.let { return it }
+    swaggerModel.getAnnotationValue(SUMMARY).takeIf { it.isNotBlank() }?.let { return it }
     swaggerModel.getAnnotationValue(DEFAULT).takeIf { it.isNotBlank() }?.let { return it }
     return null
 }

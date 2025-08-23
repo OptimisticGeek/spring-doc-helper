@@ -56,8 +56,31 @@ private fun List<FieldModel>.toParams(): AnalyzeModel? = this.map(FieldModel::an
 fun AnalyzeHttpMethod.toCurlStr(): String {
     val sb = StringBuilder("curl -X $httpMethod ")
     requestBody?.let { sb.append(" -H \"Content-Type: application/json\" ") }
-        ?.let { sb.append(" -d '${requestBody.toJson(false).replace(Regex("\\s+"), "")}'") }
+        ?.let { sb.append(" -d '${requestBody.toJson(true).replace(Regex("\\s+"), "")}'") }
     response?.let { sb.append(" -H \"Accept: application/json\" ") }
-    sb.appendLine(" ${getUrl(true)}")
+    sb.appendLine(" ${getUrl(false)}")
+    return sb.toString()
+}
+
+@JvmName("toDocument")
+fun AnalyzeHttpMethod.toDocument(sb: StringBuilder = StringBuilder()): String {
+    sb.appendLine("#### ${this.remark}")
+    sb.appendLine("```http")
+    sb.appendLine("${httpMethod.name} ${getUrl(true)} HTTP/1.1")
+    sb.appendLine("Content-Type: application/json")
+    sb.appendLine("```")
+
+    requestBody?.let {
+        sb.appendLine("##### RequestBody")
+        sb.appendLine("```json5")
+        sb.appendLine(it.toJson(true))
+        sb.appendLine("```")
+    }
+
+    response?.let {
+        sb.appendLine("##### Response")
+        sb.appendLine("```json5\n${it.toJson(true)}\n```\n")
+    }
+    sb.appendLine("\n")
     return sb.toString()
 }
