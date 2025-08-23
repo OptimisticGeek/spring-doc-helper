@@ -29,6 +29,7 @@ class HttpMethodModel(val element: PsiMethod, val parent: ControllerModel) {
     val sourcePsi = SmartPointerManager.createPointer<PsiMethod>(element)
     val urlPath: UrlPath = UrlPath(element, parent.urlPath)
     val psiClass get() = psiMethod.containingClass!!
+    val project get() = psiMethod.project
     val psiMethod get() = sourcePsi.element!!
     val myModule get() = psiClass.let { ModuleUtilCore.findModuleForPsiElement(it)!! }
     val httpMethod get() = urlPath.httpMethod

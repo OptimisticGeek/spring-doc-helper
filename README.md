@@ -5,37 +5,89 @@
 [![Stars](https://badgen.net/github/stars/OptimisticGeek/spring-doc-helper)](https://github.com/OptimisticGeek/spring-doc-helper/releases)
 [![Version](https://img.shields.io/jetbrains/plugin/v/23730-springdochelper)](https://plugins.jetbrains.com/plugin/23730-springdochelper)
 [![Downloads](https://img.shields.io/jetbrains/plugin/d/23730-springdochelper)](https://plugins.jetbrains.com/plugin/23730-springdochelper)
-  
+
+[![English](https://img.shields.io/badge/lang-English-blue.svg)](README.md)
+[![中文](https://img.shields.io/badge/lang-中文-blue.svg)](README.zh-CN.md)
+
+# Spring Interface Documentation Helper
+
 <!-- Plugin description -->
-This is a plugin for spring interface documentation. With this plugin, you can quickly view and copy interface documentation in HTML, JSON, Markdown, cURL, etc., and generate interface test cases for import into Yapi, Postman, etc.
+**Comprehensive API Documentation Solution for Spring Developers**
 
-这是一款针对spring的接口文档插件，通过本插件获取接口文档，快速查看接口文档，快速复制接口文档的html、json、markdown、cURL等，生成接口用例，导入到yapi、postman等。
-## 支持功能
-- 鼠标悬浮文档提示（class、field、response、params、method）
-- Object与泛型返回值真实类型推断
-- ![GET](https://raw.githubusercontent.com/OptimisticGeek/spring-doc-helper/main/src/main/resources/icon/method/GET.png)GET|![POST](https://raw.githubusercontent.com/OptimisticGeek/spring-doc-helper/main/src/main/resources/icon/method/POST.png)POST|![PUT](https://raw.githubusercontent.com/OptimisticGeek/spring-doc-helper/main/src/main/resources/icon/method/PUT.png)PUT|![DELETE](https://raw.githubusercontent.com/OptimisticGeek/spring-doc-helper/main/src/main/resources/icon/method/DELETE.png)DELETE左侧小图标，支持复制操作、生成测试用例
-- 双击shift搜索接口（search everywhere），支持*通配和单词、正则、区分大小写和http请求方法搜索
-- 支持swagger文档解析
-- 优化缓存逻辑，减少内存占用
+## Core Features
+- 🚀 **Efficient Development**: Instant API documentation generation and real-time preview
+- 📐 **Professional Output**: Multi-format export (HTML/JSON/Markdown/cURL)
+- 🔄 **Test Case Generation**: Create Postman/Yapi compatible test cases with one click
+- 🧠 **Advanced Type Inference**: Accurate parsing of complex generic return types
 
-## Todo
-- [ ] 针对指定类的自定义fields
-- [ ] 导入到Yapi
-- [ ] 导入到Postman
-- [ ] 方法责任链（以时间轴倒序展示接口修改记录）
+## Key Capabilities
+### Smart Documentation
+- Mouse-hover display (class, field, response, parameters, methods)
+- Swagger document parsing integration
+- Dynamic type inference for complex generic structures
+
+### Visual Operations
+- HTTP method icons (GET/POST/PUT/DELETE) in editor gutter
+  - Click to copy documentation
+  - Generate test cases
+  - Method responsibility chain tracking (WIP)
+
+### Efficient Search System
+- Double-shift global search (Search Everywhere)
+  - Wildcard* matching
+  - Word/regex search
+  - HTTP method filtering (GET/POST etc.)
+  - Case sensitivity control
+
+### Performance Optimization
+- Smart caching: LRU strategy + 10-minute auto-expiration
+- Memory optimization: Efficient memory management via Caffeine framework
+
 <!-- Plugin description end -->
 
-## Installation
+## Technical Architecture
+```mermaid
+graph TD
+    A[IDEA Plugin Core] --> B(Documentation Engine)
+    A --> C(Editor Extensions)
+    A --> D(Spring Parser)
+    B --> E[AST Analysis]
+    C --> F[Tooltip System]
+    C --> G[Icon Rendering]
+    D --> H[Annotation Parser]
+    D --> I[Cache Management]
+    J[User Interaction] --> K{Event Bus}
+    K --> L[Document Update]
+    K --> M[Test Case Generation]
+```
 
-- Using the IDE built-in plugin system:
-  
-  <kbd>Settings/Preferences</kbd> > <kbd>Plugins</kbd> > <kbd>Marketplace</kbd> > <kbd>Search for "spring-doc-helper"</kbd> >
-  <kbd>Install</kbd>
-  
-- Manually:
+## Developer Guide
+### Build Requirements
+- JDK 17+
+- Kotlin JVM Toolchain 17
+- IntelliJ Platform Gradle Plugin 2025.1.1
+- Gradle 8.9
 
-  Download the [latest release](https://github.com/OptimisticGeek/spring-doc-helper/releases/latest) and install it manually using
-  <kbd>Settings/Preferences</kbd> > <kbd>Plugins</kbd> > <kbd>⚙️</kbd> > <kbd>Install plugin from disk...</kbd>
+### Tech Stack
+- **Frontend**: IntelliJ UI components + Kotlinx-html
+- **Backend**: Kotlin coroutines + Java 17
+- **Build**: Gradle + Qodana code quality check
+- **Testing**: JUnit5 + Mockito
+
+## Installation Guide
+### Online Installation
+<kbd>Settings/Preferences</kbd> > <kbd>Plugins</kbd> > <kbd>Marketplace</kbd> > <kbd>Search "spring-doc-helper"</kbd> > <kbd>Install</kbd>
+
+### Offline Installation
+1. Download [latest release](https://github.com/OptimisticGeek/spring-doc-helper/releases/latest)
+2. Use <kbd>Settings/Preferences</kbd> > <kbd>Plugins</kbd> > <kbd>⚙️</kbd> > <kbd>Install plugin from disk</kbd>
+
+## Contribution Guidelines
+Welcome contributions! Please refer to our [Contributing Guide](CONTRIBUTING.md) for development instructions.
+
+## License
+This project uses Apache-2.0 License. See [LICENSE](LICENSE) for details.
+
 ---
 Plugin based on the [IntelliJ Platform Plugin Template][template].
 

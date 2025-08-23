@@ -123,6 +123,5 @@ fun PsiType?.analyzeRefClassModel(project: Project): RefClassModel? {
 
 @JvmName("resolvePsiClass")
 fun PsiTypeElement.resolvePsiClass(): PsiClass? {
-    val resolve = this.innermostComponentReferenceElement?.resolve() ?: return null
-    return if (resolve is PsiClass) resolve else null
+    return this.innermostComponentReferenceElement?.resolve() as? PsiClass
 }

@@ -2,6 +2,7 @@
 
 package com.github.optimistic.editor.search
 
+import com.github.optimistic.editor.action.copyMarkdownStr
 import com.github.optimistic.spring.constant.HttpMethodType
 import com.github.optimistic.spring.model.HttpMethodModel
 import com.github.optimistic.spring.service.ScannerBundle
@@ -10,6 +11,7 @@ import com.github.optimistic.spring.service.getIcon
 import com.github.optimistic.spring.service.springApiService
 import com.intellij.find.FindManager
 import com.intellij.find.FindModel
+import com.intellij.icons.AllIcons
 import com.intellij.ide.actions.searcheverywhere.*
 import com.intellij.openapi.Disposable
 import com.intellij.openapi.actionSystem.AnAction
@@ -83,7 +85,7 @@ class SpringApiSearchEverywhereClassifier(event: AnActionEvent) : WeightedSearch
      * 创建左右列表渲染器
      */
     override fun getElementsRenderer(): ListCellRenderer<in SpringApiItem> = myListRenderer
-
+    var currentPattern: String? = null
     /**
      * 填充搜索结果
      */
@@ -92,6 +94,7 @@ class SpringApiSearchEverywhereClassifier(event: AnActionEvent) : WeightedSearch
         progressIndicator: ProgressIndicator,
         consumer: Processor<in FoundItemDescriptor<SpringApiItem>>
     ) {
+        currentPattern = pattern
         if (DumbService.isDumb(myProject)) return
         if (myFilter.moduleFilter.selectedElements.isEmpty()) return
         if (!isEmptyPatternSupported && pattern.isEmpty()) return
@@ -127,8 +130,24 @@ class SpringApiSearchEverywhereClassifier(event: AnActionEvent) : WeightedSearch
             WordAction(word, onChanged),
             RegexpAction(regexp, onChanged),
             SearchEverywhereFiltersAction(myFilter.moduleFilter, onChanged),
-            SearchEverywhereFiltersAction(myFilter.methodFilter, onChanged)
+            SearchEverywhereFiltersAction(myFilter.methodFilter, onChanged),
+            exportApiDocAction()
         )
+    }
+
+    /**
+     * 导出当前符合搜索条件的所有接口
+     */
+    private fun exportApiDocAction(): AnAction {
+        return object : AnAction("导出接口", "导出所有符合搜索条件的接口", AllIcons.Actions.Download) {
+            override fun actionPerformed(e: AnActionEvent) {
+                val matcher = currentPattern?.let { createMatcher(it) }
+
+                myProject.service<SpringApiService>()
+                    .searchMethods(myFilter.myModules) { myFilter.match(it, matcher) }
+                    .copyMarkdownStr()
+            }
+        }
     }
 
     /**
@@ -168,15 +187,17 @@ private class MyFilter(myProject: Project) {
     )
 
     fun match(
-        model: HttpMethodModel, matcher: MinusculeMatcher, consumer: Processor<in FoundItemDescriptor<SpringApiItem>>
+        model: HttpMethodModel,
+        matcher: MinusculeMatcher?,
+        consumer: Processor<in FoundItemDescriptor<SpringApiItem>>? = null
     ): Boolean {
-        FindModel.initStringToFind(findModel, matcher.pattern)
+        matcher?.let { FindModel.initStringToFind(findModel, matcher.pattern) }
         if (!methodFilter.isSelected(HttpMethodType.ALL) && !methodFilter.isSelected(model.httpMethod)) return false
         SpringApiItem(model).takeIf {
-            if (matcher.pattern.isEmpty()) return@takeIf true
+            if (matcher?.pattern?.isEmpty() != false) return@takeIf true
             if (!isBuiltInMatching()) return@takeIf it.isFoundString(matcher)
             return@takeIf it.isFoundString(findManager.findString(it.title, 0, findModel))
-        }?.let { consumer.process(FoundItemDescriptor(it, it.weight)) } ?: return false
+        }?.let { consumer?.process(FoundItemDescriptor(it, it.weight)) ?: return true } ?: return false
         return true
     }
 

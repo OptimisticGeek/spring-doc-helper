@@ -2,6 +2,8 @@
 package com.github.optimistic.spring.constant
 
 const val DEFAULT = "value"
+const val NAME = "name"
+const val SUMMARY = "summary"
 const val AUTHOR = "author"
 const val PARAM = "param"
 const val METHOD = "method"

@@ -4,6 +4,10 @@
 
 ## [Unreleased]
 
+## [2.0.5] - 2025-04-18
+### Changed
+- 支持Idea v252.*
+
 ## [2.0.4] - 2025-04-18
 ### Changed
 - 支持Idea v251.*
@@ -144,6 +148,7 @@
 
 [Unreleased]: https://github.com/OptimisticGeek/spring-doc-helper/compare/v1.0.6...HEAD
 
+[2.0.5]: https://github.com/OptimisticGeek/spring-doc-helper/compare/v2.04..v2.0.5
 [2.0.4]: https://github.com/OptimisticGeek/spring-doc-helper/compare/v2.02...v2.0.4
 [2.0.3]: https://github.com/OptimisticGeek/spring-doc-helper/compare/v2.02...v2.0.3
 [2.0.2]: https://github.com/OptimisticGeek/spring-doc-helper/compare/v2.01...v2.0.2
