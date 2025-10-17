@@ -8,7 +8,7 @@ kotlin = "2.2.10"
 changelog = "2.4.0"
 qodana = "0.1.13"
 
-kover = "0.9.1"
+kover = "0.9.3"
 intelliJPlatform = "2.7.2"
 kotlinxHtml = "0.12.0"
 
