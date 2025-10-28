@@ -12,10 +12,15 @@ kover = "0.9.1"
 intelliJPlatform = "2.7.2"
 kotlinxHtml = "0.12.0"
 
+ktor = "3.3.1"
+kotlinSdk = "0.7.4"
+
 [libraries]
 annotations = { group = "org.jetbrains", name = "annotations", version.ref = "annotations" }
 kotlinxHtml = { group = "org.jetbrains.kotlinx", name = "kotlinx-html", version.ref = "kotlinxHtml" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }
+ktorServer = {group = "io.ktor", name = "ktor-server-netty", version.ref = "ktor"}
+kotlinSdk = {group = "io.modelcontextprotocol", name = "kotlin-sdk", version.ref = "kotlinSdk"}
 
 [plugins]
 changelog = { id = "org.jetbrains.changelog", version.ref = "changelog" }

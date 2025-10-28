@@ -4,6 +4,21 @@
 
 ## [Unreleased]
 
+## [3.0.1] - 2025-04-18
+### Changed
+- 支持Idea v253.*
+- 支持MCP服务
+
+```json
+{
+  "mcpServers": {
+    "SpringDocHelper": {
+      "url": "http://0.0.0.0:18080/sse"
+    }
+  }
+}
+```
+
 ## [2.0.5] - 2025-04-18
 ### Changed
 - 支持Idea v252.*

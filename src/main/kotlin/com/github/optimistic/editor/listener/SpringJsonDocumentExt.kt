@@ -2,9 +2,24 @@
 package com.github.optimistic.editor.listener
 
 import com.github.optimistic.analyze.model.AnalyzeModel
+import com.github.optimistic.editor.model.MethodJsonSchema
 import com.github.optimistic.editor.model.getJsonSchema
 import com.github.optimistic.spring.constant.FieldType
+import com.github.optimistic.spring.ext.analyze
+import com.github.optimistic.spring.model.HttpMethodModel
 import com.google.gson.Gson
+
+@JvmName("toMethodJsonSchema")
+fun HttpMethodModel.toJsonSchema(showRemark: Boolean = true): String {
+    val method = MethodJsonSchema(url, httpMethod, remark, author, position)
+    method.pathVariables = pathVariables.stream().map { it?.analyze()?.getJsonSchema() }.filter { it != null }.toList()
+    method.queryParams = queryParams.stream().map { it.analyze().getJsonSchema() }.toList()
+    requestBody?.analyze()?.getJsonSchema()?.let { method.requestBody = it }
+    responseBody?.analyze()?.getJsonSchema()?.let { method.response = it }
+
+
+    return Gson().toJson(method)
+}
 
 @JvmName("toJson")
 fun AnalyzeModel.toJson(showRemark: Boolean = true): String {
