@@ -31,6 +31,7 @@ import com.intellij.psi.PsiClass
 import com.intellij.psi.PsiMethod
 import com.intellij.psi.search.ProjectScope
 import kotlinx.coroutines.runBlocking
+import org.apache.commons.lang3.StringUtils
 import java.util.function.Function
 import java.util.function.Supplier
 import javax.swing.Icon
@@ -104,7 +105,9 @@ class SpringApiService(private val myProject: Project) : Disposable {
     fun toClassModel(psiClass: PsiClass, useCache: Boolean = true): ClassModel? {
         val fieldType = getFieldType(psiClass, psiClass.qualifiedName).takeIf { it != FieldType.OTHER } ?: return null
         fieldType.model?.let { return it }
-
+        if (StringUtils.isBlank(psiClass.qualifiedName)) {
+            return null
+        }
         return psiClass.getUserData(classModelKey) {
             ClassModel(psiClass.qualifiedName!!, psiClass.getRemark(), fieldType)
         }?.apply {
