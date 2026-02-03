@@ -39,7 +39,7 @@ dependencies {
 //    implementation(libs.ktorServer)
 //    implementation(libs.kotlinSdk)
     testImplementation(libs.junit)
-    implementation("io.github.nosaywanan:mcp-wrapper:0.7.2")
+    implementation("io.github.nosaywanan:mcp-wrapper:0.8.3")
 
     // IntelliJ Platform Gradle Plugin Dependencies Extension - read more: https://plugins.jetbrains.com/docs/intellij/tools-intellij-platform-gradle-plugin-dependencies-extension.html
     intellijPlatform {
