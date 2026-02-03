@@ -4,6 +4,21 @@
 
 ## [Unreleased]
 
+## [3.0.1] - 2026-02-04
+### Changed
+- 支持Idea v253.*
+- 支持MCP服务
+
+```json
+{
+  "mcpServers": {
+    "SpringDocHelper": {
+      "url": "http://0.0.0.0:18080/sse"
+    }
+  }
+}
+```
+
 ## [2.0.5] - 2025-04-18
 ### Changed
 - 支持Idea v252.*
@@ -148,6 +163,7 @@
 
 [Unreleased]: https://github.com/OptimisticGeek/spring-doc-helper/compare/v1.0.6...HEAD
 
+[3.0.1]: https://github.com/OptimisticGeek/spring-doc-helper/compare/v2.05..v3.0.1
 [2.0.5]: https://github.com/OptimisticGeek/spring-doc-helper/compare/v2.04..v2.0.5
 [2.0.4]: https://github.com/OptimisticGeek/spring-doc-helper/compare/v2.02...v2.0.4
 [2.0.3]: https://github.com/OptimisticGeek/spring-doc-helper/compare/v2.02...v2.0.3

@@ -17,12 +17,14 @@ version = providers.gradleProperty("pluginVersion").get()
 
 // Configure project's dependencies
 repositories {
-    mavenLocal()
-    maven(url = "https://maven.aliyun.com/nexus/content/groups/public/")
+//    maven(url = "https://maven.aliyun.com/nexus/content/groups/public/")
+    google()
+    gradlePluginPortal()
     maven(url = "https://www.jetbrains.com/intellij-repository/releases")
     maven(url = "https://www.jetbrains.com/intellij-repository/snapshots")
     maven(url = "https://maven-central.storage-download.googleapis.com/repos/central/data/")
     mavenCentral()
+    mavenLocal()
 
     // IntelliJ Platform Gradle Plugin Repositories Extension - read more: https://plugins.jetbrains.com/docs/intellij/tools-intellij-platform-gradle-plugin-repositories-extension.html
     intellijPlatform {
@@ -34,7 +36,10 @@ repositories {
 dependencies {
     implementation(libs.kotlinxHtml)
     implementation(libs.annotations)
+//    implementation(libs.ktorServer)
+//    implementation(libs.kotlinSdk)
     testImplementation(libs.junit)
+    implementation("io.github.nosaywanan:mcp-wrapper:0.8.3")
 
     // IntelliJ Platform Gradle Plugin Dependencies Extension - read more: https://plugins.jetbrains.com/docs/intellij/tools-intellij-platform-gradle-plugin-dependencies-extension.html
     intellijPlatform {

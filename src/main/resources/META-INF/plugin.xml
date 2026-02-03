@@ -18,6 +18,9 @@
     <lang.documentationProvider language="JAVA" implementationClass="com.github.optimistic.editor.listener.SpringApiDocumentProvider" order="first" />
     <searchEverywhereContributor implementation="com.github.optimistic.editor.search.SpringApiSearchEverywhereClassifier$Factory" />
     <backgroundPostStartupActivity implementation="com.github.optimistic.editor.listener.StartupActivityImpl" />
+    <notificationGroup id="SpringDocHelperNotification"
+                       displayType="BALLOON"
+                       key="notification.group.name"/>
   </extensions>
   <projectListeners>
     <listener class="com.github.optimistic.editor.listener.BulkFileListenerImpl" topic="com.intellij.openapi.vfs.newvfs.BulkFileListener" />
