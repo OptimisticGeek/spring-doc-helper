@@ -33,7 +33,7 @@ Add the following configuration to your MCP-enabled AI tool:
 {
   "mcpServers": {
     "SpringDocHelper": {
-      "url": "http://localhost:18080/sse"
+      "url": "http://localhost:18080"
     }
   }
 }
