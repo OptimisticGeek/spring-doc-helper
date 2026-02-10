@@ -33,7 +33,7 @@ SpringDocHelper 支持 MCP（Model Context Protocol），允许 AI 助手（如 
 {
   "mcpServers": {
     "SpringDocHelper": {
-      "url": "http://localhost:18080/sse"
+      "url": "http://localhost:18080"
     }
   }
 }
