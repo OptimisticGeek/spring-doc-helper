@@ -4,6 +4,10 @@
 
 ## [Unreleased]
 
+## [3.0.2] - 2026-02-15
+### Fixed
+- 修复文档在253.*版本无法显示的问题
+
 ## [3.0.1] - 2026-02-04
 ### Changed
 - 支持Idea v253.*
@@ -13,7 +17,7 @@
 {
   "mcpServers": {
     "SpringDocHelper": {
-      "url": "http://0.0.0.0:18080/sse"
+      "url": "http://0.0.0.0:18080"
     }
   }
 }
@@ -163,6 +167,7 @@
 
 [Unreleased]: https://github.com/OptimisticGeek/spring-doc-helper/compare/v1.0.6...HEAD
 
+[3.0.2]: https://github.com/OptimisticGeek/spring-doc-helper/compare/v3.0.1...v3.0.2
 [3.0.1]: https://github.com/OptimisticGeek/spring-doc-helper/compare/v2.05..v3.0.1
 [2.0.5]: https://github.com/OptimisticGeek/spring-doc-helper/compare/v2.04..v2.0.5
 [2.0.4]: https://github.com/OptimisticGeek/spring-doc-helper/compare/v2.02...v2.0.4

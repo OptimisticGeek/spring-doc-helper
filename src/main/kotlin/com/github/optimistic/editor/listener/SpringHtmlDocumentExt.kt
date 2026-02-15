@@ -160,11 +160,6 @@ private fun getHtmlStyle(): String {
             line-height: 1.6;
         }
         
-        hr {
-            border: none;
-            border-top: 1px solid ${JavaTokenType.C_STYLE_COMMENT.getHtmlColor()};
-        }
-        
         /* ===== API 标题区域 ===== */
         .api-title {
             font-size: 14px;
@@ -186,28 +181,20 @@ private fun getHtmlStyle(): String {
         div.url {
             margin: 5px 0;
             padding: 5px 0;
-            border-bottom: 1px dashed ${JavaTokenType.C_STYLE_COMMENT.getHtmlColor()}50;
+            border-bottom: 1px solid ${JavaTokenType.C_STYLE_COMMENT.getHtmlColor()}50;
         }
         
         div.url a {
             display: inline-block;
-            align-items: center;
-            gap: 10px;
-            text-decoration: none;
             font-size: 14px;
             font-weight: 500;
             color: ${JavaTokenType.IDENTIFIER.getHtmlColor()};
             margin-left: 10px;
         }
         
-        div.url a:hover {
-            color: ${JavaTokenType.PUBLIC_KEYWORD.getHtmlColor()};
-        }
-        
         div.url img {
             width: 18px;
             height: 18px;
-            vertical-align: middle;
         }
         
         /* ===== 参数/模型区域 ===== */
@@ -222,7 +209,6 @@ private fun getHtmlStyle(): String {
             margin-top: 8px;
             font-weight: 600;
             font-size: 12px;
-            text-transform: uppercase;
             letter-spacing: 1.5px;
             border-bottom: 2px solid ${JavaTokenType.PUBLIC_KEYWORD.getHtmlColor()}60;
             color: ${JavaTokenType.IDENTIFIER.getHtmlColor()};
@@ -237,10 +223,6 @@ private fun getHtmlStyle(): String {
             padding-left: 10px;
             margin: 4px 0;
             border-left: 2px solid ${JavaTokenType.C_STYLE_COMMENT.getHtmlColor()}40;
-        }
-        
-        div.level:hover {
-            border-left-color: ${JavaTokenType.PUBLIC_KEYWORD.getHtmlColor()}60;
         }
         
         /* ===== 类名/备注行 ===== */
@@ -282,19 +264,12 @@ private fun getHtmlStyle(): String {
         .remark {
             color: ${JavaTokenType.C_STYLE_COMMENT.getHtmlColor()};
             font-style: italic;
-            opacity: 0.9;
         }
         
         a[rel="remark"] {
             color: ${JavaTokenType.C_STYLE_COMMENT.getHtmlColor()};
             text-decoration: none;
-            border-bottom: 1px dashed ${JavaTokenType.C_STYLE_COMMENT.getHtmlColor()}60;
-            transition: all 0.2s;
-        }
-        
-        a[rel="remark"]:hover {
-            color: ${JavaTokenType.PUBLIC_KEYWORD.getHtmlColor()};
-            border-bottom-color: ${JavaTokenType.PUBLIC_KEYWORD.getHtmlColor()};
+            border-bottom: 1px solid ${JavaTokenType.C_STYLE_COMMENT.getHtmlColor()}60;
         }
         
         /* ===== 标点符号 ===== */
@@ -316,7 +291,6 @@ private fun getHtmlStyle(): String {
         .del {
             color: ${JavaTokenType.C_STYLE_COMMENT.getHtmlColor()};
             text-decoration: line-through;
-            opacity: 0.6;
         }
         
         /* ===== 空状态提示 ===== */
